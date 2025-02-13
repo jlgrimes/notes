@@ -8,12 +8,14 @@ import {
   ActivityIndicator,
   Alert,
   ScrollView,
+  Modal,
+  Platform,
 } from 'react-native';
 import { NoteForm } from '../components/NoteForm';
 import { NoteList } from '../components/NoteList';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
-import { searchNotes } from '../lib/ai';
+import { searchNotes, getCommonTopics } from '../lib/ai';
 
 export function Notes() {
   const [notes, setNotes] = useState<any[]>([]);
@@ -21,6 +23,9 @@ export function Notes() {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResult, setSearchResult] = useState('');
   const [isSearching, setIsSearching] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
   const { session, signOut } = useAuth();
 
   useEffect(() => {
@@ -28,6 +33,45 @@ export function Notes() {
       fetchNotes();
     }
   }, [session]);
+
+  useEffect(() => {
+    if (notes.length > 0) {
+      loadSuggestions();
+    }
+  }, [notes]);
+
+  useEffect(() => {
+    const handleClickOutside = () => {
+      setShowSuggestions(false);
+    };
+
+    if (Platform.OS === 'web') {
+      document.addEventListener('click', handleClickOutside);
+      return () => document.removeEventListener('click', handleClickOutside);
+    }
+  }, []);
+
+  const loadSuggestions = async () => {
+    try {
+      setIsLoadingSuggestions(true);
+      const topics = await getCommonTopics(notes);
+      setSuggestions(topics);
+    } catch (error) {
+      console.error('Error loading suggestions:', error);
+    } finally {
+      setIsLoadingSuggestions(false);
+    }
+  };
+
+  const handleSearchInputPress = () => {
+    setShowSuggestions(true);
+  };
+
+  const handleSuggestionPress = async (suggestion: string) => {
+    setSearchQuery(suggestion);
+    setShowSuggestions(false);
+    handleSearch(suggestion);
+  };
 
   const fetchNotes = async () => {
     try {
@@ -44,6 +88,9 @@ export function Notes() {
       }
 
       setNotes(data || []);
+      if (data && data.length > 0) {
+        await loadSuggestions();
+      }
     } catch (error) {
       console.error('Error in fetchNotes:', error);
       Alert.alert(
@@ -53,15 +100,15 @@ export function Notes() {
     }
   };
 
-  const handleSearch = async () => {
-    if (!searchQuery.trim()) {
+  const handleSearch = async (query: string = searchQuery) => {
+    if (!query.trim()) {
       Alert.alert('Error', 'Please enter a search query.');
       return;
     }
 
     try {
       setIsSearching(true);
-      const result = await searchNotes(searchQuery, notes);
+      const result = await searchNotes(query, notes);
       setSearchResult(result);
     } catch (error) {
       console.error('Error searching notes:', error);
@@ -166,15 +213,44 @@ export function Notes() {
       </View>
 
       <View style={styles.searchContainer}>
-        <TextInput
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-          placeholder='Ask anything about your notes...'
-          placeholderTextColor='#9CA3AF'
-          style={styles.searchInput}
-        />
+        <View style={styles.searchInputContainer}>
+          <TextInput
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            onFocus={() => setShowSuggestions(true)}
+            onPressIn={handleSearchInputPress}
+            placeholder='Ask anything about your notes...'
+            placeholderTextColor='#9CA3AF'
+            style={styles.searchInput}
+          />
+          {showSuggestions && (
+            <View style={styles.suggestionsDropdown}>
+              {isLoadingSuggestions ? (
+                <ActivityIndicator size='small' color='#4F46E5' />
+              ) : suggestions.length > 0 ? (
+                suggestions.map((suggestion, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    style={[
+                      styles.suggestionItem,
+                      index === suggestions.length - 1 &&
+                        styles.suggestionItemLast,
+                    ]}
+                    onPress={() => handleSuggestionPress(suggestion)}
+                  >
+                    <Text style={styles.suggestionText}>{suggestion}</Text>
+                  </TouchableOpacity>
+                ))
+              ) : (
+                <Text style={styles.noSuggestionsText}>
+                  No suggestions available
+                </Text>
+              )}
+            </View>
+          )}
+        </View>
         <TouchableOpacity
-          onPress={handleSearch}
+          onPress={() => handleSearch()}
           style={styles.searchButton}
           disabled={isSearching}
         >
@@ -242,6 +318,10 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     gap: 8,
   },
+  searchInputContainer: {
+    flex: 1,
+    position: 'relative',
+  },
   searchInput: {
     flex: 1,
     backgroundColor: '#FFFFFF',
@@ -301,5 +381,42 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: 'center',
     marginTop: 24,
+  },
+  suggestionsDropdown: {
+    position: 'absolute',
+    top: '100%',
+    left: 0,
+    right: 0,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    marginTop: 4,
+    padding: 8,
+    ...Platform.select({
+      web: {
+        boxShadow:
+          '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+      },
+      default: {
+        elevation: 3,
+      },
+    }),
+    zIndex: 1000,
+  },
+  suggestionItem: {
+    padding: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E5E7EB',
+  },
+  suggestionItemLast: {
+    borderBottomWidth: 0,
+  },
+  suggestionText: {
+    fontSize: 16,
+    color: '#374151',
+  },
+  noSuggestionsText: {
+    padding: 12,
+    color: '#9CA3AF',
+    textAlign: 'center',
   },
 });
