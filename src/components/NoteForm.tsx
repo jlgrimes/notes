@@ -1,4 +1,12 @@
 import React, { useState } from 'react';
+import {
+  StyleSheet,
+  View,
+  TextInput,
+  TouchableOpacity,
+  Text,
+  Platform,
+} from 'react-native';
 
 interface NoteFormProps {
   onSubmit: (title: string, content: string) => void;
@@ -13,8 +21,7 @@ export function NoteForm({
 }: NoteFormProps) {
   const [content, setContent] = useState(initialContent);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = () => {
     if (content.trim()) {
       onSubmit('', content);
       if (!isEditing) {
@@ -24,22 +31,71 @@ export function NoteForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className='space-y-4 max-w-2xl mx-auto'>
-      <div className='relative'>
-        <textarea
-          value={content}
-          onChange={e => setContent(e.target.value)}
-          placeholder='Write your note here...'
-          className='w-full px-6 py-4 border-0 rounded-xl bg-white shadow-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 min-h-[150px] text-gray-700 placeholder-gray-400 resize-none'
-          required
-        />
-      </div>
-      <button
-        type='submit'
-        className='w-full bg-indigo-600 text-white py-3 px-6 rounded-xl hover:bg-indigo-700 transition-colors duration-200 font-medium shadow-md hover:shadow-lg'
+    <View style={styles.container}>
+      <TextInput
+        value={content}
+        onChangeText={setContent}
+        placeholder='Write your note here...'
+        placeholderTextColor='#9CA3AF'
+        multiline
+        style={styles.input}
+      />
+      <TouchableOpacity
+        onPress={handleSubmit}
+        style={styles.button}
+        activeOpacity={0.8}
       >
-        {isEditing ? 'Update Note' : 'Add Note'}
-      </button>
-    </form>
+        <Text style={styles.buttonText}>
+          {isEditing ? 'Update Note' : 'Add Note'}
+        </Text>
+      </TouchableOpacity>
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    marginBottom: 16,
+  },
+  input: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    padding: 16,
+    minHeight: 150,
+    marginBottom: 12,
+    color: '#374151',
+    fontSize: 16,
+    lineHeight: 24,
+    textAlignVertical: 'top',
+    ...Platform.select({
+      web: {
+        outlineStyle: 'none',
+        boxShadow:
+          '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+      },
+      default: {
+        elevation: 2,
+      },
+    }),
+  },
+  button: {
+    backgroundColor: '#4F46E5',
+    borderRadius: 12,
+    padding: 12,
+    alignItems: 'center',
+    ...Platform.select({
+      web: {
+        boxShadow:
+          '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
+      },
+      default: {
+        elevation: 1,
+      },
+    }),
+  },
+  buttonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '500',
+  },
+});

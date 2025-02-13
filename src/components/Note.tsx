@@ -1,9 +1,15 @@
 import React from 'react';
-import { Pencil, Trash2 } from 'lucide-react';
+import {
+  StyleSheet,
+  View,
+  Text,
+  TouchableOpacity,
+  Platform,
+} from 'react-native';
+import { Feather } from '@expo/vector-icons';
 
 interface NoteProps {
   id: string;
-  title: string;
   content: string;
   onEdit: (id: string) => void;
   onDelete: (id: string) => void;
@@ -11,28 +17,72 @@ interface NoteProps {
 
 export function Note({ id, content, onEdit, onDelete }: NoteProps) {
   return (
-    <div className='bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all duration-200 border border-gray-100'>
-      <div className='flex justify-end gap-2 mb-3'>
-        <button
-          onClick={() => onEdit(id)}
-          className='text-gray-500 hover:text-indigo-600 transition-colors px-3 py-1.5 rounded-lg hover:bg-indigo-50 flex items-center gap-1'
-          aria-label='Edit note'
+    <View style={styles.container}>
+      <View style={styles.actions}>
+        <TouchableOpacity
+          onPress={() => onEdit(id)}
+          style={[styles.button, styles.editButton]}
         >
-          <Pencil className='w-4 h-4' />
-          <span>Edit</span>
-        </button>
-        <button
-          onClick={() => onDelete(id)}
-          className='text-gray-500 hover:text-red-600 transition-colors px-3 py-1.5 rounded-lg hover:bg-red-50 flex items-center gap-1'
-          aria-label='Delete note'
+          <Feather name='edit-2' size={16} color='#6B7280' />
+          <Text style={styles.buttonText}>Edit</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => onDelete(id)}
+          style={[styles.button, styles.deleteButton]}
         >
-          <Trash2 className='w-4 h-4' />
-          <span>Delete</span>
-        </button>
-      </div>
-      <p className='text-gray-700 whitespace-pre-wrap text-base leading-relaxed'>
-        {content}
-      </p>
-    </div>
+          <Feather name='trash-2' size={16} color='#6B7280' />
+          <Text style={styles.buttonText}>Delete</Text>
+        </TouchableOpacity>
+      </View>
+      <Text style={styles.content}>{content}</Text>
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    padding: 24,
+    ...Platform.select({
+      web: {
+        boxShadow:
+          '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+        borderWidth: 1,
+        borderColor: '#F3F4F6',
+      },
+      default: {
+        elevation: 2,
+      },
+    }),
+  },
+  actions: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    gap: 8,
+    marginBottom: 12,
+  },
+  button: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 8,
+    borderRadius: 8,
+    gap: 4,
+  },
+  editButton: {
+    backgroundColor: '#F3F4F6',
+  },
+  deleteButton: {
+    backgroundColor: '#FEE2E2',
+  },
+  buttonText: {
+    fontSize: 14,
+    color: '#6B7280',
+    marginLeft: 4,
+  },
+  content: {
+    fontSize: 16,
+    lineHeight: 24,
+    color: '#374151',
+  },
+});
