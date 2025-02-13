@@ -1,13 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, TouchableOpacity, Text, Alert } from 'react-native';
+import {
+  StyleSheet,
+  View,
+  TouchableOpacity,
+  Text,
+  TextInput,
+  ActivityIndicator,
+  Alert,
+  ScrollView,
+} from 'react-native';
 import { NoteForm } from '../components/NoteForm';
 import { NoteList } from '../components/NoteList';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
+import { searchNotes } from '../lib/ai';
 
 export function Notes() {
   const [notes, setNotes] = useState<any[]>([]);
   const [editingNote, setEditingNote] = useState<any>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResult, setSearchResult] = useState('');
+  const [isSearching, setIsSearching] = useState(false);
   const { session, signOut } = useAuth();
 
   useEffect(() => {
@@ -40,6 +53,24 @@ export function Notes() {
     }
   };
 
+  const handleSearch = async () => {
+    if (!searchQuery.trim()) {
+      Alert.alert('Error', 'Please enter a search query.');
+      return;
+    }
+
+    try {
+      setIsSearching(true);
+      const result = await searchNotes(searchQuery, notes);
+      setSearchResult(result);
+    } catch (error) {
+      console.error('Error searching notes:', error);
+      Alert.alert('Error', 'Failed to search notes. Please try again.');
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
   const handleSubmit = async (title: string, content: string) => {
     try {
       if (!session?.user) {
@@ -48,12 +79,11 @@ export function Notes() {
       }
 
       if (editingNote) {
-        const { data, error } = await supabase
+        const { error } = await supabase
           .from('notes')
-          .update({ title, content, updated_at: new Date().toISOString() })
+          .update({ title, content })
           .eq('id', editingNote.id)
-          .eq('user_id', session.user.id)
-          .select();
+          .eq('user_id', session.user.id);
 
         if (error) {
           console.error('Error updating note:', error);
@@ -63,32 +93,18 @@ export function Notes() {
 
         setEditingNote(null);
       } else {
-        const { data, error } = await supabase
+        const { error } = await supabase
           .from('notes')
-          .insert([
-            {
-              title,
-              content,
-              user_id: session.user.id,
-              created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString(),
-            },
-          ])
-          .select();
+          .insert([{ title, content, user_id: session.user.id }]);
 
         if (error) {
           console.error('Error creating note:', error);
           Alert.alert('Error', 'Failed to create note. Please try again.');
           return;
         }
-
-        if (data && data[0]) {
-          setNotes(prevNotes => [data[0], ...prevNotes]);
-          return; // No need to fetch all notes again
-        }
       }
 
-      fetchNotes(); // Only fetch all notes if needed
+      fetchNotes();
     } catch (error) {
       console.error('Error in handleSubmit:', error);
       Alert.alert(
@@ -141,20 +157,59 @@ export function Notes() {
   }
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>My Notes</Text>
         <TouchableOpacity onPress={signOut} style={styles.signOutButton}>
           <Text style={styles.signOutText}>Sign Out</Text>
         </TouchableOpacity>
       </View>
+
+      <View style={styles.searchContainer}>
+        <TextInput
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          placeholder='Ask anything about your notes...'
+          placeholderTextColor='#9CA3AF'
+          style={styles.searchInput}
+        />
+        <TouchableOpacity
+          onPress={handleSearch}
+          style={styles.searchButton}
+          disabled={isSearching}
+        >
+          <Text style={styles.searchButtonText}>Search</Text>
+        </TouchableOpacity>
+      </View>
+
+      {isSearching ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size='large' color='#4F46E5' />
+          <Text style={styles.loadingText}>Searching notes...</Text>
+        </View>
+      ) : searchResult ? (
+        <View style={styles.searchResultContainer}>
+          <Text style={styles.searchResultTitle}>Search Result:</Text>
+          <Text style={styles.searchResultText}>{searchResult}</Text>
+          <TouchableOpacity
+            style={styles.clearButton}
+            onPress={() => {
+              setSearchResult('');
+              setSearchQuery('');
+            }}
+          >
+            <Text style={styles.clearButtonText}>Clear Search</Text>
+          </TouchableOpacity>
+        </View>
+      ) : null}
+
       <NoteForm
         onSubmit={handleSubmit}
         initialContent={editingNote?.content}
         isEditing={!!editingNote}
       />
       <NoteList notes={notes} onEdit={handleEdit} onDelete={handleDelete} />
-    </View>
+    </ScrollView>
   );
 }
 
@@ -178,6 +233,65 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   signOutText: {
+    color: '#4F46E5',
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  searchContainer: {
+    flexDirection: 'row',
+    marginBottom: 16,
+    gap: 8,
+  },
+  searchInput: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    padding: 12,
+    color: '#374151',
+    fontSize: 16,
+  },
+  searchButton: {
+    backgroundColor: '#4F46E5',
+    borderRadius: 12,
+    padding: 12,
+    justifyContent: 'center',
+  },
+  searchButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '500',
+  },
+  loadingContainer: {
+    alignItems: 'center',
+    marginVertical: 20,
+  },
+  loadingText: {
+    marginTop: 8,
+    color: '#4F46E5',
+    fontSize: 16,
+  },
+  searchResultContainer: {
+    backgroundColor: '#F3F4F6',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 16,
+  },
+  searchResultTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#1F2937',
+    marginBottom: 8,
+  },
+  searchResultText: {
+    fontSize: 16,
+    color: '#374151',
+    lineHeight: 24,
+  },
+  clearButton: {
+    marginTop: 12,
+    alignSelf: 'flex-end',
+  },
+  clearButtonText: {
     color: '#4F46E5',
     fontSize: 14,
     fontWeight: '500',
