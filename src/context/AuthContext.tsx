@@ -180,10 +180,83 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         if (result.type === 'success') {
           const { url } = result;
-          console.log('Auth successful, processing callback URL');
-          await handleDeepLink({ url });
+          console.log('Auth successful, processing callback URL:', url);
+
+          try {
+            // Parse the URL to get any error information
+            const parsedUrl = new URL(url);
+            console.log('Parsed callback URL:', {
+              protocol: parsedUrl.protocol,
+              host: parsedUrl.host,
+              pathname: parsedUrl.pathname,
+              search: parsedUrl.search,
+              hash: parsedUrl.hash,
+            });
+
+            // Try to exchange the code if present
+            const params = new URLSearchParams(
+              parsedUrl.search || parsedUrl.hash.replace('#', '')
+            );
+            const code = params.get('code');
+
+            if (code) {
+              console.log(
+                'Found authorization code, attempting to exchange...'
+              );
+              const {
+                data: { session: codeSession },
+                error: codeError,
+              } = await supabase.auth.exchangeCodeForSession(code);
+
+              if (codeError) {
+                console.error('Error exchanging code:', codeError);
+              } else if (codeSession) {
+                console.log('Successfully exchanged code for session');
+                setSession(codeSession);
+                return;
+              }
+            }
+
+            // Fallback to waiting for session
+            console.log('Falling back to session polling...');
+            const maxAttempts = 10; // Increased attempts
+            let attempts = 0;
+
+            while (attempts < maxAttempts) {
+              console.log(
+                `Checking for session (attempt ${attempts + 1}/${maxAttempts})`
+              );
+              const {
+                data: { session: currentSession },
+                error: sessionError,
+              } = await supabase.auth.getSession();
+
+              if (sessionError) {
+                console.error('Error getting session:', sessionError);
+                throw sessionError;
+              }
+
+              if (currentSession) {
+                console.log('Session obtained successfully:', currentSession);
+                setSession(currentSession);
+                return;
+              }
+
+              attempts++;
+              // Increased wait time
+              await new Promise(resolve => setTimeout(resolve, 2000));
+            }
+
+            throw new Error(
+              'Could not establish session after multiple attempts'
+            );
+          } catch (err) {
+            console.error('Error processing auth callback:', err);
+            throw err;
+          }
         } else {
           console.log('Auth was not successful:', result.type);
+          throw new Error('Authentication was cancelled or failed');
         }
       } else {
         // Web flow
