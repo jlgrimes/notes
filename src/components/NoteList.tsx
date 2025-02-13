@@ -1,10 +1,15 @@
 import React from 'react';
-import { StyleSheet, View, ScrollView, Platform } from 'react-native';
+import {
+  StyleSheet,
+  View,
+  ScrollView,
+  Platform,
+  ViewStyle,
+} from 'react-native';
 import { Note } from './Note';
 
 interface Note {
   id: string;
-  title: string;
   content: string;
 }
 
@@ -14,10 +19,19 @@ interface NoteListProps {
   onDelete: (id: string) => void;
 }
 
+const webGridStyle =
+  Platform.OS === 'web'
+    ? ({
+        display: 'grid' as any,
+        gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+        gap: 16,
+      } as ViewStyle)
+    : {};
+
 export function NoteList({ notes, onEdit, onDelete }: NoteListProps) {
   return (
     <ScrollView style={styles.container}>
-      <View style={styles.grid}>
+      <View style={[styles.grid, webGridStyle]}>
         {notes.map(note => (
           <View key={note.id} style={styles.noteWrapper}>
             <Note
@@ -39,17 +53,11 @@ const styles = StyleSheet.create({
   },
   grid: {
     flexDirection: 'column',
-    gap: 16,
-    ...Platform.select({
-      web: {
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-      },
-    }),
-  },
+  } as ViewStyle,
   noteWrapper: {
     flex: 1,
     minWidth: 300,
     marginBottom: Platform.OS === 'web' ? 0 : 16,
+    marginHorizontal: Platform.OS === 'web' ? 0 : 16,
   },
 });
