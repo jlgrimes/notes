@@ -38,36 +38,31 @@ export async function getCommonTopics(notes: any[]): Promise<string[]> {
       model: 'gemini-2.0-flash',
     });
 
-    // Format notes into a string
     const notesContent = notes
       .map(note => {
-        const date = new Date(note.created_at).toLocaleDateString();
-        return `Date: ${date}\nContent: ${note.content}`;
+        const date = getRelativeDate(new Date(note.created_at));
+        return `Time: ${date}\nContent: ${note.content}`;
       })
       .join('\n---\n');
 
     const result = await model.generateContent(`
-      Here are the user's thoughts and reflections:
+      Here are your thoughts and reflections:
       ${notesContent}
 
-      Create 3 gentle, conversational suggestions that would help them recall their thoughts.
-      Make each one feel warm and personal, as if continuing an ongoing conversation.
+      Create 3 warm, personal suggestions to help recall these thoughts.
       
-      Examples of the format (BUT DON'T USE THESE, CREATE NEW ONES BASED ON THE ACTUAL CONTENT):
-      - "Remember when you mentioned that idea"
-      - "Let's find what you were thinking"
-      - "Tell me about your progress"
+      Format examples (create new ones based on the content):
+      - "Remember when you mentioned that project"
+      - "Tell me about your recent ideas"
+      - "Share your thoughts on design"
 
       Rules:
-      1. Return exactly 3 suggestions (or fewer if there isn't enough content)
-      2. Start each with a gentle verb like "remember", "tell", "share", "find"
-      3. Make them SPECIFIC to the actual content shown
-      4. Keep each suggestion under 6 words
-      5. Return only the suggestions, one per line
-      6. Don't include bullets or numbers
-      7. Don't make up content that isn't present
-      8. Use natural time references when relevant
-      9. Avoid phrases like "from your notes" or "from your todos"
+      1. Return exactly 3 suggestions
+      2. Start with gentle verbs (remember, tell, share)
+      3. Make them specific to the content shown
+      4. Keep each under 6 words
+      5. One per line, no bullets
+      6. Use time references naturally
     `);
 
     return result.response
@@ -90,28 +85,23 @@ export async function searchNotes(
       model: 'gemini-2.0-flash',
     });
 
-    // Format notes into a string for context
     const notesContext = notes
       .map(note => {
         const date = getRelativeDate(new Date(note.created_at));
-        return `Time: ${date}\nThoughts: ${note.content}\n---`;
+        return `Time: ${date}\nContent: ${note.content}`;
       })
-      .join('\n');
+      .join('\n---\n');
 
     const result = await model.generateContent(`
-      Context: Here are the user's thoughts and reflections:
+      Here are your thoughts and reflections:
       ${notesContext}
       
       Question: ${query}
       
-      Provide a gentle, brief response that:
-      1. Answers the question using the information provided
-      2. Uses warm phrases like "you mentioned, when we talked about..." or "you were thinking about..."
-      3. If nothing relevant exists, kindly say "I don't see anything about that yet"
-      
-      Keep the response concise but warm, using at most 2-3 sentences.
-      Use natural pauses with commas to keep the tone conversational.
-      Avoid phrases like "in your notes" or "in your todos".
+      Give a warm, brief answer that:
+      1. Uses phrases like "you mentioned" or "you were thinking about"
+      2. Keeps it to 2-3 conversational sentences
+      3. Says "I don't see anything about that yet" if nothing's relevant
     `);
 
     return result.response.text();
