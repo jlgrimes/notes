@@ -37,6 +37,8 @@ export function Notes() {
   useEffect(() => {
     if (notes.length > 0) {
       loadSuggestions();
+    } else {
+      setSuggestions([]);
     }
   }, [notes]);
 
@@ -53,6 +55,11 @@ export function Notes() {
 
   const loadSuggestions = async () => {
     try {
+      if (notes.length === 0) {
+        setSuggestions([]);
+        return;
+      }
+
       setIsLoadingSuggestions(true);
       const topics = await getCommonTopics(notes);
       setSuggestions(topics);
@@ -64,10 +71,14 @@ export function Notes() {
   };
 
   const handleSearchInputPress = () => {
-    setShowSuggestions(true);
+    if (notes.length > 0) {
+      setShowSuggestions(true);
+    }
   };
 
   const handleSuggestionPress = async (suggestion: string) => {
+    if (notes.length === 0) return;
+
     setSearchQuery(suggestion);
     setShowSuggestions(false);
     handleSearch(suggestion);
@@ -88,9 +99,6 @@ export function Notes() {
       }
 
       setNotes(data || []);
-      if (data && data.length > 0) {
-        await loadSuggestions();
-      }
     } catch (error) {
       console.error('Error in fetchNotes:', error);
       Alert.alert(
@@ -103,6 +111,11 @@ export function Notes() {
   const handleSearch = async (query: string = searchQuery) => {
     if (!query.trim()) {
       Alert.alert('Error', 'Please enter a search query.');
+      return;
+    }
+
+    if (notes.length === 0) {
+      setSearchResult("You haven't written any notes yet.");
       return;
     }
 
