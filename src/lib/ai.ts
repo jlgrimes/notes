@@ -98,10 +98,12 @@ export async function searchNotes(
       
       Question: ${query}
       
-      Give a warm, brief answer that:
-      1. Uses phrases like "you mentioned" or "you were thinking about"
-      2. Keeps it to 2-3 conversational sentences
-      3. Says "I don't see anything about that yet" if nothing's relevant
+      Look carefully through the content and provide a warm, brief answer.
+      Focus on finding relevant information, even if it's not an exact match.
+      Use phrases like "you mentioned" or "you were thinking about".
+      Keep it conversational and under 3 sentences.
+      
+      Only if you've thoroughly checked and found nothing related, say "I don't see anything about that yet".
     `);
 
     return result.response.text();
