@@ -1,6 +1,15 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useCallback,
+} from 'react';
 import { Session } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
+import { Platform } from 'react-native';
+import * as WebBrowser from 'expo-web-browser';
+import * as Linking from 'expo-linking';
 
 type AuthContextType = {
   session: Session | null;
@@ -11,9 +20,88 @@ type AuthContextType = {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+const getRedirectUrl = () => {
+  if (Platform.OS === 'web') {
+    return window.location.origin;
+  }
+  return Linking.createURL('auth-callback');
+};
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+
+  const handleDeepLink = useCallback(async ({ url }: { url: string }) => {
+    console.log('Got deep link:', url);
+
+    if (!url.includes('auth-callback')) {
+      console.log('URL does not contain auth-callback, ignoring');
+      return;
+    }
+
+    try {
+      // Parse the URL to get the fragment
+      const parsedUrl = new URL(url);
+      const fragment = parsedUrl.hash || parsedUrl.search;
+      console.log('URL fragment:', fragment);
+
+      // Extract tokens from fragment
+      const params = new URLSearchParams(fragment.replace('#', ''));
+      const access_token = params.get('access_token');
+      const refresh_token = params.get('refresh_token');
+
+      console.log('Extracted tokens:', {
+        hasAccessToken: !!access_token,
+        hasRefreshToken: !!refresh_token,
+      });
+
+      if (!access_token || !refresh_token) {
+        console.error('Missing tokens in URL');
+        return;
+      }
+
+      const {
+        data: { session },
+        error,
+      } = await supabase.auth.setSession({
+        access_token,
+        refresh_token,
+      });
+
+      if (error) {
+        console.error('Error setting session:', error);
+        return;
+      }
+
+      console.log('Session set successfully:', session);
+      setSession(session);
+
+      if (Platform.OS !== 'web') {
+        await WebBrowser.dismissBrowser();
+      }
+    } catch (err) {
+      console.error('Error processing auth callback:', err);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (Platform.OS !== 'web') {
+      // Handle deep links when app is foregrounded
+      const subscription = Linking.addEventListener('url', handleDeepLink);
+
+      // Handle deep links when app is not running
+      Linking.getInitialURL().then(url => {
+        if (url) {
+          console.log('Got initial URL:', url);
+          handleDeepLink({ url });
+        }
+      });
+
+      return () => {
+        subscription.remove();
+      };
+    }
+  }, [handleDeepLink]);
 
   useEffect(() => {
     // Check for active session
@@ -43,23 +131,76 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signInWithGoogle = async () => {
     try {
       console.log('Starting Google sign in...');
-      const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: window.location.origin,
-          queryParams: {
-            access_type: 'offline',
-            prompt: 'consent',
+      const redirectUrl = getRedirectUrl();
+      console.log('Using redirect URL:', redirectUrl);
+
+      if (Platform.OS !== 'web') {
+        // For mobile, we need to open the auth URL in a web browser
+        const { data, error } = await supabase.auth.signInWithOAuth({
+          provider: 'google',
+          options: {
+            skipBrowserRedirect: true,
+            redirectTo: redirectUrl,
+            queryParams: {
+              access_type: 'offline',
+              prompt: 'select_account',
+              hd: '*',
+            },
           },
-        },
-      });
+        });
 
-      if (error) {
-        console.error('Google sign in error:', error);
-        throw error;
+        if (error) {
+          console.error('OAuth setup error:', error);
+          throw error;
+        }
+
+        if (!data.url) {
+          console.error('No OAuth URL returned');
+          throw new Error('No OAuth URL returned');
+        }
+
+        console.log('Opening auth URL in browser:', data.url);
+        const result = await WebBrowser.openAuthSessionAsync(
+          data.url,
+          redirectUrl,
+          {
+            showInRecents: true,
+            dismissButtonStyle: 'close',
+            preferEphemeralSession: true,
+          }
+        );
+
+        console.log('Browser session result:', result);
+
+        if (result.type === 'success') {
+          const { url } = result;
+          console.log('Auth successful, processing callback URL');
+          await handleDeepLink({ url });
+        } else {
+          console.log('Auth was not successful:', result.type);
+        }
+      } else {
+        // Web flow
+        console.log('Starting web auth flow');
+        const { data, error } = await supabase.auth.signInWithOAuth({
+          provider: 'google',
+          options: {
+            redirectTo: redirectUrl,
+            queryParams: {
+              access_type: 'offline',
+              prompt: 'select_account',
+              hd: '*',
+            },
+          },
+        });
+
+        if (error) {
+          console.error('Web OAuth error:', error);
+          throw error;
+        }
+
+        console.log('Web auth initiated:', data);
       }
-
-      console.log('Sign in response:', data);
     } catch (error) {
       console.error('Error signing in with Google:', error);
       throw error;
