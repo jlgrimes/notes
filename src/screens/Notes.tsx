@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, TouchableOpacity, Text } from 'react-native';
+import { StyleSheet, View, TouchableOpacity, Text, Alert } from 'react-native';
 import { NoteForm } from '../components/NoteForm';
 import { NoteList } from '../components/NoteList';
 import { supabase } from '../lib/supabase';
@@ -8,51 +8,94 @@ import { useAuth } from '../context/AuthContext';
 export function Notes() {
   const [notes, setNotes] = useState<any[]>([]);
   const [editingNote, setEditingNote] = useState<any>(null);
-  const { signOut } = useAuth();
+  const { session, signOut } = useAuth();
 
   useEffect(() => {
-    fetchNotes();
-  }, []);
+    if (session?.user) {
+      fetchNotes();
+    }
+  }, [session]);
 
   const fetchNotes = async () => {
-    const { data, error } = await supabase
-      .from('notes')
-      .select('*')
-      .order('created_at', { ascending: false });
+    try {
+      const { data, error } = await supabase
+        .from('notes')
+        .select('*')
+        .eq('user_id', session?.user?.id)
+        .order('created_at', { ascending: false });
 
-    if (error) {
-      console.error('Error fetching notes:', error);
-      return;
+      if (error) {
+        console.error('Error fetching notes:', error);
+        Alert.alert('Error', 'Failed to fetch notes. Please try again.');
+        return;
+      }
+
+      setNotes(data || []);
+    } catch (error) {
+      console.error('Error in fetchNotes:', error);
+      Alert.alert(
+        'Error',
+        'An unexpected error occurred while fetching notes.'
+      );
     }
-
-    setNotes(data || []);
   };
 
   const handleSubmit = async (title: string, content: string) => {
-    if (editingNote) {
-      const { error } = await supabase
-        .from('notes')
-        .update({ title, content })
-        .eq('id', editingNote.id);
-
-      if (error) {
-        console.error('Error updating note:', error);
+    try {
+      if (!session?.user) {
+        Alert.alert('Error', 'You must be signed in to create notes.');
         return;
       }
 
-      setEditingNote(null);
-    } else {
-      const { error } = await supabase
-        .from('notes')
-        .insert([{ title, content }]);
+      if (editingNote) {
+        const { data, error } = await supabase
+          .from('notes')
+          .update({ title, content, updated_at: new Date().toISOString() })
+          .eq('id', editingNote.id)
+          .eq('user_id', session.user.id)
+          .select();
 
-      if (error) {
-        console.error('Error creating note:', error);
-        return;
+        if (error) {
+          console.error('Error updating note:', error);
+          Alert.alert('Error', 'Failed to update note. Please try again.');
+          return;
+        }
+
+        setEditingNote(null);
+      } else {
+        const { data, error } = await supabase
+          .from('notes')
+          .insert([
+            {
+              title,
+              content,
+              user_id: session.user.id,
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+            },
+          ])
+          .select();
+
+        if (error) {
+          console.error('Error creating note:', error);
+          Alert.alert('Error', 'Failed to create note. Please try again.');
+          return;
+        }
+
+        if (data && data[0]) {
+          setNotes(prevNotes => [data[0], ...prevNotes]);
+          return; // No need to fetch all notes again
+        }
       }
+
+      fetchNotes(); // Only fetch all notes if needed
+    } catch (error) {
+      console.error('Error in handleSubmit:', error);
+      Alert.alert(
+        'Error',
+        'An unexpected error occurred while saving the note.'
+      );
     }
-
-    fetchNotes();
   };
 
   const handleEdit = (id: string) => {
@@ -61,15 +104,41 @@ export function Notes() {
   };
 
   const handleDelete = async (id: string) => {
-    const { error } = await supabase.from('notes').delete().eq('id', id);
+    try {
+      if (!session?.user) {
+        Alert.alert('Error', 'You must be signed in to delete notes.');
+        return;
+      }
 
-    if (error) {
-      console.error('Error deleting note:', error);
-      return;
+      const { error } = await supabase
+        .from('notes')
+        .delete()
+        .eq('id', id)
+        .eq('user_id', session.user.id);
+
+      if (error) {
+        console.error('Error deleting note:', error);
+        Alert.alert('Error', 'Failed to delete note. Please try again.');
+        return;
+      }
+
+      setNotes(prevNotes => prevNotes.filter(note => note.id !== id));
+    } catch (error) {
+      console.error('Error in handleDelete:', error);
+      Alert.alert(
+        'Error',
+        'An unexpected error occurred while deleting the note.'
+      );
     }
-
-    fetchNotes();
   };
+
+  if (!session?.user) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.errorText}>Please sign in to view your notes.</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -92,6 +161,7 @@ export function Notes() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    padding: 16,
   },
   header: {
     flexDirection: 'row',
@@ -111,5 +181,11 @@ const styles = StyleSheet.create({
     color: '#4F46E5',
     fontSize: 14,
     fontWeight: '500',
+  },
+  errorText: {
+    color: '#EF4444',
+    fontSize: 16,
+    textAlign: 'center',
+    marginTop: 24,
   },
 });
