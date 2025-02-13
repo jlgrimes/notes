@@ -5,7 +5,7 @@ import React, {
   useState,
   useCallback,
 } from 'react';
-import { Session } from '@supabase/supabase-js';
+import { Session, Provider } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
 import { Platform } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
@@ -134,18 +134,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const redirectUrl = getRedirectUrl();
       console.log('Using redirect URL:', redirectUrl);
 
+      const oAuthOptions = {
+        provider: 'google' as Provider,
+        options: {
+          redirectTo: redirectUrl,
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          },
+        },
+      };
+
       if (Platform.OS !== 'web') {
         // For mobile, we need to open the auth URL in a web browser
         const { data, error } = await supabase.auth.signInWithOAuth({
-          provider: 'google',
+          ...oAuthOptions,
           options: {
+            ...oAuthOptions.options,
             skipBrowserRedirect: true,
-            redirectTo: redirectUrl,
-            queryParams: {
-              access_type: 'offline',
-              prompt: 'select_account',
-              hd: '*',
-            },
           },
         });
 
@@ -166,7 +172,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           {
             showInRecents: true,
             dismissButtonStyle: 'close',
-            preferEphemeralSession: true,
+            preferEphemeralSession: false,
           }
         );
 
@@ -182,17 +188,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       } else {
         // Web flow
         console.log('Starting web auth flow');
-        const { data, error } = await supabase.auth.signInWithOAuth({
-          provider: 'google',
-          options: {
-            redirectTo: redirectUrl,
-            queryParams: {
-              access_type: 'offline',
-              prompt: 'select_account',
-              hd: '*',
-            },
-          },
-        });
+        const { data, error } = await supabase.auth.signInWithOAuth(
+          oAuthOptions
+        );
 
         if (error) {
           console.error('Web OAuth error:', error);
