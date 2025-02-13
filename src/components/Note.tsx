@@ -9,27 +9,30 @@ interface NoteProps {
   onDelete: (id: string) => void;
 }
 
-export function Note({ id, title, content, onEdit, onDelete }: NoteProps) {
+export function Note({ id, content, onEdit, onDelete }: NoteProps) {
   return (
-    <div className="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow">
-      <div className="flex justify-between items-start mb-2">
-        <h3 className="text-lg font-semibold text-gray-800">{title}</h3>
-        <div className="flex gap-2">
-          <button
-            onClick={() => onEdit(id)}
-            className="text-blue-600 hover:text-blue-800"
-          >
-            <Pencil className="w-4 h-4" />
-          </button>
-          <button
-            onClick={() => onDelete(id)}
-            className="text-red-600 hover:text-red-800"
-          >
-            <Trash2 className="w-4 h-4" />
-          </button>
-        </div>
+    <div className='bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all duration-200 border border-gray-100'>
+      <div className='flex justify-end gap-2 mb-3'>
+        <button
+          onClick={() => onEdit(id)}
+          className='text-gray-500 hover:text-indigo-600 transition-colors px-3 py-1.5 rounded-lg hover:bg-indigo-50 flex items-center gap-1'
+          aria-label='Edit note'
+        >
+          <Pencil className='w-4 h-4' />
+          <span>Edit</span>
+        </button>
+        <button
+          onClick={() => onDelete(id)}
+          className='text-gray-500 hover:text-red-600 transition-colors px-3 py-1.5 rounded-lg hover:bg-red-50 flex items-center gap-1'
+          aria-label='Delete note'
+        >
+          <Trash2 className='w-4 h-4' />
+          <span>Delete</span>
+        </button>
       </div>
-      <p className="text-gray-600 whitespace-pre-wrap">{content}</p>
+      <p className='text-gray-700 whitespace-pre-wrap text-base leading-relaxed'>
+        {content}
+      </p>
     </div>
   );
 }

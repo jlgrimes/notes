@@ -2,50 +2,41 @@ import React, { useState } from 'react';
 
 interface NoteFormProps {
   onSubmit: (title: string, content: string) => void;
-  initialTitle?: string;
   initialContent?: string;
   isEditing?: boolean;
 }
 
-export function NoteForm({ onSubmit, initialTitle = '', initialContent = '', isEditing = false }: NoteFormProps) {
-  const [title, setTitle] = useState(initialTitle);
+export function NoteForm({
+  onSubmit,
+  initialContent = '',
+  isEditing = false,
+}: NoteFormProps) {
   const [content, setContent] = useState(initialContent);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (title.trim() && content.trim()) {
-      onSubmit(title, content);
+    if (content.trim()) {
+      onSubmit('', content);
       if (!isEditing) {
-        setTitle('');
         setContent('');
       }
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
-        <input
-          type="text"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          placeholder="Note title"
-          className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          required
-        />
-      </div>
-      <div>
+    <form onSubmit={handleSubmit} className='space-y-4 max-w-2xl mx-auto'>
+      <div className='relative'>
         <textarea
           value={content}
-          onChange={(e) => setContent(e.target.value)}
-          placeholder="Note content"
-          className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[100px]"
+          onChange={e => setContent(e.target.value)}
+          placeholder='Write your note here...'
+          className='w-full px-6 py-4 border-0 rounded-xl bg-white shadow-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 min-h-[150px] text-gray-700 placeholder-gray-400 resize-none'
           required
         />
       </div>
       <button
-        type="submit"
-        className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors"
+        type='submit'
+        className='w-full bg-indigo-600 text-white py-3 px-6 rounded-xl hover:bg-indigo-700 transition-colors duration-200 font-medium shadow-md hover:shadow-lg'
       >
         {isEditing ? 'Update Note' : 'Add Note'}
       </button>
