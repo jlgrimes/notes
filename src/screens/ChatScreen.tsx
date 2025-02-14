@@ -21,6 +21,7 @@ import { ConversationFlow } from '../components/ConversationFlow';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { SuggestionPillList } from '../components/SuggestionPillList';
+import { ModalOverlay } from '../components/ModalOverlay';
 import { PromptLabel } from '../components/PromptLabel';
 
 type RootStackParamList = {
@@ -161,89 +162,77 @@ export function ChatScreen(props: ChatScreenProps) {
             )}
           </View>
 
-          <Modal
+          <ModalOverlay
             visible={!!searchResult || isSearching}
-            transparent={true}
-            animationType='fade'
-            onRequestClose={dismissResults}
+            onDismiss={dismissResults}
           >
-            <TouchableWithoutFeedback onPress={dismissResults}>
-              <View style={styles.modalOverlay}>
-                <TouchableWithoutFeedback>
-                  <View>
-                    {isSearching ? (
-                      <View style={styles.cardContainer}>
-                        <View style={styles.aiLoadingContainer}>
-                          <AILoadingIndicator size={40} color='#4F46E5' />
-                          <Text style={styles.aiLoadingText}>
-                            Analyzing your thoughts...
-                          </Text>
-                          <Text style={styles.aiLoadingSubtext}>
-                            Finding relevant connections...
-                          </Text>
-                        </View>
-                      </View>
-                    ) : (
-                      searchResult && (
-                        <>
-                          <View style={styles.cardContainer}>
-                            <MotiView
-                              from={{ opacity: 0 }}
-                              animate={{ opacity: 1 }}
-                              exit={{ opacity: 0 }}
-                              transition={{
-                                type: 'timing',
-                                duration: 800,
-                                delay: 100,
-                              }}
-                              style={styles.searchResultContainer}
-                            >
-                              <MotiView
-                                from={{
-                                  transform: [{ translateY: 10 }],
-                                  scale: 0.98,
-                                }}
-                                animate={{
-                                  transform: [{ translateY: 0 }],
-                                  scale: 1,
-                                }}
-                                transition={{
-                                  type: 'spring',
-                                  damping: 15,
-                                  mass: 0.8,
-                                }}
-                              >
-                                {searchQuery && (
-                                  <PromptLabel prompt={searchQuery} />
-                                )}
-                                <Text style={styles.searchResultText}>
-                                  {searchResult}
-                                </Text>
-                              </MotiView>
-                            </MotiView>
-                          </View>
-                          {isLoadingSmartSuggestions ? (
-                            <View style={styles.spinnerContainer}>
-                              <AILoadingIndicator size={30} color='#4F46E5' />
-                              <Text style={styles.aiLoadingSubtext}>
-                                Getting smart suggestions...
-                              </Text>
-                            </View>
-                          ) : smartSuggestions.length > 0 ? (
-                            <SuggestionPillList
-                              suggestions={smartSuggestions}
-                              onSuggestionPress={handleSmartSuggestionPress}
-                              smart
-                            />
-                          ) : null}
-                        </>
-                      )
-                    )}
-                  </View>
-                </TouchableWithoutFeedback>
+            {isSearching ? (
+              <View style={styles.cardContainer}>
+                <View style={styles.aiLoadingContainer}>
+                  <AILoadingIndicator size={40} color='#4F46E5' />
+                  <Text style={styles.aiLoadingText}>
+                    Analyzing your thoughts...
+                  </Text>
+                  <Text style={styles.aiLoadingSubtext}>
+                    Finding relevant connections...
+                  </Text>
+                </View>
               </View>
-            </TouchableWithoutFeedback>
-          </Modal>
+            ) : (
+              searchResult && (
+                <>
+                  <View style={styles.cardContainer}>
+                    <MotiView
+                      from={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{
+                        type: 'timing',
+                        duration: 800,
+                        delay: 100,
+                      }}
+                      style={styles.searchResultContainer}
+                    >
+                      <MotiView
+                        from={{
+                          transform: [{ translateY: 10 }],
+                          scale: 0.98,
+                        }}
+                        animate={{
+                          transform: [{ translateY: 0 }],
+                          scale: 1,
+                        }}
+                        transition={{
+                          type: 'spring',
+                          damping: 15,
+                          mass: 0.8,
+                        }}
+                      >
+                        {searchQuery && <PromptLabel prompt={searchQuery} />}
+                        <Text style={styles.searchResultText}>
+                          {searchResult}
+                        </Text>
+                      </MotiView>
+                    </MotiView>
+                  </View>
+                  {isLoadingSmartSuggestions ? (
+                    <View style={styles.spinnerContainer}>
+                      <AILoadingIndicator size={30} color='#4F46E5' />
+                      <Text style={styles.aiLoadingSubtext}>
+                        Getting smart suggestions...
+                      </Text>
+                    </View>
+                  ) : smartSuggestions.length > 0 ? (
+                    <SuggestionPillList
+                      suggestions={smartSuggestions}
+                      onSuggestionPress={handleSmartSuggestionPress}
+                      smart
+                    />
+                  ) : null}
+                </>
+              )
+            )}
+          </ModalOverlay>
         </View>
 
         <View style={styles.bottomContent}>
