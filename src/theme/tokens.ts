@@ -44,6 +44,40 @@ export const colors = {
   },
 };
 
+type GradientConfig = {
+  colors: [string, string];
+  start: { x: number; y: number };
+  end: { x: number; y: number };
+};
+
+export const gradients: Record<string, GradientConfig> = {
+  primary: {
+    colors: [colors.primary[500], '#7C3AED'],
+    start: { x: 0, y: 0 },
+    end: { x: 1, y: 0 },
+  },
+  secondary: {
+    colors: [colors.info.light, colors.info.dark],
+    start: { x: 0, y: 0 },
+    end: { x: 1, y: 0 },
+  },
+  success: {
+    colors: [colors.success.light, colors.success.dark],
+    start: { x: 0, y: 0 },
+    end: { x: 1, y: 0 },
+  },
+  warning: {
+    colors: [colors.warning.light, colors.warning.dark],
+    start: { x: 0, y: 0 },
+    end: { x: 1, y: 0 },
+  },
+  error: {
+    colors: [colors.error.light, colors.error.dark],
+    start: { x: 0, y: 0 },
+    end: { x: 1, y: 0 },
+  },
+};
+
 export const typography = {
   fonts: {
     primary: 'System',

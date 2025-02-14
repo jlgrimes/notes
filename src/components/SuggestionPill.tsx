@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, TouchableOpacity, Text } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../theme/ThemeProvider';
+import { Gradient } from '../theme/components/Gradient';
 
 interface SuggestionPillProps {
   suggestion: string;
@@ -50,14 +50,9 @@ export function SuggestionPill({
   if (smart) {
     return (
       <TouchableOpacity style={styles.pill} onPress={onPress}>
-        <LinearGradient
-          colors={[theme.colors.primary[500], '#7C3AED']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
-          style={styles.gradientPill}
-        >
+        <Gradient type='primary' style={styles.gradientPill}>
           <Text style={styles.smartText}>{suggestion}</Text>
-        </LinearGradient>
+        </Gradient>
       </TouchableOpacity>
     );
   }
