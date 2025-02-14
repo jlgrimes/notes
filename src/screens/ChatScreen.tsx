@@ -19,8 +19,23 @@ import MaskedView from '@react-native-masked-view/masked-view';
 import { searchNotes, getSmartSuggestions, getFollowUpAnswer } from '../lib/ai';
 import { ConversationFlow } from '../components/ConversationFlow';
 import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { SuggestionPill } from '../components/SuggestionPill';
 import { PromptLabel } from '../components/PromptLabel';
+
+type RootStackParamList = {
+  MainTabs: undefined;
+  CreateNoteModal: { mode: 'create' };
+  Conversation: {
+    initialQuery: string;
+    initialAnswer: string;
+    onSuggestionPress: (suggestion: string) => void;
+    previousAnswer: string;
+  };
+  NotesListModal: undefined;
+};
+
+type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 interface ChatScreenProps {
   notes: any[];
@@ -43,7 +58,7 @@ interface ChatScreenProps {
 }
 
 export function ChatScreen(props: ChatScreenProps) {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp>();
   const [smartSuggestions, setSmartSuggestions] = useState<string[]>([]);
   const [isLoadingSmartSuggestions, setIsLoadingSmartSuggestions] =
     useState(false);
@@ -248,17 +263,24 @@ export function ChatScreen(props: ChatScreenProps) {
                     Getting suggestions...
                   </Text>
                 </View>
-              ) : suggestions.length > 0 ? (
-                <View style={styles.suggestionsList}>
+              ) : (
+                <View style={styles.suggestionsContainer}>
                   {suggestions.map((suggestion, index) => (
                     <SuggestionPill
                       key={index}
                       suggestion={suggestion}
-                      onPress={() => handleSuggestionPress(suggestion)}
+                      onPress={() => handleRegularSuggestionPress(suggestion)}
                     />
                   ))}
+                  <TouchableOpacity
+                    style={styles.browseAllLink}
+                    onPress={() => navigation.navigate('NotesListModal')}
+                  >
+                    <Text style={styles.browseAllText}>Browse all notes</Text>
+                    <Text style={styles.chevron}>›</Text>
+                  </TouchableOpacity>
                 </View>
-              ) : null}
+              )}
             </>
           )}
 
@@ -458,5 +480,29 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'center',
     padding: 16,
+  },
+  suggestionsContainer: {
+    flexDirection: 'column',
+    gap: 8,
+    marginTop: 16,
+    marginBottom: 32,
+  },
+  browseAllLink: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    marginTop: 16,
+  },
+  browseAllText: {
+    color: '#4F46E5',
+    fontSize: 16,
+    fontWeight: '500',
+  },
+  chevron: {
+    color: '#4F46E5',
+    fontSize: 18,
+    marginLeft: 8,
+    fontWeight: '600',
   },
 });

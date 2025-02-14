@@ -13,9 +13,23 @@ import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
 import { searchNotes, getCommonTopics, getWelcomeMessage } from '../lib/ai';
 import { Keyboard } from 'react-native';
+import type { ParamListBase } from '@react-navigation/native';
 
 const Tab = createBottomTabNavigator();
-const Stack = createNativeStackNavigator();
+
+type RootStackParamList = {
+  MainTabs: undefined;
+  CreateNoteModal: { mode: 'create' };
+  Conversation: {
+    initialQuery: string;
+    initialAnswer: string;
+    onSuggestionPress: (suggestion: string) => void;
+    previousAnswer: string;
+  };
+  NotesListModal: undefined;
+};
+
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 function ChatScreenWrapper(props: any) {
   return <ChatScreen {...props} mode='chat' />;
@@ -403,8 +417,34 @@ export function AuthenticatedApp() {
               fontWeight: '600',
             },
           }}
-          component={ConversationScreen}
-        />
+        >
+          {({ route }) => <ConversationScreen route={route} />}
+        </Stack.Screen>
+        <Stack.Screen
+          name='NotesListModal'
+          options={{
+            presentation: 'modal',
+            headerShown: true,
+            headerTitle: 'All Notes',
+            headerShadowVisible: false,
+            headerStyle: {
+              backgroundColor: '#f7f7f7',
+            },
+            headerTitleStyle: {
+              color: '#1F2937',
+              fontSize: 18,
+              fontWeight: '600',
+            },
+          }}
+        >
+          {() => (
+            <NotesListScreen
+              notes={screenProps.notes}
+              onEdit={screenProps.handleEdit}
+              onDelete={screenProps.handleDelete}
+            />
+          )}
+        </Stack.Screen>
       </Stack.Navigator>
     </NavigationContainer>
   );
