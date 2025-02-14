@@ -17,7 +17,7 @@ import MaskedView from '@react-native-masked-view/masked-view';
 import { searchNotes, getSmartSuggestions, getFollowUpAnswer } from '../lib/ai';
 import { ConversationFlow } from '../components/ConversationFlow';
 import { useNavigation } from '@react-navigation/native';
-import { SmartSuggestionPill } from '../components/SmartSuggestionPill';
+import { SuggestionPill } from '../components/SuggestionPill';
 import { PromptLabel } from '../components/PromptLabel';
 
 interface ChatScreenProps {
@@ -167,10 +167,11 @@ export function ChatScreen(props: ChatScreenProps) {
               ) : smartSuggestions.length > 0 ? (
                 <View style={styles.suggestionsList}>
                   {smartSuggestions.map((suggestion, index) => (
-                    <SmartSuggestionPill
+                    <SuggestionPill
                       key={index}
                       suggestion={suggestion}
                       onPress={() => handleSmartSuggestionPress(suggestion)}
+                      smart
                     />
                   ))}
                 </View>
@@ -192,15 +193,11 @@ export function ChatScreen(props: ChatScreenProps) {
               ) : suggestions.length > 0 ? (
                 <View style={styles.suggestionsList}>
                   {suggestions.map((suggestion, index) => (
-                    <TouchableOpacity
+                    <SuggestionPill
                       key={index}
-                      style={styles.suggestionPill}
+                      suggestion={suggestion}
                       onPress={() => handleSuggestionPress(suggestion)}
-                    >
-                      <Text style={styles.suggestionPillText}>
-                        {suggestion}
-                      </Text>
-                    </TouchableOpacity>
+                    />
                   ))}
                 </View>
               ) : null}

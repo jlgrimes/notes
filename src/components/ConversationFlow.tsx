@@ -10,7 +10,7 @@ import { MotiView } from 'moti';
 import { LinearGradient } from 'expo-linear-gradient';
 import { AILoadingIndicator } from './AILoadingIndicator';
 import { getSmartSuggestions, getFollowUpAnswer } from '../lib/ai';
-import { SmartSuggestionPill } from './SmartSuggestionPill';
+import { SuggestionPill } from './SuggestionPill';
 import { LocationCard } from './LocationCard';
 import { PromptLabel } from './PromptLabel';
 
@@ -175,12 +175,13 @@ export function ConversationFlow({
               ) : card.smartSuggestions?.length > 0 ? (
                 <View style={styles.suggestionsList}>
                   {card.smartSuggestions.map((suggestion, index) => (
-                    <SmartSuggestionPill
+                    <SuggestionPill
                       key={index}
                       suggestion={suggestion}
                       onPress={() =>
                         handleSuggestionPress(suggestion, cardIndex)
                       }
+                      smart={true}
                     />
                   ))}
                 </View>
