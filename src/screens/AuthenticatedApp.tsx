@@ -6,6 +6,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { CreateNoteScreen } from './CreateNoteScreen';
 import { ChatScreen } from './ChatScreen';
+import { ConversationScreen } from './ConversationScreen';
 import { NotesListScreen } from './NotesListScreen';
 import { SettingsScreen } from './SettingsScreen';
 import { useAuth } from '../context/AuthContext';
@@ -384,6 +385,23 @@ export function AuthenticatedApp() {
         >
           {() => <CreateNoteScreen handleSubmit={handleSubmit} />}
         </Stack.Screen>
+        <Stack.Screen
+          name='Conversation'
+          options={{
+            headerShown: true,
+            headerTitle: 'Conversation',
+            headerShadowVisible: false,
+            headerStyle: {
+              backgroundColor: '#f7f7f7',
+            },
+            headerTitleStyle: {
+              color: '#1F2937',
+              fontSize: 18,
+              fontWeight: '600',
+            },
+          }}
+          component={ConversationScreen}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );

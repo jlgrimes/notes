@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
   View,
@@ -14,8 +14,9 @@ import { AILoadingIndicator } from '../components/AILoadingIndicator';
 import { NoteForm } from '../components/NoteForm';
 import { LinearGradient } from 'expo-linear-gradient';
 import MaskedView from '@react-native-masked-view/masked-view';
-import { searchNotes } from '../lib/ai';
+import { searchNotes, getSmartSuggestions, getFollowUpAnswer } from '../lib/ai';
 import { ConversationFlow } from '../components/ConversationFlow';
+import { useNavigation } from '@react-navigation/native';
 
 interface ChatScreenProps {
   notes: any[];
@@ -37,7 +38,10 @@ interface ChatScreenProps {
 }
 
 export function ChatScreen(props: ChatScreenProps) {
-  const [showConversation, setShowConversation] = useState(false);
+  const navigation = useNavigation();
+  const [smartSuggestions, setSmartSuggestions] = useState<string[]>([]);
+  const [isLoadingSmartSuggestions, setIsLoadingSmartSuggestions] =
+    useState(false);
 
   const {
     notes,
@@ -54,14 +58,40 @@ export function ChatScreen(props: ChatScreenProps) {
     handleSuggestionPress,
   } = props;
 
-  const handleSuggestionPressWithConversation = (suggestion: string) => {
-    handleSuggestionPress(suggestion);
-    setShowConversation(true);
+  // Load smart suggestions when we get a search result
+  useEffect(() => {
+    if (searchResult) {
+      loadSmartSuggestions();
+    } else {
+      setSmartSuggestions([]);
+    }
+  }, [searchResult]);
+
+  const loadSmartSuggestions = async () => {
+    setIsLoadingSmartSuggestions(true);
+    try {
+      const suggestions = await getSmartSuggestions(searchResult);
+      setSmartSuggestions(suggestions);
+    } catch (error) {
+      console.error('Error loading smart suggestions:', error);
+    } finally {
+      setIsLoadingSmartSuggestions(false);
+    }
   };
 
-  const handleSearchWithConversation = () => {
+  const handleSmartSuggestionPress = async (suggestion: string) => {
+    // Navigate to conversation screen
+    // @ts-ignore - navigation type is complex here
+    navigation.navigate('Conversation', {
+      initialQuery: suggestion,
+      initialAnswer: '', // Start with empty answer
+      onSuggestionPress: handleSmartSuggestionPress,
+      previousAnswer: searchResult, // Pass the previous answer for context
+    });
+  };
+
+  const handleSearchWithSmartSuggestions = () => {
     handleSearch();
-    setShowConversation(true);
   };
 
   return (
@@ -80,14 +110,7 @@ export function ChatScreen(props: ChatScreenProps) {
             </View>
           </View>
         ) : searchResult || searchQuery ? (
-          showConversation ? (
-            <ConversationFlow
-              key={`${searchQuery}-${searchResult}`}
-              initialQuery={searchQuery}
-              initialAnswer={searchResult}
-              onSuggestionPress={handleSuggestionPressWithConversation}
-            />
-          ) : (
+          <>
             <View style={styles.cardContainer}>
               <MotiView
                 from={{ opacity: 0 }}
@@ -105,7 +128,36 @@ export function ChatScreen(props: ChatScreenProps) {
                 </MotiView>
               </MotiView>
             </View>
-          )
+            {isLoadingSmartSuggestions ? (
+              <View style={styles.spinnerContainer}>
+                <AILoadingIndicator size={30} color='#4F46E5' />
+                <Text style={styles.aiLoadingSubtext}>
+                  Getting smart suggestions...
+                </Text>
+              </View>
+            ) : smartSuggestions.length > 0 ? (
+              <View style={styles.suggestionsList}>
+                {smartSuggestions.map((suggestion, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    style={[styles.suggestionPill, styles.smartSuggestionPill]}
+                    onPress={() => handleSmartSuggestionPress(suggestion)}
+                  >
+                    <LinearGradient
+                      colors={['#4F46E5', '#7C3AED']}
+                      start={{ x: 0, y: 0 }}
+                      end={{ x: 1, y: 0 }}
+                      style={styles.suggestionPillGradient}
+                    >
+                      <Text style={styles.smartSuggestionText}>
+                        {suggestion}
+                      </Text>
+                    </LinearGradient>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            ) : null}
+          </>
         ) : (
           <View style={styles.cardContainer}>
             {!isLoadingWelcome && (
@@ -135,7 +187,7 @@ export function ChatScreen(props: ChatScreenProps) {
           </View>
         )}
 
-        {!searchResult && !showConversation && (
+        {!searchResult && (
           <>
             {isLoadingSuggestions ? (
               <View style={styles.spinnerContainer}>
@@ -150,9 +202,7 @@ export function ChatScreen(props: ChatScreenProps) {
                   <TouchableOpacity
                     key={index}
                     style={styles.suggestionPill}
-                    onPress={() =>
-                      handleSuggestionPressWithConversation(suggestion)
-                    }
+                    onPress={() => handleSuggestionPress(suggestion)}
                   >
                     <Text style={styles.suggestionPillText}>{suggestion}</Text>
                   </TouchableOpacity>
@@ -173,7 +223,7 @@ export function ChatScreen(props: ChatScreenProps) {
             />
           </View>
           <TouchableOpacity
-            onPress={handleSearchWithConversation}
+            onPress={handleSearchWithSmartSuggestions}
             style={styles.searchButton}
             disabled={isSearching}
           >
@@ -308,5 +358,19 @@ const styles = StyleSheet.create({
     textAlign: 'left',
     color: 'black',
     lineHeight: 36,
+  },
+  suggestionPillGradient: {
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 100,
+  },
+  smartSuggestionPill: {
+    borderWidth: 0,
+    overflow: 'hidden',
+  },
+  smartSuggestionText: {
+    fontSize: 16,
+    color: '#FFFFFF',
+    fontWeight: '500',
   },
 });

@@ -34,14 +34,16 @@ export function ConversationFlow({
 
   // Initialize with the first card when props change
   useEffect(() => {
-    if (initialQuery && initialAnswer) {
+    if (initialQuery) {
       const newCard = {
         question: initialQuery,
         answer: initialAnswer,
         smartSuggestions: [],
       };
       setAnswerCards([newCard]);
-      loadSmartSuggestions(initialAnswer, 0);
+      if (initialAnswer) {
+        loadSmartSuggestions(initialAnswer, 0);
+      }
     }
   }, [initialQuery, initialAnswer]);
 
