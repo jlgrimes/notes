@@ -9,7 +9,12 @@
     "edit": "Modifier",
     "create": "Créer",
     "search": "Rechercher",
-    "settings": "Paramètres"
+    "settings": "Paramètres",
+    "pleaseSignIn": "Veuillez vous connecter pour voir vos notes.",
+    "browseAll": "Parcourir toutes les notes",
+    "conversation": "Conversation",
+    "allMemos": "Toutes les Notes",
+    "chat": "Chat"
   },
   "welcome": {
     "title": "Prêts pour Memo?",
@@ -36,10 +41,21 @@
     "noteContent": "Contenu",
     "noNotes": "Pas encore de notes",
     "searchPlaceholder": "Rechercher dans vos notes...",
+    "askAnything": "Posez n'importe quelle question sur vos notes...",
     "untitledNote": "Note sans titre",
     "createFirstNote": "Créez votre première note",
     "deleteConfirmation": "Êtes-vous sûr de vouloir supprimer cette note ?",
-    "deleteConfirmationTitle": "Supprimer la Note"
+    "deleteConfirmationTitle": "Supprimer la Note",
+    "errors": {
+      "mustBeSignedIn": "Vous devez être connecté pour créer des notes.",
+      "failedToCreate": "Échec de la création de la note. Veuillez réessayer.",
+      "failedToUpdate": "Échec de la mise à jour de la note. Veuillez réessayer.",
+      "failedToDelete": "Échec de la suppression de la note. Veuillez réessayer.",
+      "failedToFetch": "Échec de la récupération des notes. Veuillez réessayer.",
+      "unexpectedError": "Une erreur inattendue s'est produite.",
+      "pleaseEnterQuery": "Veuillez entrer une requête de recherche.",
+      "noMemosYet": "Vous n'avez pas encore écrit de notes."
+    }
   },
   "settings": {
     "title": "Paramètres",

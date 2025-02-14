@@ -9,23 +9,28 @@
     "edit": "編集",
     "create": "作成",
     "search": "検索",
-    "settings": "設定"
+    "settings": "設定",
+    "pleaseSignIn": "メモを表示するにはサインインしてください。",
+    "browseAll": "すべてのメモを表示",
+    "conversation": "会話",
+    "allMemos": "すべてのメモ",
+    "chat": "チャット"
   },
   "welcome": {
-    "title": "メモをはじめよ",
+    "title": "Memoへようこそ",
     "subtitle": "あなたの思考とアイデアのための個人スペース",
     "startButton": "Googleで続ける",
     "description": "思考をキャプチャし、アイデアを整理し、大切なことを見失わないようにしましょう。"
   },
   "auth": {
-    "signIn": "ログイン",
-    "signOut": "ログアウト",
-    "signUp": "新規登録",
+    "signIn": "サインイン",
+    "signOut": "サインアウト",
+    "signUp": "サインアップ",
     "email": "メールアドレス",
     "password": "パスワード",
     "forgotPassword": "パスワードをお忘れですか？",
-    "switchToSignIn": "アカウントをお持ちの方はログイン",
-    "switchToSignUp": "アカウントをお持ちでない方は新規登録"
+    "switchToSignIn": "すでにアカウントをお持ちですか？サインイン",
+    "switchToSignUp": "アカウントをお持ちでない方はサインアップ"
   },
   "notes": {
     "title": "ノート",
@@ -34,12 +39,23 @@
     "deleteNote": "ノートを削除",
     "noteTitle": "タイトル",
     "noteContent": "内容",
-    "noNotes": "ノートがありません",
+    "noNotes": "ノートはまだありません",
     "searchPlaceholder": "ノートを検索...",
+    "askAnything": "メモについて何でも質問してください...",
     "untitledNote": "無題のノート",
     "createFirstNote": "最初のノートを作成",
     "deleteConfirmation": "このノートを削除してもよろしいですか？",
-    "deleteConfirmationTitle": "ノートの削除"
+    "deleteConfirmationTitle": "ノートを削除",
+    "errors": {
+      "mustBeSignedIn": "ノートを作成するにはサインインが必要です。",
+      "failedToCreate": "ノートの作成に失敗しました。もう一度お試しください。",
+      "failedToUpdate": "ノートの更新に失敗しました。もう一度お試しください。",
+      "failedToDelete": "ノートの削除に失敗しました。もう一度お試しください。",
+      "failedToFetch": "ノートの取得に失敗しました。もう一度お試しください。",
+      "unexpectedError": "予期せぬエラーが発生しました。",
+      "pleaseEnterQuery": "検索クエリを入力してください。",
+      "noMemosYet": "まだメモを書いていません。"
+    }
   },
   "settings": {
     "title": "設定",
@@ -62,7 +78,7 @@
     }
   },
   "errors": {
-    "required": "この項目は必須です",
+    "required": "このフィールドは必須です",
     "invalidEmail": "無効なメールアドレスです",
     "passwordTooShort": "パスワードは8文字以上である必要があります",
     "networkError": "ネットワークエラー。接続を確認してください。",

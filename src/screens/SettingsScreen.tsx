@@ -18,6 +18,7 @@ interface SettingsScreenProps {
 
 export function SettingsScreen({ signOut }: SettingsScreenProps) {
   const { session } = useAuth();
+  const { t } = useTranslation();
   const userEmail = session?.user?.email;
   const userName = session?.user?.user_metadata?.full_name || 'User';
   const userAvatar = session?.user?.user_metadata?.avatar_url;
@@ -26,7 +27,7 @@ export function SettingsScreen({ signOut }: SettingsScreenProps) {
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView}>
         <View style={styles.settingsContainer}>
-          <Text style={styles.settingsTitle}>Settings</Text>
+          <Text style={styles.settingsTitle}>{t('settings.title')}</Text>
 
           <View style={styles.profileCard}>
             {userAvatar ? (
@@ -47,7 +48,7 @@ export function SettingsScreen({ signOut }: SettingsScreenProps) {
           </View>
 
           <TouchableOpacity onPress={signOut} style={styles.signOutButton}>
-            <Text style={styles.signOutText}>Sign Out</Text>
+            <Text style={styles.signOutText}>{t('auth.signOut')}</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

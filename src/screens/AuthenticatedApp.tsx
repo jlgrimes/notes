@@ -13,6 +13,7 @@ import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
 import { searchNotes, getCommonTopics, getWelcomeMessage } from '../lib/ai';
 import { Keyboard } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import type { ParamListBase } from '@react-navigation/native';
 
 const Tab = createBottomTabNavigator();
@@ -37,6 +38,7 @@ function ChatScreenWrapper(props: any) {
 
 function TabNavigator({ screenProps }: any) {
   const navigation = useNavigation();
+  const { t } = useTranslation();
 
   return (
     <Tab.Navigator
@@ -44,11 +46,11 @@ function TabNavigator({ screenProps }: any) {
         tabBarIcon: ({ focused, color, size }) => {
           let iconName: string = '';
 
-          if (route.name === 'Chat') {
+          if (route.name === t('common.chat')) {
             iconName = focused ? 'chatbubbles' : 'chatbubbles-outline';
-          } else if (route.name === 'My Notes') {
+          } else if (route.name === t('notes.title')) {
             iconName = focused ? 'document-text' : 'document-text-outline';
-          } else if (route.name === 'Settings') {
+          } else if (route.name === t('common.settings')) {
             iconName = focused ? 'settings' : 'settings-outline';
           }
 
@@ -74,11 +76,11 @@ function TabNavigator({ screenProps }: any) {
         headerShown: false,
       })}
     >
-      <Tab.Screen name='Chat'>
+      <Tab.Screen name={t('common.chat')}>
         {() => <ChatScreenWrapper {...screenProps} />}
       </Tab.Screen>
       <Tab.Screen
-        name='Create'
+        name={t('notes.newNote')}
         component={View}
         options={{
           tabBarButton: () => (
@@ -89,7 +91,6 @@ function TabNavigator({ screenProps }: any) {
                 alignItems: 'center',
               }}
               onPress={() => {
-                // @ts-ignore - navigation type is complex here
                 navigation.navigate('CreateNoteModal', { mode: 'create' });
               }}
             >
@@ -126,7 +127,7 @@ function TabNavigator({ screenProps }: any) {
           />
         )}
       </Tab.Screen> */}
-      <Tab.Screen name='Settings'>
+      <Tab.Screen name={t('common.settings')}>
         {() => <SettingsScreen signOut={screenProps.signOut} />}
       </Tab.Screen>
     </Tab.Navigator>
@@ -135,6 +136,7 @@ function TabNavigator({ screenProps }: any) {
 
 export function AuthenticatedApp() {
   const { session, signOut } = useAuth();
+  const { t } = useTranslation();
   const [notes, setNotes] = useState<any[]>([]);
   const [editingNote, setEditingNote] = useState<any>(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -211,12 +213,12 @@ export function AuthenticatedApp() {
 
   const handleSearch = async (query: string) => {
     if (!query.trim()) {
-      Alert.alert('Error', 'Please enter a search query.');
+      Alert.alert('Error', t('notes.errors.pleaseEnterQuery'));
       return;
     }
 
     if (notes.length === 0) {
-      setSearchResult("You haven't written any memos yet.");
+      setSearchResult(t('notes.errors.noMemosYet'));
       return;
     }
 
@@ -227,7 +229,7 @@ export function AuthenticatedApp() {
       setSearchResult(result);
     } catch (error) {
       console.error('Error searching memos:', error);
-      Alert.alert('Error', 'Failed to search memos. Please try again.');
+      Alert.alert('Error', t('notes.errors.failedToFetch'));
     } finally {
       setIsSearching(false);
     }
@@ -249,24 +251,21 @@ export function AuthenticatedApp() {
 
       if (error) {
         console.error('Error fetching memos:', error);
-        Alert.alert('Error', 'Failed to fetch memos. Please try again.');
+        Alert.alert('Error', t('notes.errors.failedToFetch'));
         return;
       }
 
       setNotes(data || []);
     } catch (error) {
       console.error('Error in fetchNotes:', error);
-      Alert.alert(
-        'Error',
-        'An unexpected error occurred while fetching memos.'
-      );
+      Alert.alert('Error', t('notes.errors.unexpectedError'));
     }
   };
 
   const handleSubmit = async (note: { title: string; content: string }) => {
     try {
       if (!session?.user) {
-        Alert.alert('Error', 'You must be signed in to create memos.');
+        Alert.alert('Error', t('notes.errors.mustBeSignedIn'));
         return;
       }
 
@@ -279,7 +278,7 @@ export function AuthenticatedApp() {
 
         if (error) {
           console.error('Error updating memo:', error);
-          Alert.alert('Error', 'Failed to update memo. Please try again.');
+          Alert.alert('Error', t('notes.errors.failedToUpdate'));
           return;
         }
 
@@ -295,7 +294,7 @@ export function AuthenticatedApp() {
 
         if (error) {
           console.error('Error creating memo:', error);
-          Alert.alert('Error', 'Failed to create memo. Please try again.');
+          Alert.alert('Error', t('notes.errors.failedToCreate'));
           return;
         }
       }
@@ -303,10 +302,7 @@ export function AuthenticatedApp() {
       fetchNotes();
     } catch (error) {
       console.error('Error in handleSubmit:', error);
-      Alert.alert(
-        'Error',
-        'An unexpected error occurred while saving the memo.'
-      );
+      Alert.alert('Error', t('notes.errors.unexpectedError'));
     }
   };
 
@@ -318,7 +314,7 @@ export function AuthenticatedApp() {
   const handleDelete = async (id: string) => {
     try {
       if (!session?.user) {
-        Alert.alert('Error', 'You must be signed in to delete memos.');
+        Alert.alert('Error', t('notes.errors.mustBeSignedIn'));
         return;
       }
 
@@ -330,17 +326,14 @@ export function AuthenticatedApp() {
 
       if (error) {
         console.error('Error deleting memo:', error);
-        Alert.alert('Error', 'Failed to delete memo. Please try again.');
+        Alert.alert('Error', t('notes.errors.failedToDelete'));
         return;
       }
 
       setNotes(prevNotes => prevNotes.filter(note => note.id !== id));
     } catch (error) {
       console.error('Error in handleDelete:', error);
-      Alert.alert(
-        'Error',
-        'An unexpected error occurred while deleting the memo.'
-      );
+      Alert.alert('Error', t('notes.errors.unexpectedError'));
     }
   };
 
@@ -371,7 +364,7 @@ export function AuthenticatedApp() {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <Text style={{ color: '#EF4444', fontSize: 16 }}>
-          Please sign in to view your memos.
+          {t('common.pleaseSignIn')}
         </Text>
       </View>
     );
@@ -400,7 +393,7 @@ export function AuthenticatedApp() {
         name='Conversation'
         options={{
           headerShown: true,
-          headerTitle: 'Conversation',
+          headerTitle: t('common.conversation'),
           headerShadowVisible: false,
           headerStyle: {
             backgroundColor: '#f7f7f7',
@@ -419,7 +412,7 @@ export function AuthenticatedApp() {
         options={{
           presentation: 'modal',
           headerShown: true,
-          headerTitle: 'All Memos',
+          headerTitle: t('common.allMemos'),
           headerShadowVisible: false,
           headerStyle: {
             backgroundColor: '#f7f7f7',

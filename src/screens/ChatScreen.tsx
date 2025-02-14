@@ -24,6 +24,7 @@ import { SuggestionPillList } from '../components/SuggestionPillList';
 import { ModalOverlay } from '../components/ModalOverlay';
 import { PromptLabel } from '../components/PromptLabel';
 import { welcomeAnimation, fadeIn, slideUpAndFadeIn } from '../lib/animations';
+import { useTranslation } from 'react-i18next';
 
 type RootStackParamList = {
   MainTabs: undefined;
@@ -61,6 +62,7 @@ interface ChatScreenProps {
 
 export function ChatScreen(props: ChatScreenProps) {
   const navigation = useNavigation<NavigationProp>();
+  const { t } = useTranslation();
   const [smartSuggestions, setSmartSuggestions] = useState<string[]>([]);
   const [isLoadingSmartSuggestions, setIsLoadingSmartSuggestions] =
     useState(false);
@@ -225,7 +227,9 @@ export function ChatScreen(props: ChatScreenProps) {
                 style={styles.browseAllLink}
                 onPress={() => navigation.navigate('NotesListModal')}
               >
-                <Text style={styles.browseAllText}>Browse all memos</Text>
+                <Text style={styles.browseAllText}>
+                  {t('common.browseAll')}
+                </Text>
                 <Text style={styles.chevron}>›</Text>
               </TouchableOpacity>
             </View>
@@ -236,7 +240,7 @@ export function ChatScreen(props: ChatScreenProps) {
               <TextInput
                 value={searchQuery}
                 onChangeText={setSearchQuery}
-                placeholder='Ask anything about your memos...'
+                placeholder={t('notes.askAnything')}
                 placeholderTextColor='#9CA3AF'
                 style={styles.searchInput}
               />
@@ -246,7 +250,7 @@ export function ChatScreen(props: ChatScreenProps) {
               style={styles.searchButton}
               disabled={isSearching}
             >
-              <Text style={styles.searchButtonText}>Search</Text>
+              <Text style={styles.searchButtonText}>{t('common.search')}</Text>
             </TouchableOpacity>
           </View>
         </View>
