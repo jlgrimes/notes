@@ -225,26 +225,17 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   searchResultContainer: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'transparent',
     borderRadius: 16,
     paddingHorizontal: 28,
     paddingVertical: 32,
     justifyContent: 'center',
     minHeight: 200,
-    ...Platform.select({
-      web: {
-        boxShadow:
-          '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
-      },
-      default: {
-        elevation: 5,
-      },
-    }),
   },
   searchResultText: {
-    fontSize: 19,
+    fontSize: 24,
     color: '#374151',
-    lineHeight: 28,
+    lineHeight: 32,
     fontWeight: '500',
     letterSpacing: -0.3,
     textAlign: 'left',
@@ -292,30 +283,26 @@ const styles = StyleSheet.create({
   },
   aiLoadingContainer: {
     alignItems: 'center',
-    backgroundColor: '#F9FAFB',
+    backgroundColor: 'transparent',
     borderRadius: 16,
     padding: 24,
     minHeight: 160,
     justifyContent: 'center',
-    ...Platform.select({
-      web: {
-        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-      },
-      default: {
-        elevation: 2,
-      },
-    }),
   },
   aiLoadingText: {
     marginTop: 16,
     color: '#4F46E5',
-    fontSize: 16,
+    fontSize: 20,
     fontWeight: '500',
+    textAlign: 'left',
+    alignSelf: 'flex-start',
   },
   aiLoadingSubtext: {
     marginTop: 8,
     color: '#6B7280',
-    fontSize: 14,
+    fontSize: 16,
+    textAlign: 'left',
+    alignSelf: 'flex-start',
   },
   maskedView: {
     flex: 1,
@@ -328,9 +315,10 @@ const styles = StyleSheet.create({
     padding: 32,
   },
   welcomeText: {
-    fontSize: 20,
+    fontSize: 28,
     fontWeight: '600',
-    textAlign: 'center',
+    textAlign: 'left',
     color: 'black',
+    lineHeight: 36,
   },
 });
