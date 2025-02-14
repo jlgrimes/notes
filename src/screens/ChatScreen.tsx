@@ -225,7 +225,7 @@ export function ChatScreen(props: ChatScreenProps) {
                 style={styles.browseAllLink}
                 onPress={() => navigation.navigate('NotesListModal')}
               >
-                <Text style={styles.browseAllText}>Browse all notes</Text>
+                <Text style={styles.browseAllText}>Browse all memos</Text>
                 <Text style={styles.chevron}>›</Text>
               </TouchableOpacity>
             </View>
@@ -236,7 +236,7 @@ export function ChatScreen(props: ChatScreenProps) {
               <TextInput
                 value={searchQuery}
                 onChangeText={setSearchQuery}
-                placeholder='Ask anything about your notes...'
+                placeholder='Ask anything about your memos...'
                 placeholderTextColor='#9CA3AF'
                 style={styles.searchInput}
               />

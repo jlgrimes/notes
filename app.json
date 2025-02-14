@@ -1,18 +1,18 @@
 {
   "expo": {
-    "name": "notes",
-    "slug": "notes",
+    "name": "memo",
+    "slug": "memo",
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
-    "scheme": "notes",
+    "scheme": "memo",
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.yourcompany.notes"
+      "bundleIdentifier": "com.yourcompany.memo"
     },
     "android": {
-      "package": "com.yourcompany.notes",
+      "package": "com.yourcompany.memo",
       "adaptiveIcon": {
         "backgroundColor": "#ffffff"
       }

@@ -216,7 +216,7 @@ export function AuthenticatedApp() {
     }
 
     if (notes.length === 0) {
-      setSearchResult("You haven't written any notes yet.");
+      setSearchResult("You haven't written any memos yet.");
       return;
     }
 
@@ -226,8 +226,8 @@ export function AuthenticatedApp() {
       setSearchQuery(query);
       setSearchResult(result);
     } catch (error) {
-      console.error('Error searching notes:', error);
-      Alert.alert('Error', 'Failed to search notes. Please try again.');
+      console.error('Error searching memos:', error);
+      Alert.alert('Error', 'Failed to search memos. Please try again.');
     } finally {
       setIsSearching(false);
     }
@@ -248,8 +248,8 @@ export function AuthenticatedApp() {
         .order('created_at', { ascending: false });
 
       if (error) {
-        console.error('Error fetching notes:', error);
-        Alert.alert('Error', 'Failed to fetch notes. Please try again.');
+        console.error('Error fetching memos:', error);
+        Alert.alert('Error', 'Failed to fetch memos. Please try again.');
         return;
       }
 
@@ -258,7 +258,7 @@ export function AuthenticatedApp() {
       console.error('Error in fetchNotes:', error);
       Alert.alert(
         'Error',
-        'An unexpected error occurred while fetching notes.'
+        'An unexpected error occurred while fetching memos.'
       );
     }
   };
@@ -266,7 +266,7 @@ export function AuthenticatedApp() {
   const handleSubmit = async (title: string, content: string) => {
     try {
       if (!session?.user) {
-        Alert.alert('Error', 'You must be signed in to create notes.');
+        Alert.alert('Error', 'You must be signed in to create memos.');
         return;
       }
 
@@ -278,8 +278,8 @@ export function AuthenticatedApp() {
           .eq('user_id', session.user.id);
 
         if (error) {
-          console.error('Error updating note:', error);
-          Alert.alert('Error', 'Failed to update note. Please try again.');
+          console.error('Error updating memo:', error);
+          Alert.alert('Error', 'Failed to update memo. Please try again.');
           return;
         }
 
@@ -290,8 +290,8 @@ export function AuthenticatedApp() {
           .insert([{ title, content, user_id: session.user.id }]);
 
         if (error) {
-          console.error('Error creating note:', error);
-          Alert.alert('Error', 'Failed to create note. Please try again.');
+          console.error('Error creating memo:', error);
+          Alert.alert('Error', 'Failed to create memo. Please try again.');
           return;
         }
       }
@@ -301,7 +301,7 @@ export function AuthenticatedApp() {
       console.error('Error in handleSubmit:', error);
       Alert.alert(
         'Error',
-        'An unexpected error occurred while saving the note.'
+        'An unexpected error occurred while saving the memo.'
       );
     }
   };
@@ -314,7 +314,7 @@ export function AuthenticatedApp() {
   const handleDelete = async (id: string) => {
     try {
       if (!session?.user) {
-        Alert.alert('Error', 'You must be signed in to delete notes.');
+        Alert.alert('Error', 'You must be signed in to delete memos.');
         return;
       }
 
@@ -325,8 +325,8 @@ export function AuthenticatedApp() {
         .eq('user_id', session.user.id);
 
       if (error) {
-        console.error('Error deleting note:', error);
-        Alert.alert('Error', 'Failed to delete note. Please try again.');
+        console.error('Error deleting memo:', error);
+        Alert.alert('Error', 'Failed to delete memo. Please try again.');
         return;
       }
 
@@ -335,7 +335,7 @@ export function AuthenticatedApp() {
       console.error('Error in handleDelete:', error);
       Alert.alert(
         'Error',
-        'An unexpected error occurred while deleting the note.'
+        'An unexpected error occurred while deleting the memo.'
       );
     }
   };
@@ -367,7 +367,7 @@ export function AuthenticatedApp() {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <Text style={{ color: '#EF4444', fontSize: 16 }}>
-          Please sign in to view your notes.
+          Please sign in to view your memos.
         </Text>
       </View>
     );
@@ -411,7 +411,7 @@ export function AuthenticatedApp() {
           options={{
             presentation: 'modal',
             headerShown: true,
-            headerTitle: 'All Notes',
+            headerTitle: 'All Memos',
             headerShadowVisible: false,
             headerStyle: {
               backgroundColor: '#f7f7f7',

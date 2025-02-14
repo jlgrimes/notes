@@ -2,9 +2,9 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const MODEL_NAME = 'gemini-2.0-flash-lite-preview-02-05';
-const WELCOME_CACHE_KEY = '@notes_app_welcome_cache';
-const SUGGESTIONS_CACHE_KEY = '@notes_app_suggestions_cache';
-const SEARCH_CACHE_KEY = '@notes_app_search_cache';
+const WELCOME_CACHE_KEY = '@memo_welcome_cache';
+const SUGGESTIONS_CACHE_KEY = '@memo_suggestions_cache';
+const SEARCH_CACHE_KEY = '@memo_search_cache';
 
 // Cache for welcome message
 type WelcomeMessageCache = {

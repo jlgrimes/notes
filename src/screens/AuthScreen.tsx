@@ -29,7 +29,9 @@ export function AuthScreen() {
       style={styles.container}
     >
       <View style={styles.form}>
-        <Text style={styles.title}>Welcome to Notes</Text>
+        <View style={styles.titleContainer}>
+          <Text style={styles.title}>Say hello to Memo</Text>
+        </View>
         <Text style={styles.subtitle}>Sign in to continue</Text>
 
         <TouchableOpacity
@@ -87,5 +89,8 @@ const styles = StyleSheet.create({
     color: '#1F2937',
     fontSize: 16,
     fontWeight: '500',
+  },
+  titleContainer: {
+    marginBottom: 16,
   },
 });
