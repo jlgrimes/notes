@@ -43,6 +43,7 @@ function TabNavigator({ screenProps }: any) {
   const navigation = useNavigation<NavigationProp>();
   const { t } = useTranslation();
   const theme = useTheme();
+  const { setEditingNote } = screenProps;
 
   return (
     <Tab.Navigator
@@ -95,6 +96,7 @@ function TabNavigator({ screenProps }: any) {
                 alignItems: 'center',
               }}
               onPress={() => {
+                setEditingNote(null);
                 navigation.navigate('CreateNoteModal', { mode: 'create' });
               }}
             >
@@ -115,15 +117,6 @@ function TabNavigator({ screenProps }: any) {
           ),
         }}
       />
-      {/* <Tab.Screen name='My Notes'>
-        {() => (
-          <NotesListScreen
-            notes={screenProps.notes}
-            onEdit={screenProps.handleEdit}
-            onDelete={screenProps.handleDelete}
-          />
-        )}
-      </Tab.Screen> */}
       <Tab.Screen name={t('common.settings')}>
         {() => <SettingsScreen signOut={screenProps.signOut} />}
       </Tab.Screen>
@@ -354,9 +347,9 @@ export function AuthenticatedApp() {
     handleSearch,
     handleSubmit,
     handleEdit,
-    handleDelete,
     editingNote,
     signOut,
+    setEditingNote,
   };
 
   if (!session?.user) {
@@ -435,7 +428,6 @@ export function AuthenticatedApp() {
           <NotesListScreen
             notes={screenProps.notes}
             onEdit={screenProps.handleEdit}
-            onDelete={screenProps.handleDelete}
           />
         )}
       </Stack.Screen>
