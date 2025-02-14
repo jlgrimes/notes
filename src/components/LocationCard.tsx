@@ -112,9 +112,9 @@ export function LocationCard({ location }: LocationCardProps) {
 const styles = StyleSheet.create({
   card: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    marginVertical: 6,
-    padding: 16,
+    borderRadius: 10,
+    marginHorizontal: 6,
+    padding: 12,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -125,6 +125,7 @@ const styles = StyleSheet.create({
     elevation: 2,
     borderWidth: Platform.OS === 'ios' ? 0 : 1,
     borderColor: '#E5E7EB',
+    width: 220, // Fixed width for horizontal scroll
   },
   content: {
     flexDirection: 'row',
@@ -134,25 +135,26 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   iconContainer: {
-    marginLeft: 12,
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    marginLeft: 8,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
     backgroundColor: '#F3F4F6',
     justifyContent: 'center',
     alignItems: 'center',
   },
   locationName: {
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: 15,
+    fontWeight: '700',
     color: '#1F2937',
-    marginBottom: 4,
+    marginBottom: 2,
   },
   locationAddress: {
-    fontSize: 14,
+    fontSize: 13,
+    fontWeight: '500',
     color: '#6B7280',
   },
   icon: {
-    fontSize: 18,
+    fontSize: 14,
   },
 });

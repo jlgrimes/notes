@@ -13,18 +13,28 @@ import { getSmartSuggestions, getFollowUpAnswer } from '../lib/ai';
 import { SmartSuggestionPill } from './SmartSuggestionPill';
 import { LocationCard } from './LocationCard';
 
-interface ConversationFlowProps {
-  initialQuery: string;
-  initialAnswer: string;
-  initialLocations: string[];
-  onSuggestionPress: (suggestion: string) => void;
+interface LocationReference {
+  name: string;
+  address?: string;
+  placeId?: string;
+  coordinates?: {
+    latitude: number;
+    longitude: number;
+  };
 }
 
 interface AnswerCard {
   question: string;
   answer: string;
-  locations: string[];
+  locations: LocationReference[];
   smartSuggestions: string[];
+}
+
+interface ConversationFlowProps {
+  initialQuery: string;
+  initialAnswer: string;
+  initialLocations: LocationReference[];
+  onSuggestionPress: (suggestion: string) => void;
 }
 
 export function ConversationFlow({
@@ -132,11 +142,16 @@ export function ConversationFlow({
               <>
                 <Text style={styles.answerText}>{card.answer}</Text>
                 {card.locations.length > 0 && (
-                  <View style={styles.locationsContainer}>
+                  <ScrollView
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    style={styles.locationsContainer}
+                    contentContainerStyle={styles.locationsContentContainer}
+                  >
                     {card.locations.map((location, index) => (
                       <LocationCard key={index} location={location} />
                     ))}
-                  </View>
+                  </ScrollView>
                 )}
               </>
             ) : (
@@ -190,16 +205,25 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   questionText: {
-    fontSize: 16,
+    fontSize: 15,
+    fontWeight: '500',
     color: '#6B7280',
-    marginBottom: 6,
+    marginBottom: 4,
   },
   answerText: {
-    fontSize: 24,
+    fontSize: 18,
+    fontWeight: '600',
     color: '#374151',
-    lineHeight: 32,
-    fontWeight: '500',
+    lineHeight: 26,
     letterSpacing: -0.3,
+  },
+  locationsContainer: {
+    marginTop: 12,
+    marginLeft: -16,
+    marginRight: -16,
+  },
+  locationsContentContainer: {
+    paddingHorizontal: 16,
   },
   suggestionsContainer: {
     marginTop: 12,
@@ -230,11 +254,8 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     marginTop: 12,
-    fontSize: 16,
+    fontSize: 15,
+    fontWeight: '500',
     color: '#6B7280',
-  },
-  locationsContainer: {
-    marginTop: 12,
-    gap: 4,
   },
 });
