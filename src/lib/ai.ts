@@ -346,15 +346,23 @@ export async function getSmartSuggestions(
       Based on this previous answer:
       "${previousAnswer}"
 
-      Generate 3 follow-up questions that would enrich the user's understanding.
+      You are a curious and knowledgeable AI assistant. Generate 3 follow-up questions that would help explore this topic more deeply.
+      
+      Consider:
+      1. Current trends and developments in this area
+      2. Related concepts and theories that could enrich understanding
+      3. Real-world applications and implications
+      4. Historical context and evolution of these ideas
+      5. Expert perspectives and research in this field
       
       Rules:
       1. Return exactly 3 questions
-      2. Make them specific and related to the previous answer
-      3. Each should explore a different aspect or detail
-      4. Keep each under 6 words
+      2. Make them specific and thought-provoking
+      3. Each should explore a different aspect
+      4. Keep each under 8 words
       5. One per line, no bullets
       6. Start with words like "How" "What" "Why" "Tell me about"
+      7. Questions should feel natural and conversational
     `);
 
     const suggestions = result.response
@@ -367,5 +375,40 @@ export async function getSmartSuggestions(
   } catch (error) {
     console.error('Error getting smart suggestions:', error);
     return [];
+  }
+}
+
+export async function getFollowUpAnswer(
+  question: string,
+  previousAnswer: string
+): Promise<string> {
+  try {
+    const model = genAI.getGenerativeModel({
+      model: MODEL_NAME,
+    });
+
+    const result = await model.generateContent(`
+      Previous context:
+      "${previousAnswer}"
+
+      New question: "${question}"
+
+      You are a knowledgeable AI assistant. Provide a detailed answer that builds upon the previous context.
+      
+      Guidelines:
+      1. Use the previous answer as context to provide more depth
+      2. Add new, relevant information not covered in the previous answer
+      3. Consider current research, expert opinions, and real-world examples
+      4. Keep the tone conversational but informative
+      5. Aim for 2-3 sentences that provide meaningful insights
+      6. Make connections between ideas where relevant
+      
+      Return only the answer, written in a natural, flowing style.
+    `);
+
+    return result.response.text();
+  } catch (error) {
+    console.error('Error getting follow-up answer:', error);
+    throw error;
   }
 }
