@@ -209,10 +209,8 @@ export function AuthenticatedApp() {
     }
   };
 
-  const handleSearch = async (query?: string) => {
-    const searchText = query || searchQuery;
-
-    if (!searchText.trim()) {
+  const handleSearch = async (query: string) => {
+    if (!query.trim()) {
       Alert.alert('Error', 'Please enter a search query.');
       return;
     }
@@ -224,10 +222,8 @@ export function AuthenticatedApp() {
 
     try {
       setIsSearching(true);
-      const result = await searchNotes(searchText, notes);
-      if (query) {
-        setSearchQuery(query);
-      }
+      const result = await searchNotes(query, notes);
+      setSearchQuery(query);
       setSearchResult(result);
     } catch (error) {
       console.error('Error searching notes:', error);

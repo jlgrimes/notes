@@ -52,7 +52,7 @@ interface ChatScreenProps {
   isLoadingSuggestions: boolean;
   suggestions: string[];
   handleSuggestionPress: (suggestion: string) => void;
-  handleSearch: () => void;
+  handleSearch: (query: string) => void;
   handleSubmit: (title: string, content: string) => void;
   editingNote: any;
 }
@@ -118,12 +118,12 @@ export function ChatScreen(props: ChatScreenProps) {
     await setSearchQuery(suggestion);
     // Small timeout to ensure state is updated
     setTimeout(() => {
-      handleSearch();
+      handleSearch(suggestion);
     }, 0);
   };
 
   const handleSearchWithSmartSuggestions = () => {
-    handleSearch();
+    handleSearch(searchQuery);
   };
 
   const dismissResults = () => {
