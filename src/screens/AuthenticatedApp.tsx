@@ -145,6 +145,7 @@ export function AuthenticatedApp() {
   const [welcomeMessage, setWelcomeMessage] = useState<string>('');
   const [isLoadingWelcome, setIsLoadingWelcome] = useState(true);
   const theme = useTheme();
+  const navigation = useNavigation<NavigationProp>();
 
   useEffect(() => {
     if (session?.user) {
@@ -306,6 +307,7 @@ export function AuthenticatedApp() {
   const handleEdit = (id: string) => {
     const note = notes.find(n => n.id === id);
     setEditingNote(note);
+    navigation.navigate('CreateNoteModal', { mode: 'edit' });
   };
 
   const handleDelete = async (id: string) => {
@@ -392,10 +394,14 @@ export function AuthenticatedApp() {
           headerShown: false,
         }}
       >
-        {({ navigation }) => (
+        {({ route, navigation }) => (
           <CreateNoteScreen
             handleSubmit={handleSubmit}
-            onCancel={() => navigation.goBack()}
+            onCancel={() => {
+              navigation.goBack();
+              setEditingNote(null);
+            }}
+            initialContent={editingNote?.content}
           />
         )}
       </Stack.Screen>

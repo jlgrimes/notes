@@ -3,6 +3,11 @@ import { View, StyleSheet } from 'react-native';
 import { NoteForm } from '../components/NoteForm';
 import { ModalScreen } from '../components/ModalScreen';
 import { useTranslation } from 'react-i18next';
+import { useRoute, RouteProp } from '@react-navigation/native';
+
+type CreateNoteRouteParams = {
+  mode?: 'create' | 'edit';
+};
 
 interface CreateNoteScreenProps {
   handleSubmit: (content: string) => void;
@@ -16,6 +21,8 @@ export function CreateNoteScreen({
   initialContent,
 }: CreateNoteScreenProps) {
   const { t } = useTranslation();
+  const route = useRoute<RouteProp<Record<string, CreateNoteRouteParams>>>();
+  const isEditMode = route.params?.mode === 'edit';
 
   return (
     <ModalScreen onDismiss={onCancel} dismissText={t('common.cancel')}>
