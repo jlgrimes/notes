@@ -43,13 +43,7 @@ export function Note({ id, content, onEdit, onDelete }: NoteProps) {
           <Text style={styles.buttonText}>Delete</Text>
         </TouchableOpacity>
       </View>
-      <View style={styles.header}>
-        <Text style={styles.title} numberOfLines={1}>
-          {content.split(' ')[1] || t('notes.untitledNote')}
-        </Text>
-        <Text style={styles.date}>{formattedDate}</Text>
-      </View>
-      <Text style={styles.content}>{content.split(' ')[2]}</Text>
+      <Text style={styles.content}>{content}</Text>
     </View>
   );
 }
