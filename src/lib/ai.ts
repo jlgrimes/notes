@@ -171,16 +171,16 @@ export async function getCommonTopics(notes: any[]): Promise<string[]> {
       ${notesContent}
 
       Create 3 warm, personal suggestions to help recall these thoughts.
-      Each suggestion should start with an appropriate emoji that matches the topic.
+      Each suggestion should end with an appropriate emoji that matches the topic.
       
       Format examples (create new ones based on the content):
-      - "💡 Remember when you mentioned that project"
-      - "🤔 Tell me about your recent ideas"
-      - "🎨 Share your thoughts on design"
+      - "Remember when you mentioned that project 💡"
+      - "Tell me about your recent ideas 🤔"
+      - "Share your thoughts on design 🎨"
 
       Rules:
       1. Return exactly 3 suggestions
-      2. Start with an emoji + space, then a gentle verb (remember, tell, share)
+      2. End with an emoji (space before emoji)
       3. Make them highly specific to the content shown
       4. Keep each under 6 words (excluding emoji)
       5. One per line, no bullets
@@ -350,7 +350,7 @@ export async function getSmartSuggestions(
 
       Generate 3 follow-up questions that a curious user might ask me next.
       Each question should be written from the user's perspective, as if they are asking me directly.
-      Each should start with an appropriate emoji that matches the topic.
+      Each should end with an appropriate emoji that matches the topic.
       
       Consider questions about:
       1. More specific details about what was just explained
@@ -364,7 +364,7 @@ export async function getSmartSuggestions(
       
       Rules:
       1. Return exactly 3 questions
-      2. Start each with an emoji + space
+      2. End each question with a space and an emoji
       3. Write questions as if the user is asking me directly
       4. Each should explore a different aspect
       5. One per line, no bullets or introductory text
@@ -375,9 +375,9 @@ export async function getSmartSuggestions(
       Return only the 3 questions, one per line, nothing else.
       
       Example output:
-      🌍 Can you tell me more about the history of London Bridge?
-      🎭 What makes the West End theatre district so special?
-      🏰 Why did they build the Tower of London there?
+      Can you tell me more about the history of London Bridge? 🌍
+      What makes the West End theatre district so special? 🎭
+      Why did they build the Tower of London there? 🏰
     `);
 
     const suggestions = result.response

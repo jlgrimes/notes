@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Alert, Platform, View, Text } from 'react-native';
+import { Alert, Platform, View, Text, TouchableOpacity } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, useNavigation } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { CreateNoteScreen } from './CreateNoteScreen';
+import { ChatScreen } from './ChatScreen';
 import { NotesListScreen } from './NotesListScreen';
 import { SettingsScreen } from './SettingsScreen';
 import { useAuth } from '../context/AuthContext';
@@ -12,8 +14,112 @@ import { searchNotes, getCommonTopics, getWelcomeMessage } from '../lib/ai';
 import { Keyboard } from 'react-native';
 
 const Tab = createBottomTabNavigator();
+const Stack = createNativeStackNavigator();
+
+function ChatScreenWrapper(props: any) {
+  return <ChatScreen {...props} mode='chat' />;
+}
+
+function TabNavigator({ screenProps }: any) {
+  const navigation = useNavigation();
+
+  return (
+    <Tab.Navigator
+      screenOptions={({ route }) => ({
+        tabBarIcon: ({ focused, color, size }) => {
+          let iconName: string = '';
+
+          if (route.name === 'Chat') {
+            iconName = focused ? 'chatbubbles' : 'chatbubbles-outline';
+          } else if (route.name === 'My Notes') {
+            iconName = focused ? 'document-text' : 'document-text-outline';
+          } else if (route.name === 'Settings') {
+            iconName = focused ? 'settings' : 'settings-outline';
+          }
+
+          return <Icon name={iconName} size={size} color={color} />;
+        },
+        tabBarActiveTintColor: '#4F46E5',
+        tabBarInactiveTintColor: '#6B7280',
+        tabBarStyle: {
+          borderTopWidth: 1,
+          borderTopColor: '#E5E7EB',
+          backgroundColor: '#FFFFFF',
+          height: Platform.OS === 'ios' ? 90 : 60,
+          paddingBottom: Platform.OS === 'ios' ? 25 : 8,
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          elevation: 0,
+          shadowOpacity: 0,
+          borderTopRightRadius: 15,
+          borderTopLeftRadius: 15,
+        },
+        headerShown: false,
+      })}
+    >
+      <Tab.Screen name='Chat'>
+        {() => <ChatScreenWrapper {...screenProps} />}
+      </Tab.Screen>
+      <Tab.Screen
+        name='Create'
+        component={View}
+        options={{
+          tabBarButton: () => (
+            <TouchableOpacity
+              style={{
+                top: -20,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+              onPress={() => {
+                // @ts-ignore - navigation type is complex here
+                navigation.navigate('CreateNoteModal', { mode: 'create' });
+              }}
+            >
+              <View
+                style={{
+                  width: 56,
+                  height: 56,
+                  borderRadius: 28,
+                  backgroundColor: '#4F46E5',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  shadowColor: '#000',
+                  shadowOffset: {
+                    width: 0,
+                    height: 2,
+                  },
+                  shadowOpacity: 0.25,
+                  shadowRadius: 3.84,
+                  elevation: 5,
+                }}
+              >
+                <Icon name='add' size={32} color='#FFFFFF' />
+              </View>
+            </TouchableOpacity>
+          ),
+        }}
+      />
+      {/* <Tab.Screen name='My Notes'>
+        {() => (
+          <NotesListScreen
+            notes={screenProps.notes}
+            onEdit={screenProps.handleEdit}
+            onDelete={screenProps.handleDelete}
+          />
+        )}
+      </Tab.Screen> */}
+      <Tab.Screen name='Settings'>
+        {() => <SettingsScreen signOut={screenProps.signOut} />}
+      </Tab.Screen>
+    </Tab.Navigator>
+  );
+}
 
 export function AuthenticatedApp() {
+  const { session, signOut } = useAuth();
   const [notes, setNotes] = useState<any[]>([]);
   const [editingNote, setEditingNote] = useState<any>(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -24,10 +130,6 @@ export function AuthenticatedApp() {
   const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
   const [welcomeMessage, setWelcomeMessage] = useState<string>('');
   const [isLoadingWelcome, setIsLoadingWelcome] = useState(true);
-  const { session, signOut } = useAuth();
-
-  const userFirstName =
-    session?.user?.user_metadata?.full_name?.split(' ')[0] || 'there';
 
   useEffect(() => {
     if (session?.user) {
@@ -75,6 +177,8 @@ export function AuthenticatedApp() {
   const loadWelcomeMessage = async () => {
     try {
       setIsLoadingWelcome(true);
+      const userFirstName =
+        session?.user?.user_metadata?.full_name?.split(' ')[0] || 'there';
       const message = await getWelcomeMessage(userFirstName);
       setWelcomeMessage(message);
     } catch (error) {
@@ -223,6 +327,28 @@ export function AuthenticatedApp() {
     }
   };
 
+  const screenProps = {
+    notes,
+    isSearching,
+    searchResult,
+    searchQuery,
+    isLoadingWelcome,
+    welcomeMessage,
+    setSearchQuery,
+    setShowSuggestions,
+    handleSearchInputPress,
+    showSuggestions,
+    isLoadingSuggestions,
+    suggestions,
+    handleSuggestionPress,
+    handleSearch,
+    handleSubmit,
+    handleEdit,
+    handleDelete,
+    editingNote,
+    signOut,
+  };
+
   if (!session?.user) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -235,75 +361,30 @@ export function AuthenticatedApp() {
 
   return (
     <NavigationContainer>
-      <Tab.Navigator
-        screenOptions={({ route }) => ({
-          tabBarIcon: ({ focused, color, size }) => {
-            let iconName: string = 'home-outline';
-
-            if (route.name === 'Home') {
-              iconName = focused ? 'home' : 'home-outline';
-            } else if (route.name === 'My Notes') {
-              iconName = focused ? 'document-text' : 'document-text-outline';
-            } else if (route.name === 'Settings') {
-              iconName = focused ? 'settings' : 'settings-outline';
-            }
-
-            return <Icon name={iconName} size={size} color={color} />;
-          },
-          tabBarActiveTintColor: '#4F46E5',
-          tabBarInactiveTintColor: '#6B7280',
-          tabBarStyle: {
-            borderTopWidth: 1,
-            borderTopColor: '#E5E7EB',
-            backgroundColor: '#FFFFFF',
-            height: Platform.OS === 'ios' ? 90 : 60,
-            paddingBottom: Platform.OS === 'ios' ? 25 : 8,
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            right: 0,
-            elevation: 0,
-            shadowOpacity: 0,
-            borderTopRightRadius: 15,
-            borderTopLeftRadius: 15,
-          },
-          headerShown: false,
-        })}
-      >
-        <Tab.Screen name='Home'>
-          {() => (
-            <CreateNoteScreen
-              isSearching={isSearching}
-              searchResult={searchResult}
-              searchQuery={searchQuery}
-              isLoadingWelcome={isLoadingWelcome}
-              welcomeMessage={welcomeMessage}
-              setSearchQuery={setSearchQuery}
-              setShowSuggestions={setShowSuggestions}
-              handleSearchInputPress={handleSearchInputPress}
-              showSuggestions={showSuggestions}
-              isLoadingSuggestions={isLoadingSuggestions}
-              suggestions={suggestions}
-              handleSuggestionPress={handleSuggestionPress}
-              handleSearch={handleSearch}
-              handleSubmit={handleSubmit}
-              editingNote={editingNote}
-            />
-          )}
-        </Tab.Screen>
-        <Tab.Screen name='My Notes'>
-          {() => (
-            <NotesListScreen
-              notes={notes}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
-            />
-          )}
-        </Tab.Screen>
-        <Tab.Screen name='Settings'>
-          {() => <SettingsScreen signOut={signOut} />}
-        </Tab.Screen>
-      </Tab.Navigator>
+      <Stack.Navigator>
+        <Stack.Screen name='MainTabs' options={{ headerShown: false }}>
+          {() => <TabNavigator screenProps={screenProps} />}
+        </Stack.Screen>
+        <Stack.Screen
+          name='CreateNoteModal'
+          options={{
+            presentation: 'modal',
+            headerShown: true,
+            headerTitle: 'Create Note',
+            headerShadowVisible: false,
+            headerStyle: {
+              backgroundColor: '#f7f7f7',
+            },
+            headerTitleStyle: {
+              color: '#1F2937',
+              fontSize: 18,
+              fontWeight: '600',
+            },
+          }}
+        >
+          {() => <CreateNoteScreen handleSubmit={handleSubmit} />}
+        </Stack.Screen>
+      </Stack.Navigator>
     </NavigationContainer>
   );
 }

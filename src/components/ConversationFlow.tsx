@@ -172,17 +172,17 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   cardContainer: {
-    marginBottom: 24,
+    marginBottom: 12,
   },
   answerCard: {
     backgroundColor: 'transparent',
     borderRadius: 16,
-    padding: 20,
+    padding: 16,
   },
   questionText: {
     fontSize: 16,
     color: '#6B7280',
-    marginBottom: 8,
+    marginBottom: 6,
   },
   answerText: {
     fontSize: 24,
@@ -192,11 +192,11 @@ const styles = StyleSheet.create({
     letterSpacing: -0.3,
   },
   suggestionsContainer: {
-    marginTop: 16,
+    marginTop: 12,
   },
   suggestionsList: {
     flexDirection: 'column',
-    gap: 8,
+    gap: 6,
     paddingHorizontal: 16,
   },
   suggestionPill: {
