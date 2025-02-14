@@ -20,7 +20,7 @@ import { searchNotes, getSmartSuggestions, getFollowUpAnswer } from '../lib/ai';
 import { ConversationFlow } from '../components/ConversationFlow';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { SuggestionPill } from '../components/SuggestionPill';
+import { SuggestionPillList } from '../components/SuggestionPillList';
 import { PromptLabel } from '../components/PromptLabel';
 
 type RootStackParamList = {
@@ -230,18 +230,11 @@ export function ChatScreen(props: ChatScreenProps) {
                               </Text>
                             </View>
                           ) : smartSuggestions.length > 0 ? (
-                            <View style={styles.suggestionsList}>
-                              {smartSuggestions.map((suggestion, index) => (
-                                <SuggestionPill
-                                  key={index}
-                                  suggestion={suggestion}
-                                  onPress={() =>
-                                    handleSmartSuggestionPress(suggestion)
-                                  }
-                                  smart
-                                />
-                              ))}
-                            </View>
+                            <SuggestionPillList
+                              suggestions={smartSuggestions}
+                              onSuggestionPress={handleSmartSuggestionPress}
+                              smart
+                            />
                           ) : null}
                         </>
                       )
@@ -265,13 +258,10 @@ export function ChatScreen(props: ChatScreenProps) {
                 </View>
               ) : (
                 <View style={styles.suggestionsContainer}>
-                  {suggestions.map((suggestion, index) => (
-                    <SuggestionPill
-                      key={index}
-                      suggestion={suggestion}
-                      onPress={() => handleRegularSuggestionPress(suggestion)}
-                    />
-                  ))}
+                  <SuggestionPillList
+                    suggestions={suggestions}
+                    onSuggestionPress={handleRegularSuggestionPress}
+                  />
                   <TouchableOpacity
                     style={styles.browseAllLink}
                     onPress={() => navigation.navigate('NotesListModal')}
