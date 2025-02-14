@@ -10,6 +10,7 @@ import {
   Modal,
   Platform,
 } from 'react-native';
+import { MotiView } from 'moti';
 import { AILoadingIndicator } from '../components/AILoadingIndicator';
 import { NoteForm } from '../components/NoteForm';
 import { NoteList } from '../components/NoteList';
@@ -237,7 +238,24 @@ export function Notes() {
             style={styles.searchInput}
           />
           {showSuggestions && (
-            <View style={styles.suggestionsDropdown}>
+            <MotiView
+              style={styles.suggestionsDropdown}
+              from={{
+                opacity: 0,
+                scale: 0.95,
+                translateY: -10,
+              }}
+              animate={{
+                opacity: 1,
+                scale: 1,
+                translateY: 0,
+              }}
+              transition={{
+                type: 'spring',
+                damping: 20,
+                mass: 0.8,
+              }}
+            >
               {isLoadingSuggestions ? (
                 <View style={styles.spinnerContainer}>
                   <AILoadingIndicator size={30} color='#4F46E5' />
@@ -264,7 +282,7 @@ export function Notes() {
                   No suggestions available
                 </Text>
               )}
-            </View>
+            </MotiView>
           )}
         </View>
         <TouchableOpacity
