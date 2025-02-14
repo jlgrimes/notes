@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   StyleSheet,
   View,
@@ -6,27 +6,13 @@ import {
   Text,
   Platform,
   KeyboardAvoidingView,
-  Alert,
-  Image,
-  TextInput,
 } from 'react-native';
 import { useAuth } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 
 export function AuthScreen() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [isSignUp, setIsSignUp] = useState(false);
-  const { signIn, signUp } = useAuth();
+  const { signInWithGoogle } = useAuth();
   const { t } = useTranslation();
-
-  const handleAuth = async () => {
-    if (isSignUp) {
-      await signUp(email, password);
-    } else {
-      await signIn(email, password);
-    }
-  };
 
   return (
     <KeyboardAvoidingView
@@ -40,33 +26,8 @@ export function AuthScreen() {
           <Text style={styles.description}>{t('welcome.description')}</Text>
         </View>
 
-        <TextInput
-          style={styles.input}
-          placeholder={t('auth.email')}
-          value={email}
-          onChangeText={setEmail}
-          autoCapitalize='none'
-          keyboardType='email-address'
-        />
-        <TextInput
-          style={styles.input}
-          placeholder={t('auth.password')}
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
-        />
-        <TouchableOpacity style={styles.button} onPress={handleAuth}>
-          <Text style={styles.buttonText}>
-            {isSignUp ? t('auth.signUp') : t('auth.signIn')}
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.switchButton}
-          onPress={() => setIsSignUp(!isSignUp)}
-        >
-          <Text style={styles.switchButtonText}>
-            {isSignUp ? t('auth.switchToSignIn') : t('auth.switchToSignUp')}
-          </Text>
+        <TouchableOpacity style={styles.button} onPress={signInWithGoogle}>
+          <Text style={styles.buttonText}>{t('welcome.startButton')}</Text>
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
@@ -107,15 +68,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     paddingHorizontal: 24,
   },
-  input: {
-    height: 48,
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
-    borderRadius: 8,
-    paddingHorizontal: 16,
-    fontSize: 16,
-    backgroundColor: '#F9FAFB',
-  },
   button: {
     height: 48,
     backgroundColor: '#3B82F6',
@@ -127,12 +79,5 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '600',
-  },
-  switchButton: {
-    alignItems: 'center',
-  },
-  switchButtonText: {
-    color: '#3B82F6',
-    fontSize: 16,
   },
 });

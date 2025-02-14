@@ -2,10 +2,15 @@ import React from 'react';
 import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-const SUPPORTED_LANGUAGES = ['en', 'es', 'fr', 'ja'];
+const LANGUAGES = {
+  en: 'English',
+  es: 'Español',
+  fr: 'Français',
+  ja: '日本語',
+};
 
 export function LanguageSelector() {
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
   const currentLanguage = i18n.language;
 
   const handleLanguageChange = (language: string) => {
@@ -14,9 +19,9 @@ export function LanguageSelector() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{t('settings.language')}</Text>
+      <Text style={styles.title}>Language</Text>
       <View style={styles.languageList}>
-        {SUPPORTED_LANGUAGES.map(lang => (
+        {Object.entries(LANGUAGES).map(([lang, name]) => (
           <TouchableOpacity
             key={lang}
             style={[
@@ -31,7 +36,7 @@ export function LanguageSelector() {
                 currentLanguage === lang && styles.selectedLanguageText,
               ]}
             >
-              {t(`settings.languages.${lang}`)}
+              {name}
             </Text>
           </TouchableOpacity>
         ))}

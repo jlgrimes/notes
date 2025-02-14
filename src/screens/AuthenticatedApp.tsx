@@ -378,69 +378,67 @@ export function AuthenticatedApp() {
   }
 
   return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen name='MainTabs' options={{ headerShown: false }}>
-          {() => <TabNavigator screenProps={screenProps} />}
-        </Stack.Screen>
-        <Stack.Screen
-          name='CreateNoteModal'
-          options={{
-            presentation: 'modal',
-            headerShown: false,
-          }}
-        >
-          {({ navigation }) => (
-            <CreateNoteScreen
-              handleSubmit={handleSubmit}
-              onCancel={() => navigation.goBack()}
-            />
-          )}
-        </Stack.Screen>
-        <Stack.Screen
-          name='Conversation'
-          options={{
-            headerShown: true,
-            headerTitle: 'Conversation',
-            headerShadowVisible: false,
-            headerStyle: {
-              backgroundColor: '#f7f7f7',
-            },
-            headerTitleStyle: {
-              color: '#1F2937',
-              fontSize: 18,
-              fontWeight: '600',
-            },
-          }}
-        >
-          {({ route }) => <ConversationScreen route={route} />}
-        </Stack.Screen>
-        <Stack.Screen
-          name='NotesListModal'
-          options={{
-            presentation: 'modal',
-            headerShown: true,
-            headerTitle: 'All Memos',
-            headerShadowVisible: false,
-            headerStyle: {
-              backgroundColor: '#f7f7f7',
-            },
-            headerTitleStyle: {
-              color: '#1F2937',
-              fontSize: 18,
-              fontWeight: '600',
-            },
-          }}
-        >
-          {() => (
-            <NotesListScreen
-              notes={screenProps.notes}
-              onEdit={screenProps.handleEdit}
-              onDelete={screenProps.handleDelete}
-            />
-          )}
-        </Stack.Screen>
-      </Stack.Navigator>
-    </NavigationContainer>
+    <Stack.Navigator>
+      <Stack.Screen name='MainTabs' options={{ headerShown: false }}>
+        {() => <TabNavigator screenProps={screenProps} />}
+      </Stack.Screen>
+      <Stack.Screen
+        name='CreateNoteModal'
+        options={{
+          presentation: 'modal',
+          headerShown: false,
+        }}
+      >
+        {({ navigation }) => (
+          <CreateNoteScreen
+            handleSubmit={handleSubmit}
+            onCancel={() => navigation.goBack()}
+          />
+        )}
+      </Stack.Screen>
+      <Stack.Screen
+        name='Conversation'
+        options={{
+          headerShown: true,
+          headerTitle: 'Conversation',
+          headerShadowVisible: false,
+          headerStyle: {
+            backgroundColor: '#f7f7f7',
+          },
+          headerTitleStyle: {
+            color: '#1F2937',
+            fontSize: 18,
+            fontWeight: '600',
+          },
+        }}
+      >
+        {({ route }) => <ConversationScreen route={route} />}
+      </Stack.Screen>
+      <Stack.Screen
+        name='NotesListModal'
+        options={{
+          presentation: 'modal',
+          headerShown: true,
+          headerTitle: 'All Memos',
+          headerShadowVisible: false,
+          headerStyle: {
+            backgroundColor: '#f7f7f7',
+          },
+          headerTitleStyle: {
+            color: '#1F2937',
+            fontSize: 18,
+            fontWeight: '600',
+          },
+        }}
+      >
+        {() => (
+          <NotesListScreen
+            notes={screenProps.notes}
+            onEdit={screenProps.handleEdit}
+            onDelete={screenProps.handleDelete}
+          />
+        )}
+      </Stack.Screen>
+    </Stack.Navigator>
   );
 }
