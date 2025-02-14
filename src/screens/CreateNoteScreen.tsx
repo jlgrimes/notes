@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   StyleSheet,
   View,
@@ -14,8 +14,11 @@ import { AILoadingIndicator } from '../components/AILoadingIndicator';
 import { NoteForm } from '../components/NoteForm';
 import { LinearGradient } from 'expo-linear-gradient';
 import MaskedView from '@react-native-masked-view/masked-view';
+import { searchNotes } from '../lib/ai';
+import { ConversationFlow } from '../components/ConversationFlow';
 
 interface CreateNoteScreenProps {
+  notes: any[];
   isSearching: boolean;
   searchResult: string;
   searchQuery: string;
@@ -34,23 +37,32 @@ interface CreateNoteScreenProps {
 }
 
 export function CreateNoteScreen(props: CreateNoteScreenProps) {
+  const [showConversation, setShowConversation] = useState(false);
+
   const {
-    isSearching,
-    searchResult,
-    searchQuery,
+    notes,
     isLoadingWelcome,
     welcomeMessage,
-    setSearchQuery,
-    setShowSuggestions,
-    handleSearchInputPress,
-    showSuggestions,
     isLoadingSuggestions,
     suggestions,
-    handleSuggestionPress,
-    handleSearch,
-    handleSubmit,
     editingNote,
+    searchQuery,
+    setSearchQuery,
+    searchResult,
+    isSearching,
+    handleSearch,
+    handleSuggestionPress,
   } = props;
+
+  const handleSuggestionPressWithConversation = (suggestion: string) => {
+    handleSuggestionPress(suggestion);
+    setShowConversation(true);
+  };
+
+  const handleSearchWithConversation = () => {
+    handleSearch();
+    setShowConversation(true);
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -68,23 +80,32 @@ export function CreateNoteScreen(props: CreateNoteScreenProps) {
             </View>
           </View>
         ) : searchResult || searchQuery ? (
-          <View style={styles.cardContainer}>
-            <MotiView
-              from={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ type: 'timing', duration: 800, delay: 100 }}
-              style={styles.searchResultContainer}
-            >
+          showConversation ? (
+            <ConversationFlow
+              key={`${searchQuery}-${searchResult}`}
+              initialQuery={searchQuery}
+              initialAnswer={searchResult}
+              onSuggestionPress={handleSuggestionPressWithConversation}
+            />
+          ) : (
+            <View style={styles.cardContainer}>
               <MotiView
-                from={{ transform: [{ translateY: 10 }], scale: 0.98 }}
-                animate={{ transform: [{ translateY: 0 }], scale: 1 }}
-                transition={{ type: 'spring', damping: 15, mass: 0.8 }}
+                from={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ type: 'timing', duration: 800, delay: 100 }}
+                style={styles.searchResultContainer}
               >
-                <Text style={styles.searchResultText}>{searchResult}</Text>
+                <MotiView
+                  from={{ transform: [{ translateY: 10 }], scale: 0.98 }}
+                  animate={{ transform: [{ translateY: 0 }], scale: 1 }}
+                  transition={{ type: 'spring', damping: 15, mass: 0.8 }}
+                >
+                  <Text style={styles.searchResultText}>{searchResult}</Text>
+                </MotiView>
               </MotiView>
-            </MotiView>
-          </View>
+            </View>
+          )
         ) : (
           <View style={styles.cardContainer}>
             {!isLoadingWelcome && (
@@ -125,7 +146,9 @@ export function CreateNoteScreen(props: CreateNoteScreenProps) {
               <TouchableOpacity
                 key={index}
                 style={styles.suggestionPill}
-                onPress={() => handleSuggestionPress(suggestion)}
+                onPress={() =>
+                  handleSuggestionPressWithConversation(suggestion)
+                }
               >
                 <Text style={styles.suggestionPillText}>{suggestion}</Text>
               </TouchableOpacity>
@@ -137,16 +160,14 @@ export function CreateNoteScreen(props: CreateNoteScreenProps) {
           <View style={styles.searchInputContainer}>
             <TextInput
               value={searchQuery}
-              onChangeText={text => {
-                setSearchQuery(text);
-              }}
+              onChangeText={setSearchQuery}
               placeholder='Ask anything about your notes...'
               placeholderTextColor='#9CA3AF'
               style={styles.searchInput}
             />
           </View>
           <TouchableOpacity
-            onPress={handleSearch}
+            onPress={handleSearchWithConversation}
             style={styles.searchButton}
             disabled={isSearching}
           >
@@ -155,7 +176,7 @@ export function CreateNoteScreen(props: CreateNoteScreenProps) {
         </View>
 
         <NoteForm
-          onSubmit={handleSubmit}
+          onSubmit={props.handleSubmit}
           initialContent={editingNote?.content}
           isEditing={!!editingNote}
         />
@@ -174,8 +195,8 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   cardContainer: {
-    minHeight: 200,
-    marginBottom: 24,
+    minHeight: 160,
+    marginBottom: 0,
   },
   searchContainer: {
     flexDirection: 'row',
@@ -211,7 +232,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 28,
     paddingVertical: 32,
     justifyContent: 'center',
-    minHeight: 200,
+    minHeight: 160,
+    marginBottom: 0,
   },
   searchResultText: {
     fontSize: 24,
@@ -224,8 +246,9 @@ const styles = StyleSheet.create({
   suggestionsList: {
     flexDirection: 'column',
     gap: 8,
-    marginBottom: 24,
-    paddingHorizontal: 28,
+    marginTop: 16,
+    marginBottom: 32,
+    paddingHorizontal: 16,
   },
   suggestionPill: {
     borderWidth: 1,

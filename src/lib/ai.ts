@@ -333,3 +333,39 @@ export async function getWelcomeMessage(userName: string): Promise<string> {
     return fallbackMessage;
   }
 }
+
+export async function getSmartSuggestions(
+  previousAnswer: string
+): Promise<string[]> {
+  try {
+    const model = genAI.getGenerativeModel({
+      model: MODEL_NAME,
+    });
+
+    const result = await model.generateContent(`
+      Based on this previous answer:
+      "${previousAnswer}"
+
+      Generate 3 follow-up questions that would enrich the user's understanding.
+      
+      Rules:
+      1. Return exactly 3 questions
+      2. Make them specific and related to the previous answer
+      3. Each should explore a different aspect or detail
+      4. Keep each under 6 words
+      5. One per line, no bullets
+      6. Start with words like "How" "What" "Why" "Tell me about"
+    `);
+
+    const suggestions = result.response
+      .text()
+      .split('\n')
+      .filter(suggestion => suggestion.trim())
+      .slice(0, 3);
+
+    return suggestions;
+  } catch (error) {
+    console.error('Error getting smart suggestions:', error);
+    return [];
+  }
+}
