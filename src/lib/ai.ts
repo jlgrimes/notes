@@ -345,15 +345,15 @@ export async function getSmartSuggestions(
     });
 
     const result = await model.generateContent(`
-      Here is my previous response to the user:
+      Here is my previous response:
       "${previousAnswer}"
 
-      Generate 3 follow-up questions that a curious user might ask me next.
-      Each question should be written from the user's perspective, as if they are asking me directly.
+      Generate 3 follow-up questions that would naturally come next.
+      Each question should be written as a direct, factual question to an AI assistant.
       Each should end with an appropriate emoji that matches the topic.
       
       Consider questions about:
-      1. More specific details about what was just explained
+      1. More specific details about what was explained
       2. How something works or why it happens
       3. Real examples or applications
       4. Comparisons or differences
@@ -365,19 +365,17 @@ export async function getSmartSuggestions(
       Rules:
       1. Return exactly 3 questions
       2. End each question with a space and an emoji
-      3. Write questions as if the user is asking me directly
+      3. Write questions in a direct, factual way (no "you" or "your")
       4. Each should explore a different aspect
       5. One per line, no bullets or introductory text
-      6. Make them natural follow-up questions to my explanation
+      6. Make them natural follow-up questions to the explanation
       7. Choose emojis that match the specific topic
       8. Do not include any text before or after the questions
       
-      Return only the 3 questions, one per line, nothing else.
-      
       Example output:
-      Can you tell me more about the history of London Bridge? 🌍
-      What makes the West End theatre district so special? 🎭
-      Why did they build the Tower of London there? 🏰
+      What were the key factors behind the Industrial Revolution? 🏭
+      How do modern steam engines differ from early designs? ⚙️
+      Which industries still use steam power today? 🔋
     `);
 
     const suggestions = result.response
