@@ -1,134 +1,134 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import {
-  StyleSheet,
   View,
+  StyleSheet,
   TextInput,
   TouchableOpacity,
   Text,
+  KeyboardAvoidingView,
   Platform,
-  Dimensions,
-  Keyboard,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons';
 
 interface NoteFormProps {
-  onSubmit: (title: string, content: string) => void;
-  initialContent?: string;
-  isEditing?: boolean;
+  onSubmit: (note: { title: string; content: string }) => void;
+  onCancel: () => void;
+  initialNote?: { title: string; content: string };
+  mode?: 'create' | 'edit';
+  translations: {
+    title: string;
+    content: string;
+    save: string;
+    cancel: string;
+  };
 }
 
 export function NoteForm({
   onSubmit,
-  initialContent = '',
-  isEditing = false,
+  onCancel,
+  initialNote,
+  mode = 'create',
+  translations,
 }: NoteFormProps) {
-  const [content, setContent] = useState(initialContent);
-  const [keyboardHeight, setKeyboardHeight] = useState(0);
-  const inputRef = useRef<TextInput>(null);
-
-  useEffect(() => {
-    // Auto focus the input when component mounts
-    setTimeout(() => {
-      inputRef.current?.focus();
-    }, 100);
-
-    // Set up keyboard listeners
-    const keyboardWillShow = Keyboard.addListener(
-      Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow',
-      e => {
-        const height = e.endCoordinates.height;
-        // On iOS, add extra space for the input accessories bar
-        setKeyboardHeight(Platform.OS === 'ios' ? height + 45 : height);
-      }
-    );
-    const keyboardWillHide = Keyboard.addListener(
-      Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide',
-      () => setKeyboardHeight(0)
-    );
-
-    // Clean up listeners
-    return () => {
-      keyboardWillShow.remove();
-      keyboardWillHide.remove();
-    };
-  }, []);
+  const [title, setTitle] = useState(initialNote?.title || '');
+  const [content, setContent] = useState(initialNote?.content || '');
 
   const handleSubmit = () => {
-    if (content.trim()) {
-      onSubmit('', content);
-      if (!isEditing) {
-        setContent('');
-      }
-    }
+    onSubmit({ title, content });
   };
 
   return (
-    <View style={styles.container}>
-      <TextInput
-        ref={inputRef}
-        value={content}
-        onChangeText={setContent}
-        placeholder='Write your note here...'
-        placeholderTextColor='#9CA3AF'
-        multiline
-        style={styles.input}
-      />
-      <TouchableOpacity
-        onPress={handleSubmit}
-        style={[
-          styles.fab,
-          {
-            bottom:
-              keyboardHeight > 0
-                ? keyboardHeight
-                : Platform.OS === 'ios'
-                ? 40
-                : 24,
-          },
-        ]}
-        activeOpacity={0.8}
-      >
-        <Icon name='checkmark-sharp' size={24} color='#FFFFFF' />
-      </TouchableOpacity>
-    </View>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={styles.container}
+    >
+      <View style={styles.form}>
+        <TextInput
+          style={styles.titleInput}
+          placeholder={translations.title}
+          value={title}
+          onChangeText={setTitle}
+        />
+        <TextInput
+          style={styles.contentInput}
+          placeholder={translations.content}
+          value={content}
+          onChangeText={setContent}
+          multiline
+          textAlignVertical='top'
+        />
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity
+            style={[styles.button, styles.cancelButton]}
+            onPress={onCancel}
+          >
+            <Text style={styles.cancelButtonText}>{translations.cancel}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.button, styles.submitButton]}
+            onPress={handleSubmit}
+          >
+            <Text style={styles.submitButtonText}>{translations.save}</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#FFFFFF',
   },
-  input: {
+  form: {
     flex: 1,
-    backgroundColor: 'transparent',
-    padding: 24,
-    color: '#374151',
-    fontSize: 20,
-    lineHeight: 28,
-    textAlignVertical: 'top',
+    padding: 16,
+    gap: 16,
   },
-  fab: {
-    position: 'absolute',
-    right: 24,
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: '#4F46E5',
+  titleInput: {
+    height: 48,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    borderRadius: 8,
+    paddingHorizontal: 16,
+    fontSize: 18,
+    fontWeight: '600',
+    backgroundColor: '#F9FAFB',
+  },
+  contentInput: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    borderRadius: 8,
+    padding: 16,
+    fontSize: 16,
+    backgroundColor: '#F9FAFB',
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  button: {
+    flex: 1,
+    height: 48,
+    borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
-    ...Platform.select({
-      ios: {
-        shadowColor: '#000',
-        shadowOffset: {
-          width: 0,
-          height: 2,
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.84,
-      },
-      android: {
-        elevation: 5,
-      },
-    }),
+  },
+  submitButton: {
+    backgroundColor: '#3B82F6',
+  },
+  submitButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  cancelButton: {
+    backgroundColor: '#F3F4F6',
+  },
+  cancelButtonText: {
+    color: '#374151',
+    fontSize: 16,
+    fontWeight: '600',
   },
 });

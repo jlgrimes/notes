@@ -1,0 +1,73 @@
+{
+  "common": {
+    "loading": "Chargement...",
+    "error": "Une erreur est survenue",
+    "retry": "Réessayer",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "create": "Créer",
+    "search": "Rechercher",
+    "settings": "Paramètres"
+  },
+  "welcome": {
+    "title": "Prêts pour Memo?",
+    "subtitle": "Votre espace personnel pour vos pensées et idées",
+    "startButton": "Continuer avec Google",
+    "description": "Capturez vos pensées, organisez vos idées et ne perdez jamais de vue ce qui compte."
+  },
+  "auth": {
+    "signIn": "Se connecter",
+    "signOut": "Se déconnecter",
+    "signUp": "S'inscrire",
+    "email": "E-mail",
+    "password": "Mot de passe",
+    "forgotPassword": "Mot de passe oublié ?",
+    "switchToSignIn": "Déjà un compte ? Connectez-vous",
+    "switchToSignUp": "Pas de compte ? Inscrivez-vous"
+  },
+  "notes": {
+    "title": "Notes",
+    "newNote": "Nouvelle Note",
+    "editNote": "Modifier la Note",
+    "deleteNote": "Supprimer la Note",
+    "noteTitle": "Titre",
+    "noteContent": "Contenu",
+    "noNotes": "Pas encore de notes",
+    "searchPlaceholder": "Rechercher dans vos notes...",
+    "untitledNote": "Note sans titre",
+    "createFirstNote": "Créez votre première note",
+    "deleteConfirmation": "Êtes-vous sûr de vouloir supprimer cette note ?",
+    "deleteConfirmationTitle": "Supprimer la Note"
+  },
+  "settings": {
+    "title": "Paramètres",
+    "language": "Langue",
+    "theme": "Thème",
+    "notifications": "Notifications",
+    "account": "Compte",
+    "about": "À propos",
+    "version": "Version",
+    "languages": {
+      "en": "Anglais",
+      "es": "Espagnol",
+      "fr": "Français",
+      "ja": "Japonais"
+    },
+    "themes": {
+      "light": "Clair",
+      "dark": "Sombre",
+      "system": "Système"
+    }
+  },
+  "errors": {
+    "required": "Ce champ est obligatoire",
+    "invalidEmail": "Adresse e-mail invalide",
+    "passwordTooShort": "Le mot de passe doit contenir au moins 8 caractères",
+    "networkError": "Erreur réseau. Veuillez vérifier votre connexion.",
+    "unknownError": "Une erreur inconnue est survenue",
+    "authError": "Erreur d'authentification",
+    "permissionDenied": "Permission refusée"
+  }
+}

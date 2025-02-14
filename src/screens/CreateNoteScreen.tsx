@@ -1,31 +1,44 @@
 import React from 'react';
-import { StyleSheet, SafeAreaView } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { NoteForm } from '../components/NoteForm';
-import { useNavigation } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 
 interface CreateNoteScreenProps {
-  handleSubmit: (title: string, content: string) => Promise<void>;
+  onSubmit: (note: { title: string; content: string }) => void;
+  onCancel: () => void;
+  initialNote?: { title: string; content: string };
+  mode?: 'create' | 'edit';
 }
 
-export function CreateNoteScreen({ handleSubmit }: CreateNoteScreenProps) {
-  const navigation = useNavigation();
-
-  const onSubmit = async (title: string, content: string) => {
-    await handleSubmit(title, content);
-    // @ts-ignore - navigation type is complex here
-    navigation.goBack();
-  };
+export function CreateNoteScreen({
+  onSubmit,
+  onCancel,
+  initialNote,
+  mode = 'create',
+}: CreateNoteScreenProps) {
+  const { t } = useTranslation();
 
   return (
-    <SafeAreaView style={styles.container}>
-      <NoteForm onSubmit={onSubmit} />
-    </SafeAreaView>
+    <View style={styles.container}>
+      <NoteForm
+        onSubmit={onSubmit}
+        onCancel={onCancel}
+        initialNote={initialNote}
+        mode={mode}
+        translations={{
+          title: t('notes.noteTitle'),
+          content: t('notes.noteContent'),
+          save: t('common.save'),
+          cancel: t('common.cancel'),
+        }}
+      />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f7f7f7',
+    backgroundColor: '#FFFFFF',
   },
 });

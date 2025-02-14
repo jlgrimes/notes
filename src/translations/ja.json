@@ -1,0 +1,73 @@
+{
+  "common": {
+    "loading": "読み込み中...",
+    "error": "エラーが発生しました",
+    "retry": "再試行",
+    "save": "保存",
+    "cancel": "キャンセル",
+    "delete": "削除",
+    "edit": "編集",
+    "create": "作成",
+    "search": "検索",
+    "settings": "設定"
+  },
+  "welcome": {
+    "title": "メモをはじめよ",
+    "subtitle": "あなたの思考とアイデアのための個人スペース",
+    "startButton": "Googleで続ける",
+    "description": "思考をキャプチャし、アイデアを整理し、大切なことを見失わないようにしましょう。"
+  },
+  "auth": {
+    "signIn": "ログイン",
+    "signOut": "ログアウト",
+    "signUp": "新規登録",
+    "email": "メールアドレス",
+    "password": "パスワード",
+    "forgotPassword": "パスワードをお忘れですか？",
+    "switchToSignIn": "アカウントをお持ちの方はログイン",
+    "switchToSignUp": "アカウントをお持ちでない方は新規登録"
+  },
+  "notes": {
+    "title": "ノート",
+    "newNote": "新規ノート",
+    "editNote": "ノートを編集",
+    "deleteNote": "ノートを削除",
+    "noteTitle": "タイトル",
+    "noteContent": "内容",
+    "noNotes": "ノートがありません",
+    "searchPlaceholder": "ノートを検索...",
+    "untitledNote": "無題のノート",
+    "createFirstNote": "最初のノートを作成",
+    "deleteConfirmation": "このノートを削除してもよろしいですか？",
+    "deleteConfirmationTitle": "ノートの削除"
+  },
+  "settings": {
+    "title": "設定",
+    "language": "言語",
+    "theme": "テーマ",
+    "notifications": "通知",
+    "account": "アカウント",
+    "about": "アプリについて",
+    "version": "バージョン",
+    "languages": {
+      "en": "英語",
+      "es": "スペイン語",
+      "fr": "フランス語",
+      "ja": "日本語"
+    },
+    "themes": {
+      "light": "ライト",
+      "dark": "ダーク",
+      "system": "システム"
+    }
+  },
+  "errors": {
+    "required": "この項目は必須です",
+    "invalidEmail": "無効なメールアドレスです",
+    "passwordTooShort": "パスワードは8文字以上である必要があります",
+    "networkError": "ネットワークエラー。接続を確認してください。",
+    "unknownError": "不明なエラーが発生しました",
+    "authError": "認証エラー",
+    "permissionDenied": "権限がありません"
+  }
+}

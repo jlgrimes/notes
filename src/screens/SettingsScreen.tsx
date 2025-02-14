@@ -6,8 +6,11 @@ import {
   Text,
   SafeAreaView,
   Image,
+  ScrollView,
 } from 'react-native';
 import { useAuth } from '../context/AuthContext';
+import { useTranslation } from 'react-i18next';
+import { LanguageSelector } from '../components/LanguageSelector';
 
 interface SettingsScreenProps {
   signOut: () => void;
@@ -18,9 +21,10 @@ export function SettingsScreen({ signOut }: SettingsScreenProps) {
   const userEmail = session?.user?.email;
   const userName = session?.user?.user_metadata?.full_name || 'User';
   const userAvatar = session?.user?.user_metadata?.avatar_url;
+  const { t } = useTranslation();
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <ScrollView style={styles.container}>
       <View style={styles.settingsContainer}>
         <Text style={styles.settingsTitle}>Settings</Text>
 
@@ -38,18 +42,22 @@ export function SettingsScreen({ signOut }: SettingsScreenProps) {
           <Text style={styles.userEmail}>{userEmail}</Text>
         </View>
 
+        <View style={styles.section}>
+          <LanguageSelector />
+        </View>
+
         <TouchableOpacity onPress={signOut} style={styles.signOutButton}>
           <Text style={styles.signOutText}>Sign Out</Text>
         </TouchableOpacity>
       </View>
-    </SafeAreaView>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
+  container: {
     flex: 1,
-    backgroundColor: '#f7f7f7',
+    backgroundColor: '#FFFFFF',
   },
   settingsContainer: {
     padding: 20,
@@ -115,5 +123,10 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '500',
+  },
+  section: {
+    marginVertical: 8,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 8,
   },
 });

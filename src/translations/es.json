@@ -1,0 +1,73 @@
+{
+  "common": {
+    "loading": "Cargando...",
+    "error": "Se produjo un error",
+    "retry": "Reintentar",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "create": "Crear",
+    "search": "Buscar",
+    "settings": "Configuración"
+  },
+  "welcome": {
+    "title": "Empecemos con Memo",
+    "subtitle": "Tu espacio personal para pensamientos e ideas",
+    "startButton": "Continuar con Google",
+    "description": "Captura tus pensamientos, organiza tus ideas y nunca pierdas de vista lo que importa."
+  },
+  "auth": {
+    "signIn": "Iniciar Sesión",
+    "signOut": "Cerrar Sesión",
+    "signUp": "Registrarse",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "forgotPassword": "¿Olvidaste tu contraseña?",
+    "switchToSignIn": "¿Ya tienes una cuenta? Inicia sesión",
+    "switchToSignUp": "¿No tienes una cuenta? Regístrate"
+  },
+  "notes": {
+    "title": "Notas",
+    "newNote": "Nueva Nota",
+    "editNote": "Editar Nota",
+    "deleteNote": "Eliminar Nota",
+    "noteTitle": "Título",
+    "noteContent": "Contenido",
+    "noNotes": "Aún no hay notas",
+    "searchPlaceholder": "Buscar en tus notas...",
+    "untitledNote": "Nota sin título",
+    "createFirstNote": "Crea tu primera nota",
+    "deleteConfirmation": "¿Estás seguro de que quieres eliminar esta nota?",
+    "deleteConfirmationTitle": "Eliminar Nota"
+  },
+  "settings": {
+    "title": "Configuración",
+    "language": "Idioma",
+    "theme": "Tema",
+    "notifications": "Notificaciones",
+    "account": "Cuenta",
+    "about": "Acerca de",
+    "version": "Versión",
+    "languages": {
+      "en": "Inglés",
+      "es": "Español",
+      "fr": "Francés",
+      "ja": "Japonés"
+    },
+    "themes": {
+      "light": "Claro",
+      "dark": "Oscuro",
+      "system": "Sistema"
+    }
+  },
+  "errors": {
+    "required": "Este campo es obligatorio",
+    "invalidEmail": "Dirección de correo electrónico inválida",
+    "passwordTooShort": "La contraseña debe tener al menos 8 caracteres",
+    "networkError": "Error de red. Por favor, verifica tu conexión.",
+    "unknownError": "Se produjo un error desconocido",
+    "authError": "Error de autenticación",
+    "permissionDenied": "Permiso denegado"
+  }
+}

@@ -1,24 +1,25 @@
 import React from 'react';
-import 'react-native-reanimated';
+import { NavigationContainer } from '@react-navigation/native';
 import { AuthProvider } from './src/context/AuthContext';
+import { AuthenticatedApp } from './src/screens/AuthenticatedApp';
 import { AuthScreen } from './src/screens/AuthScreen';
-import { AuthenticatedApp } from '@/screens/AuthenticatedApp';
 import { useAuth } from './src/context/AuthContext';
+import './src/lib/i18n'; // Import i18n configuration
 
-function AppContent() {
-  const { session, loading } = useAuth();
+function App() {
+  const { session } = useAuth();
 
-  if (loading) {
-    return null; // Or a loading spinner
-  }
-
-  return session ? <AuthenticatedApp /> : <AuthScreen />;
+  return (
+    <NavigationContainer>
+      {session ? <AuthenticatedApp /> : <AuthScreen />}
+    </NavigationContainer>
+  );
 }
 
-export default function App() {
+export default function AppWrapper() {
   return (
     <AuthProvider>
-      <AppContent />
+      <App />
     </AuthProvider>
   );
 }

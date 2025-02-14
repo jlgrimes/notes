@@ -1,0 +1,73 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "retry": "Retry",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "search": "Search",
+    "settings": "Settings"
+  },
+  "welcome": {
+    "title": "Say hello to Memo",
+    "subtitle": "Your personal space for thoughts and ideas",
+    "startButton": "Continue with Google",
+    "description": "Capture your thoughts, organize your ideas, and never lose track of what matters."
+  },
+  "auth": {
+    "signIn": "Sign In",
+    "signOut": "Sign Out",
+    "signUp": "Sign Up",
+    "email": "Email",
+    "password": "Password",
+    "forgotPassword": "Forgot Password?",
+    "switchToSignIn": "Already have an account? Sign in",
+    "switchToSignUp": "Don't have an account? Sign up"
+  },
+  "notes": {
+    "title": "Notes",
+    "newNote": "New Note",
+    "editNote": "Edit Note",
+    "deleteNote": "Delete Note",
+    "noteTitle": "Title",
+    "noteContent": "Content",
+    "noNotes": "No notes yet",
+    "searchPlaceholder": "Search your notes...",
+    "untitledNote": "Untitled Note",
+    "createFirstNote": "Create your first note",
+    "deleteConfirmation": "Are you sure you want to delete this note?",
+    "deleteConfirmationTitle": "Delete Note"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "theme": "Theme",
+    "notifications": "Notifications",
+    "account": "Account",
+    "about": "About",
+    "version": "Version",
+    "languages": {
+      "en": "English",
+      "es": "Spanish",
+      "fr": "French",
+      "ja": "Japanese"
+    },
+    "themes": {
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System"
+    }
+  },
+  "errors": {
+    "required": "This field is required",
+    "invalidEmail": "Invalid email address",
+    "passwordTooShort": "Password must be at least 8 characters",
+    "networkError": "Network error. Please check your connection.",
+    "unknownError": "An unknown error occurred",
+    "authError": "Authentication error",
+    "permissionDenied": "Permission denied"
+  }
+}

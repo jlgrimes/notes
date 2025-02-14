@@ -7,6 +7,7 @@ import {
   Platform,
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 
 interface NoteProps {
   id: string;
@@ -16,6 +17,14 @@ interface NoteProps {
 }
 
 export function Note({ id, content, onEdit, onDelete }: NoteProps) {
+  const { t } = useTranslation();
+  const date = new Date(content.split(' ')[0]);
+  const formattedDate = date.toLocaleDateString(undefined, {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+
   return (
     <View style={styles.container}>
       <View style={styles.actions}>
@@ -34,7 +43,13 @@ export function Note({ id, content, onEdit, onDelete }: NoteProps) {
           <Text style={styles.buttonText}>Delete</Text>
         </TouchableOpacity>
       </View>
-      <Text style={styles.content}>{content}</Text>
+      <View style={styles.header}>
+        <Text style={styles.title} numberOfLines={1}>
+          {content.split(' ')[1] || t('notes.untitledNote')}
+        </Text>
+        <Text style={styles.date}>{formattedDate}</Text>
+      </View>
+      <Text style={styles.content}>{content.split(' ')[2]}</Text>
     </View>
   );
 }
@@ -79,6 +94,22 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#6B7280',
     marginLeft: 4,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    gap: 8,
+  },
+  title: {
+    flex: 1,
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#111827',
+  },
+  date: {
+    fontSize: 14,
+    color: '#6B7280',
   },
   content: {
     fontSize: 16,
