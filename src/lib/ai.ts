@@ -17,6 +17,7 @@ type WelcomeMessageCache = {
 type SuggestionsCache = {
   suggestions: string[];
   noteIds: string[];
+  timestamp: number;
 };
 
 // Cache for search results
@@ -133,28 +134,38 @@ export type AISuggestion = {
   content: string;
 };
 
+// Helper functions for cache management
+function isFromCurrentDay(timestamp: number): boolean {
+  const date = new Date(timestamp);
+  const now = new Date();
+  return (
+    date.getFullYear() === now.getFullYear() &&
+    date.getMonth() === now.getMonth() &&
+    date.getDate() === now.getDate()
+  );
+}
+
 export async function getCommonTopics(notes: any[]): Promise<string[]> {
-  // Create a sorted list of note IDs to use as cache key
-  const noteIds = notes.map(note => note.id).sort();
-  console.log('New note IDs:', noteIds);
-
-  // Check if we have a valid cache with the same notes
-  const suggestionsCache = await getSuggestionsCache();
-  if (suggestionsCache) {
-    const cachedIds = [...suggestionsCache.noteIds].sort();
-    console.log('Cached note IDs:', cachedIds);
-    console.log('New IDs stringified:', JSON.stringify(noteIds));
-    console.log('Cached IDs stringified:', JSON.stringify(cachedIds));
-    if (JSON.stringify(cachedIds) === JSON.stringify(noteIds)) {
-      console.log('Cache hit! Returning cached suggestions');
-      return suggestionsCache.suggestions;
-    }
-    console.log("Cache miss - IDs don't match");
-  } else {
-    console.log('No cache exists yet');
-  }
-
   try {
+    // Create a sorted list of note IDs to use as cache key
+    const noteIds = notes.map(note => note.id).sort();
+
+    // Check if we have a valid cache with the same notes
+    const suggestionsCache = await getSuggestionsCache();
+    if (
+      suggestionsCache?.timestamp &&
+      isFromCurrentDay(suggestionsCache.timestamp)
+    ) {
+      const cachedIds = [...suggestionsCache.noteIds].sort();
+      if (JSON.stringify(cachedIds) === JSON.stringify(noteIds)) {
+        console.log('Cache hit! Returning cached suggestions');
+        return suggestionsCache.suggestions;
+      }
+      console.log("Cache miss - IDs don't match");
+    } else {
+      console.log('Cache miss - not from current day');
+    }
+
     const model = genAI.getGenerativeModel({
       model: MODEL_NAME,
     });
@@ -197,7 +208,8 @@ export async function getCommonTopics(notes: any[]): Promise<string[]> {
     // Update cache
     const newCache = {
       suggestions,
-      noteIds: [...noteIds],
+      noteIds,
+      timestamp: Date.now(),
     };
     await setSuggestionsCache(newCache);
     console.log('Updated cache with new suggestions and IDs:', noteIds);
@@ -213,26 +225,25 @@ export async function searchNotes(
   query: string,
   notes: any[]
 ): Promise<string> {
-  // Create a sorted list of note IDs to use as cache key
-  const noteIds = notes.map(note => note.id).sort();
-  console.log('Search - New note IDs:', noteIds);
-  console.log('Search query:', query);
-
-  // Check if we have a valid cache with the same notes and query
-  const searchCache = await getSearchCache();
-  const matchingCache = searchCache.find(
-    entry =>
-      entry.query === query &&
-      JSON.stringify([...entry.noteIds].sort()) === JSON.stringify(noteIds)
-  );
-
-  if (matchingCache) {
-    console.log('Search cache hit! Returning cached result');
-    return matchingCache.result;
-  }
-  console.log('Search cache miss - fetching new result');
-
   try {
+    // Create a sorted list of note IDs to use as cache key
+    const noteIds = notes.map(note => note.id).sort();
+
+    // Check if we have a valid cache with the same notes and query
+    const searchCache = await getSearchCache();
+    const matchingCache = searchCache.find(
+      entry =>
+        entry.query === query &&
+        JSON.stringify(entry.noteIds) === JSON.stringify(noteIds) &&
+        isFromCurrentDay(entry.timestamp)
+    );
+
+    if (matchingCache) {
+      console.log('Search cache hit! Returning cached result');
+      return matchingCache.result;
+    }
+    console.log('Search cache miss - fetching new result');
+
     const model = genAI.getGenerativeModel({
       model: MODEL_NAME,
     });
@@ -263,7 +274,7 @@ export async function searchNotes(
     // Update cache with new entry
     await setSearchCache({
       result: searchResult,
-      noteIds: [...noteIds],
+      noteIds,
       query,
     });
     console.log('Updated search cache with new result');
@@ -271,29 +282,22 @@ export async function searchNotes(
     return searchResult;
   } catch (error) {
     console.error('Error searching notes:', error);
-    throw error;
+    return 'Sorry, I encountered an error while searching your notes.';
   }
 }
 
 export async function getWelcomeMessage(userName: string): Promise<string> {
-  const now = new Date();
-  const today = new Date(
-    now.getFullYear(),
-    now.getMonth(),
-    now.getDate()
-  ).getTime();
-
-  // Return cached message if it's from today and for the same user
-  const welcomeMessageCache = await getWelcomeCache();
-  if (
-    welcomeMessageCache &&
-    welcomeMessageCache.timestamp === today &&
-    welcomeMessageCache.userName === userName
-  ) {
-    return welcomeMessageCache.message;
-  }
-
   try {
+    // Return cached message if it's from the current day and for the same user
+    const welcomeMessageCache = await getWelcomeCache();
+    if (
+      welcomeMessageCache &&
+      isFromCurrentDay(welcomeMessageCache.timestamp) &&
+      welcomeMessageCache.userName === userName
+    ) {
+      return welcomeMessageCache.message;
+    }
+
     const model = genAI.getGenerativeModel({
       model: MODEL_NAME,
     });
@@ -314,7 +318,7 @@ export async function getWelcomeMessage(userName: string): Promise<string> {
     // Update cache
     const newCache = {
       message,
-      timestamp: today,
+      timestamp: Date.now(),
       userName,
     };
     await setWelcomeCache(newCache);
@@ -322,17 +326,7 @@ export async function getWelcomeMessage(userName: string): Promise<string> {
     return message;
   } catch (error) {
     console.error('Error getting welcome message:', error);
-    const fallbackMessage = `Hi ${userName}, I hope you're having a good day today`;
-
-    // Cache even fallback messages to prevent repeated API calls on error
-    const newCache = {
-      message: fallbackMessage,
-      timestamp: today,
-      userName,
-    };
-    await setWelcomeCache(newCache);
-
-    return fallbackMessage;
+    return `Welcome back, ${userName}!`;
   }
 }
 
