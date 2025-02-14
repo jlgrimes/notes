@@ -17,14 +17,9 @@ interface Note {
 interface MasonryNoteListProps {
   notes: Note[];
   onEdit: (id: string) => void;
-  onDelete: (id: string) => void;
 }
 
-export function MasonryNoteList({
-  notes,
-  onEdit,
-  onDelete,
-}: MasonryNoteListProps) {
+export function MasonryNoteList({ notes, onEdit }: MasonryNoteListProps) {
   const theme = useTheme();
   const { width } = useWindowDimensions();
   const padding = 16;
@@ -66,12 +61,7 @@ export function MasonryNoteList({
         <View style={styles.column}>
           {leftColumnNotes.map(note => (
             <View key={note.id} style={styles.noteWrapper}>
-              <Note
-                id={note.id}
-                content={note.content}
-                onEdit={onEdit}
-                onDelete={onDelete}
-              />
+              <Note id={note.id} content={note.content} onEdit={onEdit} />
             </View>
           ))}
         </View>
@@ -80,12 +70,7 @@ export function MasonryNoteList({
         <View style={styles.column}>
           {rightColumnNotes.map(note => (
             <View key={note.id} style={styles.noteWrapper}>
-              <Note
-                id={note.id}
-                content={note.content}
-                onEdit={onEdit}
-                onDelete={onDelete}
-              />
+              <Note id={note.id} content={note.content} onEdit={onEdit} />
             </View>
           ))}
         </View>

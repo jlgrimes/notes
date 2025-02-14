@@ -14,7 +14,6 @@ import { useNavigation } from '@react-navigation/native';
 interface NotesListScreenProps {
   notes: any[];
   onEdit: (id: string) => void;
-  onDelete: (id: string) => Promise<void>;
   loading?: boolean;
   onNotePress?: (note: any) => void;
   onCreateNote?: () => void;
@@ -23,7 +22,6 @@ interface NotesListScreenProps {
 export function NotesListScreen({
   notes,
   onEdit,
-  onDelete,
   loading = false,
   onNotePress,
   onCreateNote,
@@ -45,7 +43,7 @@ export function NotesListScreen({
       )}
     </View>
   ) : (
-    <MasonryNoteList notes={notes} onEdit={onEdit} onDelete={onDelete} />
+    <MasonryNoteList notes={notes} onEdit={onEdit} />
   );
 
   return (
