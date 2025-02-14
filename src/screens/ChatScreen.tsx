@@ -8,6 +8,8 @@ import {
   ScrollView,
   Platform,
   SafeAreaView,
+  TouchableWithoutFeedback,
+  Modal,
 } from 'react-native';
 import { MotiView } from 'moti';
 import { AILoadingIndicator } from '../components/AILoadingIndicator';
@@ -28,6 +30,7 @@ interface ChatScreenProps {
   isLoadingWelcome: boolean;
   welcomeMessage: string;
   setSearchQuery: (query: string) => void;
+  setSearchResult: (result: string) => void;
   setShowSuggestions: (show: boolean) => void;
   handleSearchInputPress: () => void;
   showSuggestions: boolean;
@@ -55,6 +58,7 @@ export function ChatScreen(props: ChatScreenProps) {
     searchQuery,
     setSearchQuery,
     searchResult,
+    setSearchResult,
     isSearching,
     handleSearch,
     handleSuggestionPress,
@@ -82,7 +86,10 @@ export function ChatScreen(props: ChatScreenProps) {
   };
 
   const handleSmartSuggestionPress = async (suggestion: string) => {
-    // Navigate to conversation screen
+    // First dismiss the modal
+    dismissResults();
+
+    // Then navigate to conversation screen
     // @ts-ignore - navigation type is complex here
     navigation.navigate('Conversation', {
       initialQuery: suggestion,
@@ -94,6 +101,12 @@ export function ChatScreen(props: ChatScreenProps) {
 
   const handleSearchWithSmartSuggestions = () => {
     handleSearch();
+  };
+
+  const dismissResults = () => {
+    setSearchQuery('');
+    setSearchResult('');
+    setSmartSuggestions([]);
   };
 
   return (
@@ -125,59 +138,96 @@ export function ChatScreen(props: ChatScreenProps) {
             )}
           </View>
 
-          {isSearching ? (
-            <View style={styles.cardContainer}>
-              <View style={styles.aiLoadingContainer}>
-                <AILoadingIndicator size={40} color='#4F46E5' />
-                <Text style={styles.aiLoadingText}>
-                  Analyzing your thoughts...
-                </Text>
-                <Text style={styles.aiLoadingSubtext}>
-                  Finding relevant connections...
-                </Text>
+          <Modal
+            visible={!!searchResult || isSearching}
+            transparent={true}
+            animationType='fade'
+            onRequestClose={dismissResults}
+          >
+            <TouchableWithoutFeedback onPress={dismissResults}>
+              <View style={styles.modalOverlay}>
+                <TouchableWithoutFeedback>
+                  <View>
+                    {isSearching ? (
+                      <View style={styles.cardContainer}>
+                        <View style={styles.aiLoadingContainer}>
+                          <AILoadingIndicator size={40} color='#4F46E5' />
+                          <Text style={styles.aiLoadingText}>
+                            Analyzing your thoughts...
+                          </Text>
+                          <Text style={styles.aiLoadingSubtext}>
+                            Finding relevant connections...
+                          </Text>
+                        </View>
+                      </View>
+                    ) : (
+                      searchResult && (
+                        <>
+                          <View style={styles.cardContainer}>
+                            <MotiView
+                              from={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                              exit={{ opacity: 0 }}
+                              transition={{
+                                type: 'timing',
+                                duration: 800,
+                                delay: 100,
+                              }}
+                              style={styles.searchResultContainer}
+                            >
+                              <MotiView
+                                from={{
+                                  transform: [{ translateY: 10 }],
+                                  scale: 0.98,
+                                }}
+                                animate={{
+                                  transform: [{ translateY: 0 }],
+                                  scale: 1,
+                                }}
+                                transition={{
+                                  type: 'spring',
+                                  damping: 15,
+                                  mass: 0.8,
+                                }}
+                              >
+                                {searchQuery && (
+                                  <PromptLabel prompt={searchQuery} />
+                                )}
+                                <Text style={styles.searchResultText}>
+                                  {searchResult}
+                                </Text>
+                              </MotiView>
+                            </MotiView>
+                          </View>
+                          {isLoadingSmartSuggestions ? (
+                            <View style={styles.spinnerContainer}>
+                              <AILoadingIndicator size={30} color='#4F46E5' />
+                              <Text style={styles.aiLoadingSubtext}>
+                                Getting smart suggestions...
+                              </Text>
+                            </View>
+                          ) : smartSuggestions.length > 0 ? (
+                            <View style={styles.suggestionsList}>
+                              {smartSuggestions.map((suggestion, index) => (
+                                <SuggestionPill
+                                  key={index}
+                                  suggestion={suggestion}
+                                  onPress={() =>
+                                    handleSmartSuggestionPress(suggestion)
+                                  }
+                                  smart
+                                />
+                              ))}
+                            </View>
+                          ) : null}
+                        </>
+                      )
+                    )}
+                  </View>
+                </TouchableWithoutFeedback>
               </View>
-            </View>
-          ) : searchResult || searchQuery ? (
-            <>
-              <View style={styles.cardContainer}>
-                <MotiView
-                  from={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ type: 'timing', duration: 800, delay: 100 }}
-                  style={styles.searchResultContainer}
-                >
-                  <MotiView
-                    from={{ transform: [{ translateY: 10 }], scale: 0.98 }}
-                    animate={{ transform: [{ translateY: 0 }], scale: 1 }}
-                    transition={{ type: 'spring', damping: 15, mass: 0.8 }}
-                  >
-                    {searchQuery && <PromptLabel prompt={searchQuery} />}
-                    <Text style={styles.searchResultText}>{searchResult}</Text>
-                  </MotiView>
-                </MotiView>
-              </View>
-              {isLoadingSmartSuggestions ? (
-                <View style={styles.spinnerContainer}>
-                  <AILoadingIndicator size={30} color='#4F46E5' />
-                  <Text style={styles.aiLoadingSubtext}>
-                    Getting smart suggestions...
-                  </Text>
-                </View>
-              ) : smartSuggestions.length > 0 ? (
-                <View style={styles.suggestionsList}>
-                  {smartSuggestions.map((suggestion, index) => (
-                    <SuggestionPill
-                      key={index}
-                      suggestion={suggestion}
-                      onPress={() => handleSmartSuggestionPress(suggestion)}
-                      smart
-                    />
-                  ))}
-                </View>
-              ) : null}
-            </>
-          ) : null}
+            </TouchableWithoutFeedback>
+          </Modal>
         </View>
 
         <View style={styles.bottomContent}>
@@ -292,11 +342,28 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   searchResultContainer: {
-    backgroundColor: 'transparent',
+    backgroundColor: '#FFFFFF',
     borderRadius: 16,
     paddingVertical: 32,
+    paddingHorizontal: 24,
     justifyContent: 'center',
     minHeight: 160,
+    ...Platform.select({
+      web: {
+        boxShadow:
+          '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
+      },
+      default: {
+        elevation: 5,
+        shadowColor: '#000',
+        shadowOffset: {
+          width: 0,
+          height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+      },
+    }),
   },
   searchResultText: {
     fontSize: 24,
@@ -377,5 +444,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#FFFFFF',
     fontWeight: '500',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    padding: 16,
   },
 });

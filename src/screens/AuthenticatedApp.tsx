@@ -201,7 +201,7 @@ export function AuthenticatedApp() {
     Keyboard.dismiss();
     setSearchQuery(suggestion);
     setShowSuggestions(false);
-    handleSearch(suggestion);
+    handleSearch();
   };
 
   const fetchNotes = async () => {
@@ -228,8 +228,8 @@ export function AuthenticatedApp() {
     }
   };
 
-  const handleSearch = async (query: string = searchQuery) => {
-    if (!query.trim()) {
+  const handleSearch = async () => {
+    if (!searchQuery.trim()) {
       Alert.alert('Error', 'Please enter a search query.');
       return;
     }
@@ -241,7 +241,7 @@ export function AuthenticatedApp() {
 
     try {
       setIsSearching(true);
-      const result = await searchNotes(query, notes);
+      const result = await searchNotes(searchQuery, notes);
       setSearchResult(result);
     } catch (error) {
       console.error('Error searching notes:', error);
@@ -336,6 +336,7 @@ export function AuthenticatedApp() {
     isLoadingWelcome,
     welcomeMessage,
     setSearchQuery,
+    setSearchResult,
     setShowSuggestions,
     handleSearchInputPress,
     showSuggestions,
