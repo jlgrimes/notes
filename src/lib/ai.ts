@@ -1,5 +1,7 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
+const MODEL_NAME = 'gemini-2.0-flash-lite-preview-02-05';
+
 // Initialize the Gemini AI
 const genAI = new GoogleGenerativeAI(
   process.env.EXPO_PUBLIC_GEMINI_API_KEY || ''
@@ -35,7 +37,7 @@ export type AISuggestion = {
 export async function getCommonTopics(notes: any[]): Promise<string[]> {
   try {
     const model = genAI.getGenerativeModel({
-      model: 'gemini-2.0-flash',
+      model: MODEL_NAME,
     });
 
     const notesContent = notes
@@ -82,7 +84,7 @@ export async function searchNotes(
 ): Promise<string> {
   try {
     const model = genAI.getGenerativeModel({
-      model: 'gemini-2.0-flash',
+      model: MODEL_NAME,
     });
 
     const notesContext = notes
@@ -116,7 +118,7 @@ export async function searchNotes(
 export async function getWelcomeMessage(userName: string): Promise<string> {
   try {
     const model = genAI.getGenerativeModel({
-      model: 'gemini-2.0-flash',
+      model: MODEL_NAME,
     });
 
     const result = await model.generateContent(`
