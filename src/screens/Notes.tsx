@@ -5,12 +5,12 @@ import {
   TouchableOpacity,
   Text,
   TextInput,
-  ActivityIndicator,
   Alert,
   ScrollView,
   Modal,
   Platform,
 } from 'react-native';
+import { AILoadingIndicator } from '../components/AILoadingIndicator';
 import { NoteForm } from '../components/NoteForm';
 import { NoteList } from '../components/NoteList';
 import { supabase } from '../lib/supabase';
@@ -239,7 +239,12 @@ export function Notes() {
           {showSuggestions && (
             <View style={styles.suggestionsDropdown}>
               {isLoadingSuggestions ? (
-                <ActivityIndicator size='small' color='#4F46E5' />
+                <View style={styles.spinnerContainer}>
+                  <AILoadingIndicator size={30} color='#4F46E5' />
+                  <Text style={styles.aiLoadingSubtext}>
+                    Getting suggestions...
+                  </Text>
+                </View>
               ) : suggestions.length > 0 ? (
                 suggestions.map((suggestion, index) => (
                   <TouchableOpacity
@@ -272,9 +277,12 @@ export function Notes() {
       </View>
 
       {isSearching ? (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size='large' color='#4F46E5' />
-          <Text style={styles.loadingText}>Searching notes...</Text>
+        <View style={styles.aiLoadingContainer}>
+          <AILoadingIndicator size={40} color='#4F46E5' />
+          <Text style={styles.aiLoadingText}>Analyzing your thoughts...</Text>
+          <Text style={styles.aiLoadingSubtext}>
+            Finding relevant connections...
+          </Text>
         </View>
       ) : searchResult ? (
         <View style={styles.searchResultContainer}>
@@ -431,5 +439,35 @@ const styles = StyleSheet.create({
     padding: 12,
     color: '#9CA3AF',
     textAlign: 'center',
+  },
+  spinnerContainer: {
+    alignItems: 'center',
+    padding: 20,
+  },
+  aiLoadingContainer: {
+    alignItems: 'center',
+    backgroundColor: '#F9FAFB',
+    borderRadius: 16,
+    padding: 24,
+    marginVertical: 20,
+    ...Platform.select({
+      web: {
+        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+      },
+      default: {
+        elevation: 2,
+      },
+    }),
+  },
+  aiLoadingText: {
+    marginTop: 16,
+    color: '#4F46E5',
+    fontSize: 16,
+    fontWeight: '500',
+  },
+  aiLoadingSubtext: {
+    marginTop: 8,
+    color: '#6B7280',
+    fontSize: 14,
   },
 });

@@ -4,6 +4,7 @@ import { Note } from './components/Note';
 import { NoteForm } from './components/NoteForm';
 import { LogIn, LogOut } from 'lucide-react';
 import { Toaster, toast } from 'react-hot-toast';
+import 'react-native-reanimated';
 
 interface NoteType {
   id: string;
@@ -112,26 +113,26 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <Toaster position="top-right" />
-      <nav className="bg-white shadow-md">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-bold text-gray-900">Notes App</h1>
+    <div className='min-h-screen bg-gray-100'>
+      <Toaster position='top-right' />
+      <nav className='bg-white shadow-md'>
+        <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4'>
+          <div className='flex justify-between items-center'>
+            <h1 className='text-2xl font-bold text-gray-900'>Notes App</h1>
             {session ? (
               <button
                 onClick={handleSignOut}
-                className="flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors"
+                className='flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors'
               >
-                <LogOut className="w-4 h-4" />
+                <LogOut className='w-4 h-4' />
                 Sign Out
               </button>
             ) : (
               <button
                 onClick={handleSignIn}
-                className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
+                className='flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors'
               >
-                <LogIn className="w-4 h-4" />
+                <LogIn className='w-4 h-4' />
                 Sign In with Google
               </button>
             )}
@@ -139,11 +140,11 @@ function App() {
         </div>
       </nav>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8'>
         {session ? (
-          <div className="space-y-8">
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-xl font-semibold mb-4">
+          <div className='space-y-8'>
+            <div className='bg-white rounded-lg shadow-md p-6'>
+              <h2 className='text-xl font-semibold mb-4'>
                 {editingNote ? 'Edit Note' : 'Add New Note'}
               </h2>
               <NoteForm
@@ -154,8 +155,8 @@ function App() {
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {notes.map((note) => (
+            <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
+              {notes.map(note => (
                 <Note
                   key={note.id}
                   id={note.id}
@@ -168,11 +169,11 @@ function App() {
             </div>
           </div>
         ) : (
-          <div className="text-center py-12">
-            <h2 className="text-2xl font-semibold text-gray-900">
+          <div className='text-center py-12'>
+            <h2 className='text-2xl font-semibold text-gray-900'>
               Welcome to Notes App
             </h2>
-            <p className="mt-2 text-gray-600">
+            <p className='mt-2 text-gray-600'>
               Please sign in with Google to start creating notes.
             </p>
           </div>

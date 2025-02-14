@@ -6,6 +6,7 @@ import {
   SafeAreaView,
   StatusBar,
 } from 'react-native';
+import 'react-native-reanimated';
 import { AuthProvider } from './src/context/AuthContext';
 import { AuthScreen } from './src/screens/AuthScreen';
 import { Notes } from './src/screens/Notes';
