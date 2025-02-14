@@ -20,10 +20,11 @@ type SuggestionsCache = {
 };
 
 // Cache for search results
-type SearchCache = {
+type SearchCacheEntry = {
   result: string;
   noteIds: string[];
   query: string;
+  timestamp: number;
 };
 
 // Helper functions for cache management
@@ -63,19 +64,38 @@ async function setSuggestionsCache(cache: SuggestionsCache) {
   }
 }
 
-async function getSearchCache(): Promise<SearchCache | null> {
+async function getSearchCache(): Promise<SearchCacheEntry[]> {
   try {
     const cache = await AsyncStorage.getItem(SEARCH_CACHE_KEY);
-    return cache ? JSON.parse(cache) : null;
+    if (!cache) return [];
+
+    const parsed = JSON.parse(cache);
+    // If it's the old format (single object) or invalid, clear it and return empty array
+    if (!Array.isArray(parsed)) {
+      await AsyncStorage.removeItem(SEARCH_CACHE_KEY);
+      return [];
+    }
+    return parsed;
   } catch (error) {
     console.error('Error reading search cache:', error);
-    return null;
+    return [];
   }
 }
 
-async function setSearchCache(cache: SearchCache) {
+async function setSearchCache(newEntry: Omit<SearchCacheEntry, 'timestamp'>) {
   try {
-    await AsyncStorage.setItem(SEARCH_CACHE_KEY, JSON.stringify(cache));
+    const currentCache = await getSearchCache();
+
+    // Add timestamp to new entry
+    const entryWithTimestamp: SearchCacheEntry = {
+      ...newEntry,
+      timestamp: Date.now(),
+    };
+
+    // Add new entry to the beginning and keep only the latest 10
+    const updatedCache = [entryWithTimestamp, ...currentCache].slice(0, 10);
+
+    await AsyncStorage.setItem(SEARCH_CACHE_KEY, JSON.stringify(updatedCache));
   } catch (error) {
     console.error('Error setting search cache:', error);
   }
@@ -198,13 +218,15 @@ export async function searchNotes(
 
   // Check if we have a valid cache with the same notes and query
   const searchCache = await getSearchCache();
-  if (
-    searchCache &&
-    searchCache.query === query &&
-    JSON.stringify([...searchCache.noteIds].sort()) === JSON.stringify(noteIds)
-  ) {
+  const matchingCache = searchCache.find(
+    entry =>
+      entry.query === query &&
+      JSON.stringify([...entry.noteIds].sort()) === JSON.stringify(noteIds)
+  );
+
+  if (matchingCache) {
     console.log('Search cache hit! Returning cached result');
-    return searchCache.result;
+    return matchingCache.result;
   }
   console.log('Search cache miss - fetching new result');
 
@@ -236,13 +258,12 @@ export async function searchNotes(
 
     const searchResult = result.response.text();
 
-    // Update cache
-    const newCache = {
+    // Update cache with new entry
+    await setSearchCache({
       result: searchResult,
       noteIds: [...noteIds],
       query,
-    };
-    await setSearchCache(newCache);
+    });
     console.log('Updated search cache with new result');
 
     return searchResult;
