@@ -2,7 +2,7 @@ import React from 'react';
 import 'react-native-reanimated';
 import { AuthProvider } from './src/context/AuthContext';
 import { AuthScreen } from './src/screens/AuthScreen';
-import { Notes } from './src/screens/Notes';
+import { AuthenticatedApp } from '@/screens/AuthenticatedApp';
 import { useAuth } from './src/context/AuthContext';
 
 function AppContent() {
@@ -12,7 +12,7 @@ function AppContent() {
     return null; // Or a loading spinner
   }
 
-  return session ? <Notes /> : <AuthScreen />;
+  return session ? <AuthenticatedApp /> : <AuthScreen />;
 }
 
 export default function App() {

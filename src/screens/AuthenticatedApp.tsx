@@ -3,7 +3,8 @@ import { Alert, Platform, View, Text } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { NotesScreen } from './NotesScreen';
+import { CreateNoteScreen } from './CreateNoteScreen';
+import { NotesListScreen } from './NotesListScreen';
 import { SettingsScreen } from './SettingsScreen';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
@@ -12,7 +13,7 @@ import { Keyboard } from 'react-native';
 
 const Tab = createBottomTabNavigator();
 
-export function Notes() {
+export function AuthenticatedApp() {
   const [notes, setNotes] = useState<any[]>([]);
   const [editingNote, setEditingNote] = useState<any>(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -237,9 +238,11 @@ export function Notes() {
       <Tab.Navigator
         screenOptions={({ route }) => ({
           tabBarIcon: ({ focused, color, size }) => {
-            let iconName: string = 'document-text-outline';
+            let iconName: string = 'create-outline';
 
-            if (route.name === 'Notes') {
+            if (route.name === 'Create') {
+              iconName = focused ? 'create' : 'create-outline';
+            } else if (route.name === 'My Notes') {
               iconName = focused ? 'document-text' : 'document-text-outline';
             } else if (route.name === 'Settings') {
               iconName = focused ? 'settings' : 'settings-outline';
@@ -267,10 +270,9 @@ export function Notes() {
           headerShown: false,
         })}
       >
-        <Tab.Screen name='Notes'>
+        <Tab.Screen name='Create'>
           {() => (
-            <NotesScreen
-              notes={notes}
+            <CreateNoteScreen
               isSearching={isSearching}
               searchResult={searchResult}
               searchQuery={searchQuery}
@@ -286,8 +288,15 @@ export function Notes() {
               handleSearch={handleSearch}
               handleSubmit={handleSubmit}
               editingNote={editingNote}
-              handleEdit={handleEdit}
-              handleDelete={handleDelete}
+            />
+          )}
+        </Tab.Screen>
+        <Tab.Screen name='My Notes'>
+          {() => (
+            <NotesListScreen
+              notes={notes}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
             />
           )}
         </Tab.Screen>
