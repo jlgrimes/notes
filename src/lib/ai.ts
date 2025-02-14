@@ -1,6 +1,9 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const MODEL_NAME = 'gemini-2.0-flash-lite-preview-02-05';
+const WELCOME_CACHE_KEY = '@notes_app_welcome_cache';
+const SUGGESTIONS_CACHE_KEY = '@notes_app_suggestions_cache';
 
 // Cache for welcome message
 type WelcomeMessageCache = {
@@ -9,7 +12,48 @@ type WelcomeMessageCache = {
   userName: string;
 };
 
-let welcomeMessageCache: WelcomeMessageCache | null = null;
+// Cache for suggestions
+type SuggestionsCache = {
+  suggestions: string[];
+  noteIds: string[];
+};
+
+// Helper functions for cache management
+async function getWelcomeCache(): Promise<WelcomeMessageCache | null> {
+  try {
+    const cache = await AsyncStorage.getItem(WELCOME_CACHE_KEY);
+    return cache ? JSON.parse(cache) : null;
+  } catch (error) {
+    console.error('Error reading welcome cache:', error);
+    return null;
+  }
+}
+
+async function setWelcomeCache(cache: WelcomeMessageCache) {
+  try {
+    await AsyncStorage.setItem(WELCOME_CACHE_KEY, JSON.stringify(cache));
+  } catch (error) {
+    console.error('Error setting welcome cache:', error);
+  }
+}
+
+async function getSuggestionsCache(): Promise<SuggestionsCache | null> {
+  try {
+    const cache = await AsyncStorage.getItem(SUGGESTIONS_CACHE_KEY);
+    return cache ? JSON.parse(cache) : null;
+  } catch (error) {
+    console.error('Error reading suggestions cache:', error);
+    return null;
+  }
+}
+
+async function setSuggestionsCache(cache: SuggestionsCache) {
+  try {
+    await AsyncStorage.setItem(SUGGESTIONS_CACHE_KEY, JSON.stringify(cache));
+  } catch (error) {
+    console.error('Error setting suggestions cache:', error);
+  }
+}
 
 // Initialize the Gemini AI
 const genAI = new GoogleGenerativeAI(
@@ -44,6 +88,26 @@ export type AISuggestion = {
 };
 
 export async function getCommonTopics(notes: any[]): Promise<string[]> {
+  // Create a sorted list of note IDs to use as cache key
+  const noteIds = notes.map(note => note.id).sort();
+  console.log('New note IDs:', noteIds);
+
+  // Check if we have a valid cache with the same notes
+  const suggestionsCache = await getSuggestionsCache();
+  if (suggestionsCache) {
+    const cachedIds = [...suggestionsCache.noteIds].sort();
+    console.log('Cached note IDs:', cachedIds);
+    console.log('New IDs stringified:', JSON.stringify(noteIds));
+    console.log('Cached IDs stringified:', JSON.stringify(cachedIds));
+    if (JSON.stringify(cachedIds) === JSON.stringify(noteIds)) {
+      console.log('Cache hit! Returning cached suggestions');
+      return suggestionsCache.suggestions;
+    }
+    console.log("Cache miss - IDs don't match");
+  } else {
+    console.log('No cache exists yet');
+  }
+
   try {
     const model = genAI.getGenerativeModel({
       model: MODEL_NAME,
@@ -76,11 +140,21 @@ export async function getCommonTopics(notes: any[]): Promise<string[]> {
       6. Use time references naturally
     `);
 
-    return result.response
+    const suggestions = result.response
       .text()
       .split('\n')
       .filter(topic => topic.trim())
       .slice(0, 3);
+
+    // Update cache
+    const newCache = {
+      suggestions,
+      noteIds: [...noteIds],
+    };
+    await setSuggestionsCache(newCache);
+    console.log('Updated cache with new suggestions and IDs:', noteIds);
+
+    return suggestions;
   } catch (error) {
     console.error('Error getting common topics:', error);
     return [];
@@ -133,6 +207,7 @@ export async function getWelcomeMessage(userName: string): Promise<string> {
   ).getTime();
 
   // Return cached message if it's from today and for the same user
+  const welcomeMessageCache = await getWelcomeCache();
   if (
     welcomeMessageCache &&
     welcomeMessageCache.timestamp === today &&
@@ -160,11 +235,12 @@ export async function getWelcomeMessage(userName: string): Promise<string> {
     const message = result.response.text().trim();
 
     // Update cache
-    welcomeMessageCache = {
+    const newCache = {
       message,
       timestamp: today,
       userName,
     };
+    await setWelcomeCache(newCache);
 
     return message;
   } catch (error) {
@@ -172,11 +248,12 @@ export async function getWelcomeMessage(userName: string): Promise<string> {
     const fallbackMessage = `Hi ${userName}, I hope you're having a good day today`;
 
     // Cache even fallback messages to prevent repeated API calls on error
-    welcomeMessageCache = {
+    const newCache = {
       message: fallbackMessage,
       timestamp: today,
       userName,
     };
+    await setWelcomeCache(newCache);
 
     return fallbackMessage;
   }
