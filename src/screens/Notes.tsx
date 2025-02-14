@@ -17,7 +17,7 @@ import { NoteForm } from '../components/NoteForm';
 import { NoteList } from '../components/NoteList';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
-import { searchNotes, getCommonTopics } from '../lib/ai';
+import { searchNotes, getCommonTopics, getWelcomeMessage } from '../lib/ai';
 
 export function Notes() {
   const [notes, setNotes] = useState<any[]>([]);
@@ -28,11 +28,17 @@ export function Notes() {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
+  const [welcomeMessage, setWelcomeMessage] = useState<string>('');
+  const [isLoadingWelcome, setIsLoadingWelcome] = useState(true);
   const { session, signOut } = useAuth();
+
+  const userFirstName =
+    session?.user?.user_metadata?.full_name?.split(' ')[0] || 'there';
 
   useEffect(() => {
     if (session?.user) {
       fetchNotes();
+      loadWelcomeMessage();
     }
   }, [session]);
 
@@ -69,6 +75,18 @@ export function Notes() {
       console.error('Error loading suggestions:', error);
     } finally {
       setIsLoadingSuggestions(false);
+    }
+  };
+
+  const loadWelcomeMessage = async () => {
+    try {
+      setIsLoadingWelcome(true);
+      const message = await getWelcomeMessage(userFirstName);
+      setWelcomeMessage(message);
+    } catch (error) {
+      console.error('Error loading welcome message:', error);
+    } finally {
+      setIsLoadingWelcome(false);
     }
   };
 
@@ -228,6 +246,78 @@ export function Notes() {
         </TouchableOpacity>
       </View>
 
+      {isSearching ? (
+        <View style={styles.cardContainer}>
+          <View style={styles.aiLoadingContainer}>
+            <AILoadingIndicator size={40} color='#4F46E5' />
+            <Text style={styles.aiLoadingText}>Analyzing your thoughts...</Text>
+            <Text style={styles.aiLoadingSubtext}>
+              Finding relevant connections...
+            </Text>
+          </View>
+        </View>
+      ) : searchResult || searchQuery ? (
+        <View style={styles.cardContainer}>
+          <MotiView
+            from={{
+              opacity: 0,
+            }}
+            animate={{
+              opacity: 1,
+            }}
+            exit={{
+              opacity: 0,
+            }}
+            transition={{
+              type: 'timing',
+              duration: 800,
+              delay: 100,
+            }}
+            style={styles.searchResultContainer}
+          >
+            <MotiView
+              from={{
+                transform: [{ translateY: 10 }],
+                scale: 0.98,
+              }}
+              animate={{
+                transform: [{ translateY: 0 }],
+                scale: 1,
+              }}
+              transition={{
+                type: 'spring',
+                damping: 15,
+                mass: 0.8,
+              }}
+            >
+              <Text style={styles.searchResultText}>{searchResult}</Text>
+            </MotiView>
+          </MotiView>
+        </View>
+      ) : (
+        <View style={styles.cardContainer}>
+          {!isLoadingWelcome && (
+            <MotiView
+              from={{
+                opacity: 0,
+              }}
+              animate={{
+                opacity: 1,
+              }}
+              transition={{
+                type: 'timing',
+                duration: 800,
+              }}
+              style={styles.searchResultContainer}
+            >
+              <Text style={[styles.searchResultText, styles.welcomeText]}>
+                {welcomeMessage}
+              </Text>
+            </MotiView>
+          )}
+        </View>
+      )}
+
       <View style={styles.searchContainer}>
         <View style={styles.searchInputContainer}>
           <TextInput
@@ -299,57 +389,6 @@ export function Notes() {
         </TouchableOpacity>
       </View>
 
-      {isSearching ? (
-        <View style={styles.aiLoadingContainer}>
-          <AILoadingIndicator size={40} color='#4F46E5' />
-          <Text style={styles.aiLoadingText}>Analyzing your thoughts...</Text>
-          <Text style={styles.aiLoadingSubtext}>
-            Finding relevant connections...
-          </Text>
-        </View>
-      ) : searchResult ? (
-        <MotiView
-          from={{
-            opacity: 0,
-          }}
-          animate={{
-            opacity: 1,
-          }}
-          exit={{
-            opacity: 0,
-          }}
-          transition={{
-            type: 'timing',
-            duration: 800,
-            delay: 100,
-          }}
-          style={[
-            styles.searchResultContainer,
-            {
-              transform: [{ translateY: 0 }],
-            },
-          ]}
-        >
-          <MotiView
-            from={{
-              transform: [{ translateY: 10 }],
-              scale: 0.98,
-            }}
-            animate={{
-              transform: [{ translateY: 0 }],
-              scale: 1,
-            }}
-            transition={{
-              type: 'spring',
-              damping: 15,
-              mass: 0.8,
-            }}
-          >
-            <Text style={styles.searchResultText}>{searchResult}</Text>
-          </MotiView>
-        </MotiView>
-      ) : null}
-
       <NoteForm
         onSubmit={handleSubmit}
         initialContent={editingNote?.content}
@@ -386,7 +425,7 @@ const styles = StyleSheet.create({
   },
   searchContainer: {
     flexDirection: 'row',
-    marginBottom: 16,
+    marginBottom: 24,
     gap: 8,
   },
   searchInputContainer: {
@@ -421,14 +460,17 @@ const styles = StyleSheet.create({
     color: '#4F46E5',
     fontSize: 16,
   },
+  cardContainer: {
+    minHeight: 200,
+    marginBottom: 24,
+  },
   searchResultContainer: {
     backgroundColor: '#FFFFFF',
     borderRadius: 16,
     paddingHorizontal: 28,
-    paddingVertical: 24,
-    marginBottom: 24,
+    paddingVertical: 32,
     justifyContent: 'center',
-    minHeight: 80,
+    minHeight: 200,
     ...Platform.select({
       web: {
         boxShadow:
@@ -499,7 +541,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#F9FAFB',
     borderRadius: 16,
     padding: 24,
-    marginVertical: 20,
+    minHeight: 160,
+    justifyContent: 'center',
     ...Platform.select({
       web: {
         boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
@@ -519,5 +562,11 @@ const styles = StyleSheet.create({
     marginTop: 8,
     color: '#6B7280',
     fontSize: 14,
+  },
+  welcomeText: {
+    color: '#4F46E5',
+    fontSize: 20,
+    fontWeight: '600',
+    textAlign: 'center',
   },
 });

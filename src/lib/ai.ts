@@ -112,3 +112,27 @@ export async function searchNotes(
     throw error;
   }
 }
+
+export async function getWelcomeMessage(userName: string): Promise<string> {
+  try {
+    const model = genAI.getGenerativeModel({
+      model: 'gemini-2.0-flash',
+    });
+
+    const result = await model.generateContent(`
+      Return a casual greeting for ${userName}. Should be:
+      - A complete, natural sentence
+      - Include their name
+      - Mention having a good day or similar
+      - Friendly but not overly formal
+      - No exclamation marks
+      
+      Return only the message.
+    `);
+
+    return result.response.text().trim();
+  } catch (error) {
+    console.error('Error getting welcome message:', error);
+    return `Hi ${userName}, I hope you're having a good day today`;
+  }
+}
