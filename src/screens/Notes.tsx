@@ -9,6 +9,7 @@ import {
   ScrollView,
   Modal,
   Platform,
+  Keyboard,
 } from 'react-native';
 import { MotiView } from 'moti';
 import { AILoadingIndicator } from '../components/AILoadingIndicator';
@@ -80,6 +81,7 @@ export function Notes() {
   const handleSuggestionPress = async (suggestion: string) => {
     if (notes.length === 0) return;
 
+    Keyboard.dismiss();
     setSearchQuery(suggestion);
     setShowSuggestions(false);
     handleSearch(suggestion);
@@ -218,7 +220,7 @@ export function Notes() {
   }
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={styles.container} keyboardShouldPersistTaps='handled'>
       <View style={styles.header}>
         <Text style={styles.title}>My Notes</Text>
         <TouchableOpacity onPress={signOut} style={styles.signOutButton}>
