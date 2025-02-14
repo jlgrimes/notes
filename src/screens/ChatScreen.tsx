@@ -146,7 +146,6 @@ export function ChatScreen(props: ChatScreenProps) {
     },
     mainContainer: {
       flex: 1,
-      justifyContent: 'space-between',
       paddingBottom: Platform.OS === 'ios' ? 90 : 60, // Account for tab bar height
     },
     topContent: {
@@ -346,9 +345,9 @@ export function ChatScreen(props: ChatScreenProps) {
   });
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <View style={styles.safeArea}>
       <Header title={t('appName')} />
-      <View style={styles.mainContainer}>
+      <ScrollView style={styles.mainContainer}>
         <View style={styles.topContent}>
           <View style={styles.welcomeContainer}>
             {!isLoadingWelcome && (
@@ -470,7 +469,7 @@ export function ChatScreen(props: ChatScreenProps) {
             </TouchableOpacity>
           </View>
         </View>
-      </View>
-    </SafeAreaView>
+      </ScrollView>
+    </View>
   );
 }
