@@ -340,17 +340,7 @@ export function Notes() {
               mass: 0.8,
             }}
           >
-            <Text style={styles.searchResultTitle}>Search Result:</Text>
             <Text style={styles.searchResultText}>{searchResult}</Text>
-            <TouchableOpacity
-              style={styles.clearButton}
-              onPress={() => {
-                setSearchResult('');
-                setSearchQuery('');
-              }}
-            >
-              <Text style={styles.clearButtonText}>Clear Search</Text>
-            </TouchableOpacity>
           </MotiView>
         </MotiView>
       ) : null}
@@ -427,30 +417,30 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   searchResultContainer: {
-    backgroundColor: '#F3F4F6',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
-  },
-  searchResultTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#1F2937',
-    marginBottom: 8,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    paddingHorizontal: 28,
+    paddingVertical: 24,
+    marginBottom: 24,
+    justifyContent: 'center',
+    minHeight: 80,
+    ...Platform.select({
+      web: {
+        boxShadow:
+          '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
+      },
+      default: {
+        elevation: 5,
+      },
+    }),
   },
   searchResultText: {
-    fontSize: 16,
+    fontSize: 19,
     color: '#374151',
-    lineHeight: 24,
-  },
-  clearButton: {
-    marginTop: 12,
-    alignSelf: 'flex-end',
-  },
-  clearButtonText: {
-    color: '#4F46E5',
-    fontSize: 14,
+    lineHeight: 28,
     fontWeight: '500',
+    letterSpacing: -0.3,
+    textAlign: 'left',
   },
   errorText: {
     color: '#EF4444',
