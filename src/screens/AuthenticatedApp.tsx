@@ -14,13 +14,13 @@ import { supabase } from '../lib/supabase';
 import { searchNotes, getCommonTopics, getWelcomeMessage } from '../lib/ai';
 import { Keyboard } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import type { ParamListBase } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 const Tab = createBottomTabNavigator();
 
 type RootStackParamList = {
   MainTabs: undefined;
-  CreateNoteModal: { mode: 'create' };
+  CreateNoteModal: { mode: 'create' | 'edit' };
   Conversation: {
     initialQuery: string;
     initialAnswer: string;
@@ -32,12 +32,14 @@ type RootStackParamList = {
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
+type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
+
 function ChatScreenWrapper(props: any) {
   return <ChatScreen {...props} mode='chat' />;
 }
 
 function TabNavigator({ screenProps }: any) {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp>();
   const { t } = useTranslation();
 
   return (
@@ -262,7 +264,7 @@ export function AuthenticatedApp() {
     }
   };
 
-  const handleSubmit = async (note: { title: string; content: string }) => {
+  const handleSubmit = async (content: string) => {
     try {
       if (!session?.user) {
         Alert.alert('Error', t('notes.errors.mustBeSignedIn'));
@@ -272,7 +274,7 @@ export function AuthenticatedApp() {
       if (editingNote) {
         const { error } = await supabase
           .from('notes')
-          .update({ title: note.title, content: note.content })
+          .update({ content })
           .eq('id', editingNote.id)
           .eq('user_id', session.user.id);
 
@@ -286,8 +288,7 @@ export function AuthenticatedApp() {
       } else {
         const { error } = await supabase.from('notes').insert([
           {
-            title: note.title,
-            content: note.content,
+            content,
             user_id: session.user.id,
           },
         ]);

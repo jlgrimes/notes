@@ -8,14 +8,13 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 interface NoteFormProps {
-  onSubmit: (note: { title: string; content: string }) => void;
+  onSubmit: (content: string) => void;
   onCancel: () => void;
-  initialNote?: { title: string; content: string };
-  mode?: 'create' | 'edit';
+  initialContent?: string;
   translations: {
-    title: string;
     content: string;
     save: string;
     cancel: string;
@@ -25,15 +24,13 @@ interface NoteFormProps {
 export function NoteForm({
   onSubmit,
   onCancel,
-  initialNote,
-  mode = 'create',
+  initialContent,
   translations,
 }: NoteFormProps) {
-  const [title, setTitle] = useState(initialNote?.title || '');
-  const [content, setContent] = useState(initialNote?.content || '');
+  const [content, setContent] = useState(initialContent || '');
 
   const handleSubmit = () => {
-    onSubmit({ title, content });
+    onSubmit(content);
   };
 
   return (
@@ -41,13 +38,12 @@ export function NoteForm({
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={styles.container}
     >
+      <View style={styles.header}>
+        <TouchableOpacity style={styles.cancelButton} onPress={onCancel}>
+          <Text style={styles.cancelButtonText}>{translations.cancel}</Text>
+        </TouchableOpacity>
+      </View>
       <View style={styles.form}>
-        <TextInput
-          style={styles.titleInput}
-          placeholder={translations.title}
-          value={title}
-          onChangeText={setTitle}
-        />
         <TextInput
           style={styles.contentInput}
           placeholder={translations.content}
@@ -55,22 +51,12 @@ export function NoteForm({
           onChangeText={setContent}
           multiline
           textAlignVertical='top'
+          autoFocus
         />
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            style={[styles.button, styles.cancelButton]}
-            onPress={onCancel}
-          >
-            <Text style={styles.cancelButtonText}>{translations.cancel}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.button, styles.submitButton]}
-            onPress={handleSubmit}
-          >
-            <Text style={styles.submitButtonText}>{translations.save}</Text>
-          </TouchableOpacity>
-        </View>
       </View>
+      <TouchableOpacity style={styles.fab} onPress={handleSubmit}>
+        <Icon name='checkmark' size={32} color='#FFFFFF' />
+      </TouchableOpacity>
     </KeyboardAvoidingView>
   );
 }
@@ -80,55 +66,49 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FFFFFF',
   },
+  header: {
+    height: 56,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E5E7EB',
+  },
   form: {
     flex: 1,
     padding: 16,
-    gap: 16,
-  },
-  titleInput: {
-    height: 48,
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
-    borderRadius: 8,
-    paddingHorizontal: 16,
-    fontSize: 18,
-    fontWeight: '600',
-    backgroundColor: '#F9FAFB',
   },
   contentInput: {
     flex: 1,
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
-    borderRadius: 8,
-    padding: 16,
     fontSize: 16,
-    backgroundColor: '#F9FAFB',
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    gap: 12,
-  },
-  button: {
-    flex: 1,
-    height: 48,
-    borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  submitButton: {
-    backgroundColor: '#3B82F6',
-  },
-  submitButtonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '600',
+    color: '#374151',
+    textAlignVertical: 'top',
   },
   cancelButton: {
-    backgroundColor: '#F3F4F6',
+    padding: 8,
   },
   cancelButtonText: {
-    color: '#374151',
+    color: '#6B7280',
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: '500',
+  },
+  fab: {
+    position: 'absolute',
+    right: 16,
+    bottom: Platform.OS === 'ios' ? 32 : 16,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: '#4F46E5',
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
 });

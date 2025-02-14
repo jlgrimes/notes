@@ -4,17 +4,15 @@ import { NoteForm } from '../components/NoteForm';
 import { useTranslation } from 'react-i18next';
 
 interface CreateNoteScreenProps {
-  handleSubmit: (note: { title: string; content: string }) => void;
+  handleSubmit: (content: string) => void;
   onCancel: () => void;
-  initialNote?: { title: string; content: string };
-  mode?: 'create' | 'edit';
+  initialContent?: string;
 }
 
 export function CreateNoteScreen({
   handleSubmit,
   onCancel,
-  initialNote,
-  mode = 'create',
+  initialContent,
 }: CreateNoteScreenProps) {
   const { t } = useTranslation();
 
@@ -23,10 +21,8 @@ export function CreateNoteScreen({
       <NoteForm
         onSubmit={handleSubmit}
         onCancel={onCancel}
-        initialNote={initialNote}
-        mode={mode}
+        initialContent={initialContent}
         translations={{
-          title: t('notes.noteTitle'),
           content: t('notes.noteContent'),
           save: t('common.save'),
           cancel: t('common.cancel'),
