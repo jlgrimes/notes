@@ -114,55 +114,36 @@ export function CreateNoteScreen(props: CreateNoteScreenProps) {
           </View>
         )}
 
+        {isLoadingSuggestions ? (
+          <View style={styles.spinnerContainer}>
+            <AILoadingIndicator size={30} color='#4F46E5' />
+            <Text style={styles.aiLoadingSubtext}>Getting suggestions...</Text>
+          </View>
+        ) : suggestions.length > 0 ? (
+          <View style={styles.suggestionsList}>
+            {suggestions.map((suggestion, index) => (
+              <TouchableOpacity
+                key={index}
+                style={styles.suggestionPill}
+                onPress={() => handleSuggestionPress(suggestion)}
+              >
+                <Text style={styles.suggestionPillText}>{suggestion}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        ) : null}
+
         <View style={styles.searchContainer}>
           <View style={styles.searchInputContainer}>
             <TextInput
               value={searchQuery}
               onChangeText={text => {
                 setSearchQuery(text);
-                setShowSuggestions(false);
               }}
-              onFocus={() => setShowSuggestions(true)}
-              onPressIn={handleSearchInputPress}
               placeholder='Ask anything about your notes...'
               placeholderTextColor='#9CA3AF'
               style={styles.searchInput}
             />
-            {showSuggestions && (
-              <MotiView
-                style={styles.suggestionsDropdown}
-                from={{ opacity: 0, scale: 0.95, translateY: -10 }}
-                animate={{ opacity: 1, scale: 1, translateY: 0 }}
-                transition={{ type: 'spring', damping: 20, mass: 0.8 }}
-              >
-                {isLoadingSuggestions ? (
-                  <View style={styles.spinnerContainer}>
-                    <AILoadingIndicator size={30} color='#4F46E5' />
-                    <Text style={styles.aiLoadingSubtext}>
-                      Getting suggestions...
-                    </Text>
-                  </View>
-                ) : suggestions.length > 0 ? (
-                  suggestions.map((suggestion, index) => (
-                    <TouchableOpacity
-                      key={index}
-                      style={[
-                        styles.suggestionItem,
-                        index === suggestions.length - 1 &&
-                          styles.suggestionItemLast,
-                      ]}
-                      onPress={() => handleSuggestionPress(suggestion)}
-                    >
-                      <Text style={styles.suggestionText}>{suggestion}</Text>
-                    </TouchableOpacity>
-                  ))
-                ) : (
-                  <Text style={styles.noSuggestionsText}>
-                    No suggestions available
-                  </Text>
-                )}
-              </MotiView>
-            )}
           </View>
           <TouchableOpacity
             onPress={handleSearch}
@@ -240,46 +221,30 @@ const styles = StyleSheet.create({
     letterSpacing: -0.3,
     textAlign: 'left',
   },
-  suggestionsDropdown: {
-    position: 'absolute',
-    top: '100%',
-    left: 0,
-    right: 0,
+  suggestionsList: {
+    flexDirection: 'column',
+    gap: 8,
+    marginBottom: 24,
+    paddingHorizontal: 28,
+  },
+  suggestionPill: {
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    borderRadius: 100,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
     backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    marginTop: 4,
-    padding: 8,
-    ...Platform.select({
-      web: {
-        boxShadow:
-          '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
-      },
-      default: {
-        elevation: 3,
-      },
-    }),
-    zIndex: 1000,
+    alignSelf: 'flex-start',
   },
-  suggestionItem: {
-    padding: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
-  },
-  suggestionItemLast: {
-    borderBottomWidth: 0,
-  },
-  suggestionText: {
+  suggestionPillText: {
     fontSize: 16,
-    color: '#374151',
-  },
-  noSuggestionsText: {
-    padding: 12,
-    color: '#9CA3AF',
-    textAlign: 'center',
+    color: '#4F46E5',
+    textAlign: 'left',
   },
   spinnerContainer: {
     alignItems: 'center',
-    padding: 20,
+    paddingVertical: 20,
+    marginBottom: 24,
   },
   aiLoadingContainer: {
     alignItems: 'center',
