@@ -42,12 +42,7 @@ export function SuggestionPill({
     return (
       <TouchableOpacity style={styles.pill} onPress={onPress}>
         <Gradient type='primary' style={styles.gradientPill}>
-          <Text
-            variant='body'
-            weight='medium'
-            color={theme.colors.neutral[50]}
-            align='center'
-          >
+          <Text variant='body' weight='medium' color={theme.colors.neutral[50]}>
             {suggestion}
           </Text>
         </Gradient>
@@ -60,12 +55,7 @@ export function SuggestionPill({
       style={[styles.pill, styles.regularPill]}
       onPress={onPress}
     >
-      <Text
-        variant='body'
-        weight='medium'
-        color={theme.colors.primary[500]}
-        align='center'
-      >
+      <Text variant='body' weight='medium' color={theme.colors.primary[500]}>
         {suggestion}
       </Text>
     </TouchableOpacity>
