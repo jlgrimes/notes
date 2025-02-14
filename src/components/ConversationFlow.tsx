@@ -14,6 +14,7 @@ import { SuggestionPill } from './SuggestionPill';
 import { LocationCard } from './LocationCard';
 import { PromptLabel } from './PromptLabel';
 import { fadeIn } from '../lib/animations';
+import { SuggestionPillList } from './SuggestionPillList';
 
 interface LocationReference {
   name: string;
@@ -156,21 +157,15 @@ export function ConversationFlow({
 
           {card.answer && cardIndex === answerCards.length - 1 && (
             <View style={styles.suggestionsContainer}>
-              {isLoadingSmartSuggestions ? null : card.smartSuggestions
-                  ?.length > 0 ? (
-                <MotiView {...fadeIn} style={styles.suggestionsList}>
-                  {card.smartSuggestions.map((suggestion, index) => (
-                    <SuggestionPill
-                      key={index}
-                      suggestion={suggestion}
-                      onPress={() =>
-                        handleSuggestionPress(suggestion, cardIndex)
-                      }
-                      smart={true}
-                    />
-                  ))}
-                </MotiView>
-              ) : null}
+              <SuggestionPillList
+                suggestions={
+                  isLoadingSmartSuggestions ? undefined : card.smartSuggestions
+                }
+                onSuggestionPress={suggestion =>
+                  handleSuggestionPress(suggestion, cardIndex)
+                }
+                smart={true}
+              />
             </View>
           )}
         </MotiView>
