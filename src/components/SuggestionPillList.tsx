@@ -1,7 +1,7 @@
 import React from 'react';
-import { View, StyleSheet, Text } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { SuggestionPill } from './SuggestionPill';
-import { AILoadingIndicator } from './AILoadingIndicator';
+import { MotiView } from 'moti';
 
 interface SuggestionPillListProps {
   suggestions?: string[];
@@ -15,16 +15,16 @@ export function SuggestionPillList({
   smart = false,
 }: SuggestionPillListProps) {
   if (!suggestions) {
-    return (
-      <View style={styles.spinnerContainer}>
-        <AILoadingIndicator size={30} color='#4F46E5' />
-        <Text style={styles.loadingText}>Getting suggestions...</Text>
-      </View>
-    );
+    return null;
   }
 
   return (
-    <View style={styles.suggestionsList}>
+    <MotiView
+      from={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ type: 'timing', duration: 300 }}
+      style={styles.suggestionsList}
+    >
       {suggestions.map((suggestion, index) => (
         <SuggestionPill
           key={index}
@@ -33,7 +33,7 @@ export function SuggestionPillList({
           smart={smart}
         />
       ))}
-    </View>
+    </MotiView>
   );
 }
 
@@ -43,17 +43,5 @@ const styles = StyleSheet.create({
     gap: 8,
     marginTop: 16,
     marginBottom: 32,
-  },
-  spinnerContainer: {
-    alignItems: 'center',
-    paddingVertical: 20,
-    marginBottom: 24,
-  },
-  loadingText: {
-    marginTop: 8,
-    color: '#6B7280',
-    fontSize: 16,
-    textAlign: 'left',
-    alignSelf: 'flex-start',
   },
 });
