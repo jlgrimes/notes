@@ -142,7 +142,7 @@ export function ChatScreen(props: ChatScreenProps) {
   const styles = StyleSheet.create({
     safeArea: {
       flex: 1,
-      backgroundColor: '#f7f7f7',
+      backgroundColor: theme.colors.neutral[50],
     },
     mainContainer: {
       flex: 1,
@@ -171,7 +171,6 @@ export function ChatScreen(props: ChatScreenProps) {
     bottomContent: {
       paddingHorizontal: 16,
       paddingBottom: 16,
-      backgroundColor: '#f7f7f7',
     },
     searchContainer: {
       flexDirection: 'row',
