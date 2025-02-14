@@ -12,6 +12,7 @@ import { useTheme } from '../theme/ThemeProvider';
 interface Note {
   id: string;
   content: string;
+  created_at: string;
 }
 
 interface MasonryNoteListProps {
@@ -61,7 +62,12 @@ export function MasonryNoteList({ notes, onEdit }: MasonryNoteListProps) {
         <View style={styles.column}>
           {leftColumnNotes.map(note => (
             <View key={note.id} style={styles.noteWrapper}>
-              <Note id={note.id} content={note.content} onEdit={onEdit} />
+              <Note
+                id={note.id}
+                content={note.content}
+                onEdit={onEdit}
+                createdAt={note.created_at}
+              />
             </View>
           ))}
         </View>
@@ -70,7 +76,12 @@ export function MasonryNoteList({ notes, onEdit }: MasonryNoteListProps) {
         <View style={styles.column}>
           {rightColumnNotes.map(note => (
             <View key={note.id} style={styles.noteWrapper}>
-              <Note id={note.id} content={note.content} onEdit={onEdit} />
+              <Note
+                id={note.id}
+                content={note.content}
+                onEdit={onEdit}
+                createdAt={note.created_at}
+              />
             </View>
           ))}
         </View>
