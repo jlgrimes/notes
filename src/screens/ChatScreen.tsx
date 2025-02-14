@@ -18,6 +18,7 @@ import { searchNotes, getSmartSuggestions, getFollowUpAnswer } from '../lib/ai';
 import { ConversationFlow } from '../components/ConversationFlow';
 import { useNavigation } from '@react-navigation/native';
 import { SmartSuggestionPill } from '../components/SmartSuggestionPill';
+import { PromptLabel } from '../components/PromptLabel';
 
 interface ChatScreenProps {
   notes: any[];
@@ -125,6 +126,7 @@ export function ChatScreen(props: ChatScreenProps) {
                   animate={{ transform: [{ translateY: 0 }], scale: 1 }}
                   transition={{ type: 'spring', damping: 15, mass: 0.8 }}
                 >
+                  {searchQuery && <PromptLabel prompt={searchQuery} />}
                   <Text style={styles.searchResultText}>{searchResult}</Text>
                 </MotiView>
               </MotiView>

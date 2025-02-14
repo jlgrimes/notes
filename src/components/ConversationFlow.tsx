@@ -12,6 +12,7 @@ import { AILoadingIndicator } from './AILoadingIndicator';
 import { getSmartSuggestions, getFollowUpAnswer } from '../lib/ai';
 import { SmartSuggestionPill } from './SmartSuggestionPill';
 import { LocationCard } from './LocationCard';
+import { PromptLabel } from './PromptLabel';
 
 interface LocationReference {
   name: string;
@@ -137,7 +138,7 @@ export function ConversationFlow({
             transition={{ type: 'spring', delay: cardIndex * 100 }}
             style={styles.answerCard}
           >
-            <Text style={styles.questionText}>{card.question}</Text>
+            <PromptLabel prompt={card.question} />
             {card.answer ? (
               <>
                 <Text style={styles.answerText}>{card.answer}</Text>
@@ -203,12 +204,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     borderRadius: 16,
     padding: 16,
-  },
-  questionText: {
-    fontSize: 15,
-    fontWeight: '500',
-    color: '#6B7280',
-    marginBottom: 4,
   },
   answerText: {
     fontSize: 18,
