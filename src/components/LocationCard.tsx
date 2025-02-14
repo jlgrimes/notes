@@ -7,7 +7,6 @@ import {
   Platform,
   View,
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 
 interface LocationReference {
   name: string;
@@ -95,42 +94,65 @@ export function LocationCard({ location }: LocationCardProps) {
 
   return (
     <TouchableOpacity style={styles.card} onPress={handlePress}>
-      <LinearGradient
-        colors={['#4F46E5', '#7C3AED']}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 0 }}
-        style={styles.gradient}
-      >
-        <View>
-          <Text style={styles.locationName}>📍 {location.name}</Text>
+      <View style={styles.content}>
+        <View style={styles.textContainer}>
+          <Text style={styles.locationName}>{location.name}</Text>
           {location.address && (
             <Text style={styles.locationAddress}>{location.address}</Text>
           )}
         </View>
-      </LinearGradient>
+        <View style={styles.iconContainer}>
+          <Text style={styles.icon}>📍</Text>
+        </View>
+      </View>
     </TouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
-    borderRadius: 8,
-    overflow: 'hidden',
-    marginVertical: 4,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    marginVertical: 6,
+    padding: 16,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 2,
+    borderWidth: Platform.OS === 'ios' ? 0 : 1,
+    borderColor: '#E5E7EB',
   },
-  gradient: {
-    paddingVertical: 8,
-    paddingHorizontal: 12,
+  content: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  textContainer: {
+    flex: 1,
+  },
+  iconContainer: {
+    marginLeft: 12,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#F3F4F6',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   locationName: {
-    color: '#FFFFFF',
     fontSize: 16,
-    fontWeight: '500',
+    fontWeight: '600',
+    color: '#1F2937',
+    marginBottom: 4,
   },
   locationAddress: {
-    color: '#FFFFFF',
-    fontSize: 12,
-    opacity: 0.9,
-    marginTop: 2,
+    fontSize: 14,
+    color: '#6B7280',
+  },
+  icon: {
+    fontSize: 18,
   },
 });
