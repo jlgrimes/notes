@@ -15,7 +15,8 @@
     "browseAll": "Parcourir toutes les notes",
     "conversation": "Conversation",
     "allMemos": "Toutes les Notes",
-    "chat": "Chat"
+    "chat": "Chat",
+    "done": "Terminé"
   },
   "welcome": {
     "title": "Prêts pour Memo?",

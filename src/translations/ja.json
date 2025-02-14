@@ -15,7 +15,8 @@
     "browseAll": "すべてのメモを表示",
     "conversation": "会話",
     "allMemos": "すべてのメモ",
-    "chat": "チャット"
+    "chat": "チャット",
+    "done": "完了"
   },
   "welcome": {
     "title": "メモへようこそ",

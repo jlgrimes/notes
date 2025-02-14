@@ -15,7 +15,8 @@
     "browseAll": "Browse all memos",
     "conversation": "Conversation",
     "allMemos": "All Memos",
-    "chat": "Chat"
+    "chat": "Chat",
+    "done": "Done"
   },
   "welcome": {
     "title": "Say hello to Memo",

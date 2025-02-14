@@ -7,7 +7,9 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { MasonryNoteList } from '../components/MasonryNoteList';
+import { ModalScreen } from '../components/ModalScreen';
 import { useTranslation } from 'react-i18next';
+import { useNavigation } from '@react-navigation/native';
 
 interface NotesListScreenProps {
   notes: any[];
@@ -27,33 +29,32 @@ export function NotesListScreen({
   onCreateNote,
 }: NotesListScreenProps) {
   const { t } = useTranslation();
+  const navigation = useNavigation();
 
-  if (loading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size='large' color='#3B82F6' />
-      </View>
-    );
-  }
-
-  return (
-    <View style={styles.container}>
-      {notes.length === 0 ? (
-        <View style={styles.emptyContainer}>
-          <Text style={styles.emptyText}>{t('notes.noNotes')}</Text>
-          {onCreateNote && (
-            <TouchableOpacity
-              style={styles.createButton}
-              onPress={onCreateNote}
-            >
-              <Text style={styles.createButtonText}>{t('notes.newNote')}</Text>
-            </TouchableOpacity>
-          )}
-        </View>
-      ) : (
-        <MasonryNoteList notes={notes} onEdit={onEdit} onDelete={onDelete} />
+  const content = loading ? (
+    <View style={styles.loadingContainer}>
+      <ActivityIndicator size='large' color='#3B82F6' />
+    </View>
+  ) : notes.length === 0 ? (
+    <View style={styles.emptyContainer}>
+      <Text style={styles.emptyText}>{t('notes.noNotes')}</Text>
+      {onCreateNote && (
+        <TouchableOpacity style={styles.createButton} onPress={onCreateNote}>
+          <Text style={styles.createButtonText}>{t('notes.newNote')}</Text>
+        </TouchableOpacity>
       )}
     </View>
+  ) : (
+    <MasonryNoteList notes={notes} onEdit={onEdit} onDelete={onDelete} />
+  );
+
+  return (
+    <ModalScreen
+      onDismiss={() => navigation.goBack()}
+      dismissText={t('common.done')}
+    >
+      <View style={styles.container}>{content}</View>
+    </ModalScreen>
   );
 }
 

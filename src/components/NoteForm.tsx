@@ -4,13 +4,10 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
-  KeyboardAvoidingView,
   Platform,
-  SafeAreaView,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useTheme } from '../theme/ThemeProvider';
-import { Text } from '../theme/components/Text';
 
 interface NoteFormProps {
   onSubmit: (content: string) => void;
@@ -37,15 +34,6 @@ export function NoteForm({
       flex: 1,
       backgroundColor: theme.colors.neutral[50],
     },
-    content: {
-      flex: 1,
-    },
-    header: {
-      height: 56,
-      flexDirection: 'row',
-      alignItems: 'center',
-      paddingHorizontal: theme.spacing.base,
-    },
     form: {
       flex: 1,
       padding: theme.spacing.base,
@@ -55,9 +43,6 @@ export function NoteForm({
       fontSize: theme.typography.sizes['2xl'],
       color: theme.colors.neutral[700],
       textAlignVertical: 'top',
-    },
-    cancelButton: {
-      padding: theme.spacing.sm,
     },
     fabContainer: {
       paddingHorizontal: theme.spacing.base,
@@ -80,43 +65,25 @@ export function NoteForm({
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.cancelButton} onPress={onCancel}>
-          <Text
-            variant='body'
-            weight='medium'
-            color={theme.colors.neutral[500]}
-          >
-            {translations.cancel}
-          </Text>
-        </TouchableOpacity>
+    <View style={styles.container}>
+      <View style={styles.form}>
+        <TextInput
+          style={styles.contentInput}
+          placeholder={translations.content}
+          placeholderTextColor={theme.colors.neutral[400]}
+          value={content}
+          onChangeText={setContent}
+          multiline
+          textAlignVertical='top'
+          autoFocus
+        />
       </View>
 
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.content}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 88 : 0}
-      >
-        <View style={styles.form}>
-          <TextInput
-            style={styles.contentInput}
-            placeholder={translations.content}
-            placeholderTextColor={theme.colors.neutral[400]}
-            value={content}
-            onChangeText={setContent}
-            multiline
-            textAlignVertical='top'
-            autoFocus
-          />
-        </View>
-
-        <View style={styles.fabContainer}>
-          <TouchableOpacity style={styles.fab} onPress={handleSubmit}>
-            <Icon name='checkmark' size={32} color={theme.colors.neutral[50]} />
-          </TouchableOpacity>
-        </View>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+      <View style={styles.fabContainer}>
+        <TouchableOpacity style={styles.fab} onPress={handleSubmit}>
+          <Icon name='checkmark' size={32} color={theme.colors.neutral[50]} />
+        </TouchableOpacity>
+      </View>
+    </View>
   );
 }

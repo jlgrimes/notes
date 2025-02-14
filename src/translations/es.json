@@ -15,7 +15,8 @@
     "browseAll": "Ver todas las notas",
     "conversation": "Conversación",
     "allMemos": "Todas las Notas",
-    "chat": "Chat"
+    "chat": "Chat",
+    "done": "Listo"
   },
   "welcome": {
     "title": "Empecemos con Memo",
