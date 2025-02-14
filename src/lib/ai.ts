@@ -171,19 +171,21 @@ export async function getCommonTopics(notes: any[]): Promise<string[]> {
       ${notesContent}
 
       Create 3 warm, personal suggestions to help recall these thoughts.
+      Each suggestion should start with an appropriate emoji that matches the topic.
       
       Format examples (create new ones based on the content):
-      - "Remember when you mentioned that project"
-      - "Tell me about your recent ideas"
-      - "Share your thoughts on design"
+      - "💡 Remember when you mentioned that project"
+      - "🤔 Tell me about your recent ideas"
+      - "🎨 Share your thoughts on design"
 
       Rules:
       1. Return exactly 3 suggestions
-      2. Start with gentle verbs (remember, tell, share)
-      3. Make them specific to the content shown
-      4. Keep each under 6 words
+      2. Start with an emoji + space, then a gentle verb (remember, tell, share)
+      3. Make them highly specific to the content shown
+      4. Keep each under 6 words (excluding emoji)
       5. One per line, no bullets
       6. Use time references naturally
+      7. Choose emojis that perfectly match the topic
     `);
 
     const suggestions = result.response
@@ -343,26 +345,39 @@ export async function getSmartSuggestions(
     });
 
     const result = await model.generateContent(`
-      Based on this previous answer:
+      Here is my previous response to the user:
       "${previousAnswer}"
 
-      You are a curious and knowledgeable AI assistant. Generate 3 follow-up questions that would help explore this topic more deeply.
+      Generate 3 follow-up questions that a curious user might ask me next.
+      Each question should be written from the user's perspective, as if they are asking me directly.
+      Each should start with an appropriate emoji that matches the topic.
       
-      Consider:
-      1. Current trends and developments in this area
-      2. Related concepts and theories that could enrich understanding
-      3. Real-world applications and implications
-      4. Historical context and evolution of these ideas
-      5. Expert perspectives and research in this field
+      Consider questions about:
+      1. More specific details about what was just explained
+      2. How something works or why it happens
+      3. Real examples or applications
+      4. Comparisons or differences
+      5. Historical background
+      6. Latest developments
+      7. Common challenges or solutions
+      8. Expert insights or research
       
       Rules:
       1. Return exactly 3 questions
-      2. Make them specific and thought-provoking
-      3. Each should explore a different aspect
-      4. Keep each under 8 words
-      5. One per line, no bullets
-      6. Start with words like "How" "What" "Why" "Tell me about"
-      7. Questions should feel natural and conversational
+      2. Start each with an emoji + space
+      3. Write questions as if the user is asking me directly
+      4. Each should explore a different aspect
+      5. One per line, no bullets or introductory text
+      6. Make them natural follow-up questions to my explanation
+      7. Choose emojis that match the specific topic
+      8. Do not include any text before or after the questions
+      
+      Return only the 3 questions, one per line, nothing else.
+      
+      Example output:
+      🌍 Can you tell me more about the history of London Bridge?
+      🎭 What makes the West End theatre district so special?
+      🏰 Why did they build the Tower of London there?
     `);
 
     const suggestions = result.response
