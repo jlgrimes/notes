@@ -21,36 +21,37 @@ export function SettingsScreen({ signOut }: SettingsScreenProps) {
   const userEmail = session?.user?.email;
   const userName = session?.user?.user_metadata?.full_name || 'User';
   const userAvatar = session?.user?.user_metadata?.avatar_url;
-  const { t } = useTranslation();
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.settingsContainer}>
-        <Text style={styles.settingsTitle}>Settings</Text>
+    <SafeAreaView style={styles.container}>
+      <ScrollView style={styles.scrollView}>
+        <View style={styles.settingsContainer}>
+          <Text style={styles.settingsTitle}>Settings</Text>
 
-        <View style={styles.profileCard}>
-          {userAvatar ? (
-            <Image source={{ uri: userAvatar }} style={styles.avatar} />
-          ) : (
-            <View style={styles.avatarPlaceholder}>
-              <Text style={styles.avatarText}>
-                {userName.charAt(0).toUpperCase()}
-              </Text>
-            </View>
-          )}
-          <Text style={styles.userName}>{userName}</Text>
-          <Text style={styles.userEmail}>{userEmail}</Text>
+          <View style={styles.profileCard}>
+            {userAvatar ? (
+              <Image source={{ uri: userAvatar }} style={styles.avatar} />
+            ) : (
+              <View style={styles.avatarPlaceholder}>
+                <Text style={styles.avatarText}>
+                  {userName.charAt(0).toUpperCase()}
+                </Text>
+              </View>
+            )}
+            <Text style={styles.userName}>{userName}</Text>
+            <Text style={styles.userEmail}>{userEmail}</Text>
+          </View>
+
+          <View style={styles.section}>
+            <LanguageSelector />
+          </View>
+
+          <TouchableOpacity onPress={signOut} style={styles.signOutButton}>
+            <Text style={styles.signOutText}>Sign Out</Text>
+          </TouchableOpacity>
         </View>
-
-        <View style={styles.section}>
-          <LanguageSelector />
-        </View>
-
-        <TouchableOpacity onPress={signOut} style={styles.signOutButton}>
-          <Text style={styles.signOutText}>Sign Out</Text>
-        </TouchableOpacity>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
@@ -58,6 +59,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#FFFFFF',
+  },
+  scrollView: {
+    flex: 1,
   },
   settingsContainer: {
     padding: 20,
