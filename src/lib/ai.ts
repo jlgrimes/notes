@@ -2,6 +2,15 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 
 const MODEL_NAME = 'gemini-2.0-flash-lite-preview-02-05';
 
+// Cache for welcome message
+type WelcomeMessageCache = {
+  message: string;
+  timestamp: number;
+  userName: string;
+};
+
+let welcomeMessageCache: WelcomeMessageCache | null = null;
+
 // Initialize the Gemini AI
 const genAI = new GoogleGenerativeAI(
   process.env.EXPO_PUBLIC_GEMINI_API_KEY || ''
@@ -116,6 +125,22 @@ export async function searchNotes(
 }
 
 export async function getWelcomeMessage(userName: string): Promise<string> {
+  const now = new Date();
+  const today = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate()
+  ).getTime();
+
+  // Return cached message if it's from today and for the same user
+  if (
+    welcomeMessageCache &&
+    welcomeMessageCache.timestamp === today &&
+    welcomeMessageCache.userName === userName
+  ) {
+    return welcomeMessageCache.message;
+  }
+
   try {
     const model = genAI.getGenerativeModel({
       model: MODEL_NAME,
@@ -132,9 +157,27 @@ export async function getWelcomeMessage(userName: string): Promise<string> {
       Return only the message.
     `);
 
-    return result.response.text().trim();
+    const message = result.response.text().trim();
+
+    // Update cache
+    welcomeMessageCache = {
+      message,
+      timestamp: today,
+      userName,
+    };
+
+    return message;
   } catch (error) {
     console.error('Error getting welcome message:', error);
-    return `Hi ${userName}, I hope you're having a good day today`;
+    const fallbackMessage = `Hi ${userName}, I hope you're having a good day today`;
+
+    // Cache even fallback messages to prevent repeated API calls on error
+    welcomeMessageCache = {
+      message: fallbackMessage,
+      timestamp: today,
+      userName,
+    };
+
+    return fallbackMessage;
   }
 }
