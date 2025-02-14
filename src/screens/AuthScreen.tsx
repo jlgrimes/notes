@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { useAuth } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
+import { WelcomeCarousel } from '../components/WelcomeCarousel';
 
 export function AuthScreen() {
   const { signInWithGoogle } = useAuth();
@@ -21,7 +22,7 @@ export function AuthScreen() {
     >
       <View style={styles.formContainer}>
         <View style={styles.welcomeSection}>
-          <Text style={styles.title}>{t('welcome.title')}</Text>
+          <WelcomeCarousel />
           <Text style={styles.subtitle}>{t('welcome.subtitle')}</Text>
           <Text style={styles.description}>{t('welcome.description')}</Text>
         </View>
@@ -37,46 +38,41 @@ export function AuthScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#fff',
   },
   formContainer: {
     flex: 1,
-    justifyContent: 'center',
-    padding: 16,
-    gap: 16,
+    justifyContent: 'space-between',
+    padding: 24,
   },
   welcomeSection: {
+    flex: 1,
+    justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 32,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#1F2937',
-    marginBottom: 8,
-    textAlign: 'center',
+    gap: 16,
   },
   subtitle: {
     fontSize: 18,
     color: '#4B5563',
-    marginBottom: 12,
     textAlign: 'center',
+    marginTop: 8,
   },
   description: {
     fontSize: 16,
     color: '#6B7280',
     textAlign: 'center',
-    paddingHorizontal: 24,
+    marginTop: 8,
+    lineHeight: 24,
   },
   button: {
-    height: 48,
-    backgroundColor: '#3B82F6',
-    borderRadius: 8,
-    justifyContent: 'center',
+    backgroundColor: '#4F46E5',
+    padding: 16,
+    borderRadius: 12,
     alignItems: 'center',
+    marginTop: 24,
   },
   buttonText: {
-    color: '#FFFFFF',
+    color: '#fff',
     fontSize: 16,
     fontWeight: '600',
   },
