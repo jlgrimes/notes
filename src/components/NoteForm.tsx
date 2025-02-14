@@ -82,8 +82,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
   },
   form: {
     flex: 1,
@@ -91,7 +89,7 @@ const styles = StyleSheet.create({
   },
   contentInput: {
     flex: 1,
-    fontSize: 16,
+    fontSize: 24,
     color: '#374151',
     textAlignVertical: 'top',
   },
