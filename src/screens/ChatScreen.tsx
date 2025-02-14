@@ -150,7 +150,7 @@ export function ChatScreen(props: ChatScreenProps) {
     },
     topContent: {
       flex: 1,
-      paddingHorizontal: 16,
+      paddingHorizontal: 22,
       paddingTop: 16,
     },
     welcomeContainer: {
@@ -347,7 +347,7 @@ export function ChatScreen(props: ChatScreenProps) {
   return (
     <View style={styles.safeArea}>
       <Header title={t('appName')} />
-      <ScrollView style={styles.mainContainer}>
+      <View style={styles.mainContainer}>
         <View style={styles.topContent}>
           <View style={styles.welcomeContainer}>
             {!isLoadingWelcome && (
@@ -469,7 +469,7 @@ export function ChatScreen(props: ChatScreenProps) {
             </TouchableOpacity>
           </View>
         </View>
-      </ScrollView>
+      </View>
     </View>
   );
 }
