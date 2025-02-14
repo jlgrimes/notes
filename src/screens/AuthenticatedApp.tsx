@@ -238,10 +238,10 @@ export function AuthenticatedApp() {
       <Tab.Navigator
         screenOptions={({ route }) => ({
           tabBarIcon: ({ focused, color, size }) => {
-            let iconName: string = 'create-outline';
+            let iconName: string = 'home-outline';
 
-            if (route.name === 'Create') {
-              iconName = focused ? 'create' : 'create-outline';
+            if (route.name === 'Home') {
+              iconName = focused ? 'home' : 'home-outline';
             } else if (route.name === 'My Notes') {
               iconName = focused ? 'document-text' : 'document-text-outline';
             } else if (route.name === 'Settings') {
@@ -270,7 +270,7 @@ export function AuthenticatedApp() {
           headerShown: false,
         })}
       >
-        <Tab.Screen name='Create'>
+        <Tab.Screen name='Home'>
           {() => (
             <CreateNoteScreen
               isSearching={isSearching}
