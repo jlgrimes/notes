@@ -12,14 +12,18 @@ import { useTranslation } from 'react-i18next';
 
 interface NotesListScreenProps {
   notes: any[];
-  loading: boolean;
-  onNotePress: (note: any) => void;
-  onCreateNote: () => void;
+  onEdit: (id: string) => void;
+  onDelete: (id: string) => Promise<void>;
+  loading?: boolean;
+  onNotePress?: (note: any) => void;
+  onCreateNote?: () => void;
 }
 
 export function NotesListScreen({
   notes,
-  loading,
+  onEdit,
+  onDelete,
+  loading = false,
   onNotePress,
   onCreateNote,
 }: NotesListScreenProps) {
@@ -38,24 +42,29 @@ export function NotesListScreen({
       {notes.length === 0 ? (
         <View style={styles.emptyContainer}>
           <Text style={styles.emptyText}>{t('notes.noNotes')}</Text>
-          <TouchableOpacity style={styles.createButton} onPress={onCreateNote}>
-            <Text style={styles.createButtonText}>{t('notes.newNote')}</Text>
-          </TouchableOpacity>
+          {onCreateNote && (
+            <TouchableOpacity
+              style={styles.createButton}
+              onPress={onCreateNote}
+            >
+              <Text style={styles.createButtonText}>{t('notes.newNote')}</Text>
+            </TouchableOpacity>
+          )}
         </View>
       ) : (
         <FlatList
           data={notes}
           renderItem={({ item }) => (
-            <Note note={item} onPress={() => onNotePress(item)} />
+            <Note
+              id={item.id}
+              content={item.content}
+              onEdit={onEdit}
+              onDelete={onDelete}
+            />
           )}
           keyExtractor={item => item.id}
           contentContainerStyle={styles.listContent}
         />
-      )}
-      {notes.length > 0 && (
-        <TouchableOpacity style={styles.floatingButton} onPress={onCreateNote}>
-          <Text style={styles.floatingButtonText}>+</Text>
-        </TouchableOpacity>
       )}
     </View>
   );

@@ -263,7 +263,7 @@ export function AuthenticatedApp() {
     }
   };
 
-  const handleSubmit = async (title: string, content: string) => {
+  const handleSubmit = async (note: { title: string; content: string }) => {
     try {
       if (!session?.user) {
         Alert.alert('Error', 'You must be signed in to create memos.');
@@ -273,7 +273,7 @@ export function AuthenticatedApp() {
       if (editingNote) {
         const { error } = await supabase
           .from('notes')
-          .update({ title, content })
+          .update({ title: note.title, content: note.content })
           .eq('id', editingNote.id)
           .eq('user_id', session.user.id);
 
@@ -285,9 +285,13 @@ export function AuthenticatedApp() {
 
         setEditingNote(null);
       } else {
-        const { error } = await supabase
-          .from('notes')
-          .insert([{ title, content, user_id: session.user.id }]);
+        const { error } = await supabase.from('notes').insert([
+          {
+            title: note.title,
+            content: note.content,
+            user_id: session.user.id,
+          },
+        ]);
 
         if (error) {
           console.error('Error creating memo:', error);
@@ -386,7 +390,12 @@ export function AuthenticatedApp() {
             headerShown: false,
           }}
         >
-          {() => <CreateNoteScreen handleSubmit={handleSubmit} />}
+          {({ navigation }) => (
+            <CreateNoteScreen
+              handleSubmit={handleSubmit}
+              onCancel={() => navigation.goBack()}
+            />
+          )}
         </Stack.Screen>
         <Stack.Screen
           name='Conversation'
