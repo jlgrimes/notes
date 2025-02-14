@@ -2,6 +2,7 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { SuggestionPill } from './SuggestionPill';
 import { MotiView } from 'moti';
+import { slideUpAndFadeInWithDelay } from '../lib/animations';
 
 interface SuggestionPillListProps {
   suggestions?: string[];
@@ -21,16 +22,7 @@ export function SuggestionPillList({
   return (
     <View style={styles.suggestionsList}>
       {suggestions.map((suggestion, index) => (
-        <MotiView
-          key={index}
-          from={{ opacity: 0, translateY: 10 }}
-          animate={{ opacity: 1, translateY: 0 }}
-          transition={{
-            type: 'timing',
-            duration: 300,
-            delay: index * 100,
-          }}
-        >
+        <MotiView key={index} {...slideUpAndFadeInWithDelay(index * 100)}>
           <SuggestionPill
             suggestion={suggestion}
             onPress={() => onSuggestionPress(suggestion)}

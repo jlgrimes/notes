@@ -13,6 +13,7 @@ import { getSmartSuggestions, getFollowUpAnswer } from '../lib/ai';
 import { SuggestionPill } from './SuggestionPill';
 import { LocationCard } from './LocationCard';
 import { PromptLabel } from './PromptLabel';
+import { springInWithDelay } from '../lib/animations';
 
 interface LocationReference {
   name: string;
@@ -132,62 +133,59 @@ export function ConversationFlow({
     <ScrollView style={styles.container}>
       {answerCards.map((card, cardIndex) => (
         <View key={cardIndex} style={styles.cardContainer}>
-          <MotiView
-            from={{ opacity: 0, translateY: 10 }}
-            animate={{ opacity: 1, translateY: 0 }}
-            transition={{ type: 'spring', delay: cardIndex * 100 }}
-            style={styles.answerCard}
-          >
-            <PromptLabel prompt={card.question} />
-            {card.answer ? (
-              <>
-                <Text style={styles.answerText}>{card.answer}</Text>
-                {card.locations.length > 0 && (
-                  <ScrollView
-                    horizontal
-                    showsHorizontalScrollIndicator={false}
-                    style={styles.locationsContainer}
-                    contentContainerStyle={styles.locationsContentContainer}
-                  >
-                    {card.locations.map((location, index) => (
-                      <LocationCard key={index} location={location} />
+          <MotiView key={cardIndex} {...springInWithDelay(cardIndex * 100)}>
+            <View style={styles.answerCard}>
+              <PromptLabel prompt={card.question} />
+              {card.answer ? (
+                <>
+                  <Text style={styles.answerText}>{card.answer}</Text>
+                  {card.locations.length > 0 && (
+                    <ScrollView
+                      horizontal
+                      showsHorizontalScrollIndicator={false}
+                      style={styles.locationsContainer}
+                      contentContainerStyle={styles.locationsContentContainer}
+                    >
+                      {card.locations.map((location, index) => (
+                        <LocationCard key={index} location={location} />
+                      ))}
+                    </ScrollView>
+                  )}
+                </>
+              ) : (
+                <View style={styles.loadingContainer}>
+                  <AILoadingIndicator size={30} color='#4F46E5' />
+                  <Text style={styles.loadingText}>Getting answer...</Text>
+                </View>
+              )}
+            </View>
+
+            {card.answer && cardIndex === answerCards.length - 1 && (
+              <View style={styles.suggestionsContainer}>
+                {isLoadingSmartSuggestions ? (
+                  <View style={styles.loadingContainer}>
+                    <AILoadingIndicator size={30} color='#4F46E5' />
+                    <Text style={styles.loadingText}>
+                      Getting smart suggestions...
+                    </Text>
+                  </View>
+                ) : card.smartSuggestions?.length > 0 ? (
+                  <View style={styles.suggestionsList}>
+                    {card.smartSuggestions.map((suggestion, index) => (
+                      <SuggestionPill
+                        key={index}
+                        suggestion={suggestion}
+                        onPress={() =>
+                          handleSuggestionPress(suggestion, cardIndex)
+                        }
+                        smart={true}
+                      />
                     ))}
-                  </ScrollView>
-                )}
-              </>
-            ) : (
-              <View style={styles.loadingContainer}>
-                <AILoadingIndicator size={30} color='#4F46E5' />
-                <Text style={styles.loadingText}>Getting answer...</Text>
+                  </View>
+                ) : null}
               </View>
             )}
           </MotiView>
-
-          {card.answer && cardIndex === answerCards.length - 1 && (
-            <View style={styles.suggestionsContainer}>
-              {isLoadingSmartSuggestions ? (
-                <View style={styles.loadingContainer}>
-                  <AILoadingIndicator size={30} color='#4F46E5' />
-                  <Text style={styles.loadingText}>
-                    Getting smart suggestions...
-                  </Text>
-                </View>
-              ) : card.smartSuggestions?.length > 0 ? (
-                <View style={styles.suggestionsList}>
-                  {card.smartSuggestions.map((suggestion, index) => (
-                    <SuggestionPill
-                      key={index}
-                      suggestion={suggestion}
-                      onPress={() =>
-                        handleSuggestionPress(suggestion, cardIndex)
-                      }
-                      smart={true}
-                    />
-                  ))}
-                </View>
-              ) : null}
-            </View>
-          )}
         </View>
       ))}
     </ScrollView>

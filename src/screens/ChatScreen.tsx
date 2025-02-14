@@ -23,6 +23,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { SuggestionPillList } from '../components/SuggestionPillList';
 import { ModalOverlay } from '../components/ModalOverlay';
 import { PromptLabel } from '../components/PromptLabel';
+import { welcomeAnimation, fadeIn } from '../lib/animations';
 
 type RootStackParamList = {
   MainTabs: undefined;
@@ -139,12 +140,7 @@ export function ChatScreen(props: ChatScreenProps) {
         <View style={styles.topContent}>
           <View style={styles.welcomeContainer}>
             {!isLoadingWelcome && (
-              <MotiView
-                from={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ type: 'timing', duration: 800 }}
-                style={styles.welcomeBlock}
-              >
+              <MotiView {...welcomeAnimation}>
                 <MaskedView
                   style={styles.maskedView}
                   maskElement={
@@ -182,6 +178,11 @@ export function ChatScreen(props: ChatScreenProps) {
               searchResult && (
                 <>
                   <View style={styles.cardContainer}>
+                    <MotiView {...fadeIn}>
+                      <Text style={styles.searchResultsTitle}>
+                        Search Results
+                      </Text>
+                    </MotiView>
                     <MotiView
                       from={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
@@ -465,5 +466,11 @@ const styles = StyleSheet.create({
     fontSize: 18,
     marginLeft: 8,
     fontWeight: '600',
+  },
+  searchResultsTitle: {
+    fontSize: 24,
+    fontWeight: '600',
+    color: '#374151',
+    marginBottom: 16,
   },
 });
