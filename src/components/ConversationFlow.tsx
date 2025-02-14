@@ -11,22 +11,26 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { AILoadingIndicator } from './AILoadingIndicator';
 import { getSmartSuggestions, getFollowUpAnswer } from '../lib/ai';
 import { SmartSuggestionPill } from './SmartSuggestionPill';
+import { LocationCard } from './LocationCard';
 
 interface ConversationFlowProps {
   initialQuery: string;
   initialAnswer: string;
+  initialLocations: string[];
   onSuggestionPress: (suggestion: string) => void;
 }
 
 interface AnswerCard {
   question: string;
   answer: string;
+  locations: string[];
   smartSuggestions: string[];
 }
 
 export function ConversationFlow({
   initialQuery,
   initialAnswer,
+  initialLocations,
   onSuggestionPress,
 }: ConversationFlowProps) {
   const [answerCards, setAnswerCards] = useState<AnswerCard[]>([]);
@@ -39,6 +43,7 @@ export function ConversationFlow({
       const newCard = {
         question: initialQuery,
         answer: initialAnswer,
+        locations: initialLocations,
         smartSuggestions: [],
       };
       setAnswerCards([newCard]);
@@ -46,7 +51,7 @@ export function ConversationFlow({
         loadSmartSuggestions(initialAnswer, 0);
       }
     }
-  }, [initialQuery, initialAnswer]);
+  }, [initialQuery, initialAnswer, initialLocations]);
 
   const loadSmartSuggestions = async (answer: string, cardIndex: number) => {
     setIsLoadingSmartSuggestions(true);
@@ -80,6 +85,7 @@ export function ConversationFlow({
       {
         question: suggestion,
         answer: '',
+        locations: [],
         smartSuggestions: [],
       },
     ]);
@@ -87,22 +93,23 @@ export function ConversationFlow({
     try {
       // Get the previous answer to use as context
       const previousAnswer = answerCards[previousCardIndex].answer;
-      const answer = await getFollowUpAnswer(suggestion, previousAnswer);
+      const result = await getFollowUpAnswer(suggestion, previousAnswer);
 
-      // Update the card with the answer
+      // Update the card with the answer and locations
       setAnswerCards(prev => {
         const updated = [...prev];
         if (updated[newCardIndex]) {
           updated[newCardIndex] = {
             ...updated[newCardIndex],
-            answer,
+            answer: result.answer,
+            locations: result.locations,
           };
         }
         return updated;
       });
 
       // Load smart suggestions for this new answer
-      await loadSmartSuggestions(answer, newCardIndex);
+      await loadSmartSuggestions(result.answer, newCardIndex);
     } catch (error) {
       console.error('Error handling suggestion:', error);
     }
@@ -122,7 +129,16 @@ export function ConversationFlow({
           >
             <Text style={styles.questionText}>{card.question}</Text>
             {card.answer ? (
-              <Text style={styles.answerText}>{card.answer}</Text>
+              <>
+                <Text style={styles.answerText}>{card.answer}</Text>
+                {card.locations.length > 0 && (
+                  <View style={styles.locationsContainer}>
+                    {card.locations.map((location, index) => (
+                      <LocationCard key={index} location={location} />
+                    ))}
+                  </View>
+                )}
+              </>
             ) : (
               <View style={styles.loadingContainer}>
                 <AILoadingIndicator size={30} color='#4F46E5' />
@@ -216,5 +232,9 @@ const styles = StyleSheet.create({
     marginTop: 12,
     fontSize: 16,
     color: '#6B7280',
+  },
+  locationsContainer: {
+    marginTop: 12,
+    gap: 4,
   },
 });

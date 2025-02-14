@@ -391,10 +391,24 @@ export async function getSmartSuggestions(
   }
 }
 
+interface LocationReference {
+  name: string;
+  address?: string;
+  coordinates?: {
+    latitude: number;
+    longitude: number;
+  };
+}
+
+export interface AnswerWithLocations {
+  answer: string;
+  locations: LocationReference[];
+}
+
 export async function getFollowUpAnswer(
   question: string,
   previousAnswer: string
-): Promise<string> {
+): Promise<AnswerWithLocations> {
   try {
     const model = genAI.getGenerativeModel({
       model: MODEL_NAME,
@@ -410,16 +424,64 @@ export async function getFollowUpAnswer(
       
       Guidelines:
       1. Use the previous answer as context to provide more depth
-      2. Add new, relevant information not covered in the previous answer
-      3. Consider current research, expert opinions, and real-world examples
-      4. Keep the tone conversational but informative
-      5. Aim for 2-3 sentences that provide meaningful insights
-      6. Make connections between ideas where relevant
+      2. Add new, relevant information not covered before
+      3. Keep the tone conversational but informative
+      4. Aim for 2-3 sentences that provide meaningful insights
+      5. For any specific places mentioned in your answer:
+         - Include ALL specific places in the LOCATIONS section, whether they're recommendations or just mentioned
+         - If you mention a place by name (like "Dishoom" or "Central Park"), it MUST go in the LOCATIONS section
+         - Include full details for each place mentioned
+      6. If the question asks about places or recommendations:
+         - You MUST include at least one specific place in your answer
+         - Be specific with real places, not generic descriptions
       
-      Return only the answer, written in a natural, flowing style.
+      Format your response EXACTLY as follows:
+      ANSWER: Your detailed answer here.
+      LOCATIONS: []
+      
+      Examples of correct formatting:
+      
+      Example 1 (when mentioning a place):
+      ANSWER: The concept is similar to what Dishoom does with their breakfast naan rolls, which have become incredibly popular in London.
+      LOCATIONS: [{"name": "Dishoom", "address": "7 Boundary Street, London E2 7JE, United Kingdom"}]
+      
+      Example 2 (when recommending places):
+      ANSWER: Pike Place Market in Seattle is a great spot to check out, and while you're in the area, you might also enjoy the nearby Seattle Art Museum.
+      LOCATIONS: [
+        {"name": "Pike Place Market", "address": "85 Pike Street, Seattle, WA 98101"},
+        {"name": "Seattle Art Museum", "address": "1300 First Avenue, Seattle, WA 98101"}
+      ]
+      
+      Make sure:
+      1. The LOCATIONS array is always valid JSON
+      2. ANY specific place mentioned by name must be included in LOCATIONS
+      3. Use real, specific places with accurate addresses
     `);
 
-    return result.response.text();
+    const response = result.response.text();
+    let answer = '';
+    let locations: LocationReference[] = [];
+
+    // First, get the answer part
+    const answerMatch = response.match(/ANSWER:(.*?)(?=LOCATIONS:|$)/s);
+    if (answerMatch) {
+      answer = answerMatch[1].trim();
+    }
+
+    // Then, try to get the locations part
+    const locationsMatch = response.match(/LOCATIONS:(.*?)$/s);
+    if (locationsMatch) {
+      try {
+        const locationsText = locationsMatch[1].trim();
+        const parsedLocations = JSON.parse(locationsText);
+        locations = Array.isArray(parsedLocations) ? parsedLocations : [];
+      } catch (e) {
+        console.error('Error parsing locations:', e);
+        locations = [];
+      }
+    }
+
+    return { answer, locations };
   } catch (error) {
     console.error('Error getting follow-up answer:', error);
     throw error;
