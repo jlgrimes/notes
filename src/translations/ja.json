@@ -38,7 +38,7 @@
     "editNote": "ノートを編集",
     "deleteNote": "ノートを削除",
     "noteTitle": "タイトル",
-    "noteContent": "内容",
+    "noteContent": "何を書きましょうか？",
     "noNotes": "ノートはまだありません",
     "searchPlaceholder": "ノートを検索...",
     "askAnything": "メモについて何でも質問してください...",
