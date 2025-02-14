@@ -4,6 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const MODEL_NAME = 'gemini-2.0-flash-lite-preview-02-05';
 const WELCOME_CACHE_KEY = '@notes_app_welcome_cache';
 const SUGGESTIONS_CACHE_KEY = '@notes_app_suggestions_cache';
+const SEARCH_CACHE_KEY = '@notes_app_search_cache';
 
 // Cache for welcome message
 type WelcomeMessageCache = {
@@ -16,6 +17,13 @@ type WelcomeMessageCache = {
 type SuggestionsCache = {
   suggestions: string[];
   noteIds: string[];
+};
+
+// Cache for search results
+type SearchCache = {
+  result: string;
+  noteIds: string[];
+  query: string;
 };
 
 // Helper functions for cache management
@@ -52,6 +60,24 @@ async function setSuggestionsCache(cache: SuggestionsCache) {
     await AsyncStorage.setItem(SUGGESTIONS_CACHE_KEY, JSON.stringify(cache));
   } catch (error) {
     console.error('Error setting suggestions cache:', error);
+  }
+}
+
+async function getSearchCache(): Promise<SearchCache | null> {
+  try {
+    const cache = await AsyncStorage.getItem(SEARCH_CACHE_KEY);
+    return cache ? JSON.parse(cache) : null;
+  } catch (error) {
+    console.error('Error reading search cache:', error);
+    return null;
+  }
+}
+
+async function setSearchCache(cache: SearchCache) {
+  try {
+    await AsyncStorage.setItem(SEARCH_CACHE_KEY, JSON.stringify(cache));
+  } catch (error) {
+    console.error('Error setting search cache:', error);
   }
 }
 
@@ -165,6 +191,23 @@ export async function searchNotes(
   query: string,
   notes: any[]
 ): Promise<string> {
+  // Create a sorted list of note IDs to use as cache key
+  const noteIds = notes.map(note => note.id).sort();
+  console.log('Search - New note IDs:', noteIds);
+  console.log('Search query:', query);
+
+  // Check if we have a valid cache with the same notes and query
+  const searchCache = await getSearchCache();
+  if (
+    searchCache &&
+    searchCache.query === query &&
+    JSON.stringify([...searchCache.noteIds].sort()) === JSON.stringify(noteIds)
+  ) {
+    console.log('Search cache hit! Returning cached result');
+    return searchCache.result;
+  }
+  console.log('Search cache miss - fetching new result');
+
   try {
     const model = genAI.getGenerativeModel({
       model: MODEL_NAME,
@@ -191,7 +234,18 @@ export async function searchNotes(
       Only if you've thoroughly checked and found nothing related, say "I don't see anything about that yet".
     `);
 
-    return result.response.text();
+    const searchResult = result.response.text();
+
+    // Update cache
+    const newCache = {
+      result: searchResult,
+      noteIds: [...noteIds],
+      query,
+    };
+    await setSearchCache(newCache);
+    console.log('Updated search cache with new result');
+
+    return searchResult;
   } catch (error) {
     console.error('Error searching notes:', error);
     throw error;
