@@ -250,7 +250,7 @@ const styles = StyleSheet.create({
   welcomeBlock: {
     backgroundColor: 'transparent',
     borderRadius: 16,
-    paddingHorizontal: 16,
+    paddingHorizontal: 0,
     paddingVertical: 16,
     justifyContent: 'center',
     height: '100%',
@@ -294,7 +294,6 @@ const styles = StyleSheet.create({
   searchResultContainer: {
     backgroundColor: 'transparent',
     borderRadius: 16,
-    paddingHorizontal: 28,
     paddingVertical: 32,
     justifyContent: 'center',
     minHeight: 160,
@@ -312,7 +311,6 @@ const styles = StyleSheet.create({
     gap: 8,
     marginTop: 16,
     marginBottom: 32,
-    paddingHorizontal: 16,
   },
   suggestionPill: {
     borderWidth: 1,

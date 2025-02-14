@@ -227,7 +227,6 @@ const styles = StyleSheet.create({
   suggestionsList: {
     flexDirection: 'column',
     gap: 6,
-    paddingHorizontal: 16,
   },
   suggestionPill: {
     borderRadius: 100,

@@ -40,21 +40,22 @@ export function SuggestionPill({
 
 const styles = StyleSheet.create({
   pill: {
-    borderRadius: 100,
+    borderRadius: 12,
     overflow: 'hidden',
-    alignSelf: 'flex-start',
+    width: '100%',
   },
   gradientPill: {
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 100,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 12,
+    width: '100%',
   },
   regularPill: {
     backgroundColor: '#FFFFFF',
     borderWidth: 1,
     borderColor: '#E5E7EB',
-    paddingVertical: 8,
-    paddingHorizontal: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
   },
   smartText: {
     fontSize: 16,
