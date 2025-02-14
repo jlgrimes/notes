@@ -168,9 +168,7 @@ export function ChatScreen(props: ChatScreenProps) {
                   <>
                     <View style={styles.cardContainer}>
                       <MotiView {...fadeIn}>
-                        <Text style={styles.searchResultsTitle}>
-                          Search Results
-                        </Text>
+                        {searchQuery && <PromptLabel prompt={searchQuery} />}
                       </MotiView>
                       <MotiView
                         from={{ opacity: 0 }}
@@ -198,7 +196,6 @@ export function ChatScreen(props: ChatScreenProps) {
                             mass: 0.8,
                           }}
                         >
-                          {searchQuery && <PromptLabel prompt={searchQuery} />}
                           <Text style={styles.searchResultText}>
                             {searchResult}
                           </Text>

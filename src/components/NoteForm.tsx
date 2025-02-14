@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   StyleSheet,
   View,
@@ -6,7 +6,10 @@ import {
   TouchableOpacity,
   Text,
   Platform,
+  Dimensions,
+  Keyboard,
 } from 'react-native';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 interface NoteFormProps {
   onSubmit: (title: string, content: string) => void;
@@ -20,6 +23,35 @@ export function NoteForm({
   isEditing = false,
 }: NoteFormProps) {
   const [content, setContent] = useState(initialContent);
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
+  const inputRef = useRef<TextInput>(null);
+
+  useEffect(() => {
+    // Auto focus the input when component mounts
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 100);
+
+    // Set up keyboard listeners
+    const keyboardWillShow = Keyboard.addListener(
+      Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow',
+      e => {
+        const height = e.endCoordinates.height;
+        // On iOS, add extra space for the input accessories bar
+        setKeyboardHeight(Platform.OS === 'ios' ? height + 45 : height);
+      }
+    );
+    const keyboardWillHide = Keyboard.addListener(
+      Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide',
+      () => setKeyboardHeight(0)
+    );
+
+    // Clean up listeners
+    return () => {
+      keyboardWillShow.remove();
+      keyboardWillHide.remove();
+    };
+  }, []);
 
   const handleSubmit = () => {
     if (content.trim()) {
@@ -33,6 +65,7 @@ export function NoteForm({
   return (
     <View style={styles.container}>
       <TextInput
+        ref={inputRef}
         value={content}
         onChangeText={setContent}
         placeholder='Write your note here...'
@@ -42,12 +75,20 @@ export function NoteForm({
       />
       <TouchableOpacity
         onPress={handleSubmit}
-        style={styles.button}
+        style={[
+          styles.fab,
+          {
+            bottom:
+              keyboardHeight > 0
+                ? keyboardHeight
+                : Platform.OS === 'ios'
+                ? 40
+                : 24,
+          },
+        ]}
         activeOpacity={0.8}
       >
-        <Text style={styles.buttonText}>
-          {isEditing ? 'Update Note' : 'Add Note'}
-        </Text>
+        <Icon name='checkmark-sharp' size={24} color='#FFFFFF' />
       </TouchableOpacity>
     </View>
   );
@@ -55,47 +96,39 @@ export function NoteForm({
 
 const styles = StyleSheet.create({
   container: {
-    marginBottom: 16,
+    flex: 1,
   },
   input: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    padding: 16,
-    minHeight: 150,
-    marginBottom: 12,
+    flex: 1,
+    backgroundColor: 'transparent',
+    padding: 24,
     color: '#374151',
-    fontSize: 16,
-    lineHeight: 24,
+    fontSize: 20,
+    lineHeight: 28,
     textAlignVertical: 'top',
-    ...Platform.select({
-      web: {
-        outlineStyle: 'none',
-        boxShadow:
-          '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
-      },
-      default: {
-        elevation: 2,
-      },
-    }),
   },
-  button: {
+  fab: {
+    position: 'absolute',
+    right: 24,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
     backgroundColor: '#4F46E5',
-    borderRadius: 12,
-    padding: 12,
+    justifyContent: 'center',
     alignItems: 'center',
     ...Platform.select({
-      web: {
-        boxShadow:
-          '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: {
+          width: 0,
+          height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
       },
-      default: {
-        elevation: 1,
+      android: {
+        elevation: 5,
       },
     }),
-  },
-  buttonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '500',
   },
 });

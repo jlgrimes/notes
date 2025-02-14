@@ -383,17 +383,7 @@ export function AuthenticatedApp() {
           name='CreateNoteModal'
           options={{
             presentation: 'modal',
-            headerShown: true,
-            headerTitle: 'Create Note',
-            headerShadowVisible: false,
-            headerStyle: {
-              backgroundColor: '#f7f7f7',
-            },
-            headerTitleStyle: {
-              color: '#1F2937',
-              fontSize: 18,
-              fontWeight: '600',
-            },
+            headerShown: false,
           }}
         >
           {() => <CreateNoteScreen handleSubmit={handleSubmit} />}
