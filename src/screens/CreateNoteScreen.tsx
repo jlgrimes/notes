@@ -135,26 +135,32 @@ export function CreateNoteScreen(props: CreateNoteScreenProps) {
           </View>
         )}
 
-        {isLoadingSuggestions ? (
-          <View style={styles.spinnerContainer}>
-            <AILoadingIndicator size={30} color='#4F46E5' />
-            <Text style={styles.aiLoadingSubtext}>Getting suggestions...</Text>
-          </View>
-        ) : suggestions.length > 0 ? (
-          <View style={styles.suggestionsList}>
-            {suggestions.map((suggestion, index) => (
-              <TouchableOpacity
-                key={index}
-                style={styles.suggestionPill}
-                onPress={() =>
-                  handleSuggestionPressWithConversation(suggestion)
-                }
-              >
-                <Text style={styles.suggestionPillText}>{suggestion}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        ) : null}
+        {!searchResult && !showConversation && (
+          <>
+            {isLoadingSuggestions ? (
+              <View style={styles.spinnerContainer}>
+                <AILoadingIndicator size={30} color='#4F46E5' />
+                <Text style={styles.aiLoadingSubtext}>
+                  Getting suggestions...
+                </Text>
+              </View>
+            ) : suggestions.length > 0 ? (
+              <View style={styles.suggestionsList}>
+                {suggestions.map((suggestion, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    style={styles.suggestionPill}
+                    onPress={() =>
+                      handleSuggestionPressWithConversation(suggestion)
+                    }
+                  >
+                    <Text style={styles.suggestionPillText}>{suggestion}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            ) : null}
+          </>
+        )}
 
         <View style={styles.searchContainer}>
           <View style={styles.searchInputContainer}>
