@@ -12,6 +12,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 interface LocationReference {
   name: string;
   address?: string;
+  placeId?: string;
   coordinates?: {
     latitude: number;
     longitude: number;
@@ -24,44 +25,72 @@ interface LocationCardProps {
 
 export function LocationCard({ location }: LocationCardProps) {
   const handlePress = () => {
-    const query = location.address || location.name;
-    const coords = location.coordinates;
+    const { placeId, coordinates, name, address } = location;
 
-    let url: string;
+    // For iOS (Apple Maps)
     if (Platform.OS === 'ios') {
-      // Use coordinates if available, otherwise use address/name
-      url = coords
-        ? `maps://maps.apple.com/?ll=${coords.latitude},${
-            coords.longitude
-          }&q=${encodeURIComponent(location.name)}`
-        : `maps://maps.apple.com/?q=${encodeURIComponent(query)}`;
-    } else if (Platform.OS === 'android') {
-      // Use coordinates if available, otherwise use address/name
-      url = coords
-        ? `geo:${coords.latitude},${coords.longitude}?q=${encodeURIComponent(
-            location.name
-          )}`
-        : `geo:0,0?q=${encodeURIComponent(query)}`;
-    } else {
-      // Web fallback - Google Maps
-      url = coords
-        ? `https://www.google.com/maps/search/?api=1&query=${coords.latitude},${coords.longitude}`
-        : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-            query
-          )}`;
+      // Construct a more precise query for Apple Maps
+      let url = 'maps://';
+
+      if (coordinates?.latitude && coordinates?.longitude) {
+        // If we have coordinates, use them as the center point
+        url += `?ll=${coordinates.latitude},${coordinates.longitude}`;
+        // Add the name as a marker at those coordinates
+        if (name) {
+          url += `&q=${encodeURIComponent(name)}`;
+        }
+      } else if (address) {
+        // If we have a full address, use it for more precise location
+        url += `?address=${encodeURIComponent(address)}`;
+        // Add the name as the marker label
+        if (name && name !== address) {
+          url += `&q=${encodeURIComponent(name)}`;
+        }
+      } else {
+        // Fallback to just searching by name
+        url += `?q=${encodeURIComponent(name)}`;
+      }
+
+      // Add directionsfrom=current%20location if you want to start navigation immediately
+      // url += '&directionsfrom=current%20location';
+
+      Linking.openURL(url);
+      return;
     }
 
-    Linking.canOpenURL(url).then(supported => {
-      if (supported) {
+    // For Android (Google Maps)
+    if (Platform.OS === 'android') {
+      if (placeId) {
+        const url = `google.navigation:q=${encodeURIComponent(name)}`;
+        Linking.openURL(url);
+      } else if (coordinates?.latitude && coordinates?.longitude) {
+        const url = `google.navigation:q=${coordinates.latitude},${coordinates.longitude}`;
         Linking.openURL(url);
       } else {
-        // Fallback to Google Maps web
-        const fallbackUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-          query
-        )}`;
-        Linking.openURL(fallbackUrl);
+        const query = address || name;
+        const url = `google.navigation:q=${encodeURIComponent(query)}`;
+        Linking.openURL(url);
       }
-    });
+      return;
+    }
+
+    // For web browsers
+    if (placeId) {
+      Linking.openURL(
+        `https://www.google.com/maps/place/?q=place_id:${placeId}`
+      );
+    } else if (coordinates?.latitude && coordinates?.longitude) {
+      Linking.openURL(
+        `https://www.google.com/maps/search/?api=1&query=${coordinates.latitude},${coordinates.longitude}`
+      );
+    } else {
+      const query = address || name;
+      Linking.openURL(
+        `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+          query
+        )}`
+      );
+    }
   };
 
   return (

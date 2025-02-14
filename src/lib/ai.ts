@@ -394,6 +394,7 @@ export async function getSmartSuggestions(
 interface LocationReference {
   name: string;
   address?: string;
+  placeId?: string; // Google Places ID for accurate location linking
   coordinates?: {
     latitude: number;
     longitude: number;
@@ -430,7 +431,7 @@ export async function getFollowUpAnswer(
       5. For any specific places mentioned in your answer:
          - Include ALL specific places in the LOCATIONS section, whether they're recommendations or just mentioned
          - If you mention a place by name (like "Dishoom" or "Central Park"), it MUST go in the LOCATIONS section
-         - Include full details for each place mentioned
+         - Include full details for each place mentioned, including its Google Place ID if you know it
       6. If the question asks about places or recommendations:
          - You MUST include at least one specific place in your answer
          - Be specific with real places, not generic descriptions
@@ -443,19 +444,32 @@ export async function getFollowUpAnswer(
       
       Example 1 (when mentioning a place):
       ANSWER: The concept is similar to what Dishoom does with their breakfast naan rolls, which have become incredibly popular in London.
-      LOCATIONS: [{"name": "Dishoom", "address": "7 Boundary Street, London E2 7JE, United Kingdom"}]
+      LOCATIONS: [{
+        "name": "Dishoom Shoreditch",
+        "address": "7 Boundary Street, London E2 7JE, United Kingdom",
+        "placeId": "ChIJZ2qV1b4cdkgRtCNON6x5F3g"
+      }]
       
       Example 2 (when recommending places):
       ANSWER: Pike Place Market in Seattle is a great spot to check out, and while you're in the area, you might also enjoy the nearby Seattle Art Museum.
       LOCATIONS: [
-        {"name": "Pike Place Market", "address": "85 Pike Street, Seattle, WA 98101"},
-        {"name": "Seattle Art Museum", "address": "1300 First Avenue, Seattle, WA 98101"}
+        {
+          "name": "Pike Place Market",
+          "address": "85 Pike Street, Seattle, WA 98101",
+          "placeId": "ChIJPcneb3JqkFQRqPqXpJHLN9s"
+        },
+        {
+          "name": "Seattle Art Museum",
+          "address": "1300 First Avenue, Seattle, WA 98101",
+          "placeId": "ChIJ-bfVTLJqkFQRDZLQnmioK9s"
+        }
       ]
       
       Make sure:
       1. The LOCATIONS array is always valid JSON
       2. ANY specific place mentioned by name must be included in LOCATIONS
-      3. Use real, specific places with accurate addresses
+      3. Use real, specific places with accurate addresses and Google Place IDs
+      4. If you don't know the exact Place ID, it's better to still include the place with just the name and approximate address
     `);
 
     const response = result.response.text();
