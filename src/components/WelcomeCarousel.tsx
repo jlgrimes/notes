@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 const ANIMATION_DURATION = 5000; // Time each message is shown (5 seconds)
 const TRANSITION_DURATION = 600; // Time for the transition animation
 const VISIBLE_ITEMS = 3; // Number of items visible at once
-const ITEM_HEIGHT = 60; // Height of each message
+const ITEM_HEIGHT = 50; // Height of each message
 
 interface WelcomeMessage {
   lang: string;
