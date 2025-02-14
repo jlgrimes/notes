@@ -4,13 +4,13 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
-  Text,
   KeyboardAvoidingView,
   Platform,
   SafeAreaView,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useTheme } from '../theme/ThemeProvider';
+import { Text } from '../theme/components/Text';
 
 interface NoteFormProps {
   onSubmit: (content: string) => void;
@@ -59,11 +59,6 @@ export function NoteForm({
     cancelButton: {
       padding: theme.spacing.sm,
     },
-    cancelButtonText: {
-      color: theme.colors.neutral[500],
-      fontSize: theme.typography.sizes.base,
-      fontWeight: theme.typography.weights.medium,
-    },
     fabContainer: {
       paddingHorizontal: theme.spacing.base,
       paddingBottom: theme.spacing.base,
@@ -88,7 +83,13 @@ export function NoteForm({
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity style={styles.cancelButton} onPress={onCancel}>
-          <Text style={styles.cancelButtonText}>{translations.cancel}</Text>
+          <Text
+            variant='body'
+            weight='medium'
+            color={theme.colors.neutral[500]}
+          >
+            {translations.cancel}
+          </Text>
         </TouchableOpacity>
       </View>
 

@@ -1,7 +1,8 @@
 import React from 'react';
-import { StyleSheet, TouchableOpacity, Text } from 'react-native';
+import { StyleSheet, TouchableOpacity } from 'react-native';
 import { useTheme } from '../theme/ThemeProvider';
 import { Gradient } from '../theme/components/Gradient';
+import { Text } from '../theme/components/Text';
 
 interface SuggestionPillProps {
   suggestion: string;
@@ -35,23 +36,20 @@ export function SuggestionPill({
       paddingVertical: theme.spacing.md,
       paddingHorizontal: theme.spacing.lg,
     },
-    smartText: {
-      fontSize: theme.typography.sizes.base,
-      color: theme.colors.neutral[50],
-      fontWeight: theme.typography.weights.medium,
-    },
-    regularText: {
-      fontSize: theme.typography.sizes.base,
-      color: theme.colors.primary[500],
-      fontWeight: theme.typography.weights.medium,
-    },
   });
 
   if (smart) {
     return (
       <TouchableOpacity style={styles.pill} onPress={onPress}>
         <Gradient type='primary' style={styles.gradientPill}>
-          <Text style={styles.smartText}>{suggestion}</Text>
+          <Text
+            variant='body'
+            weight='medium'
+            color={theme.colors.neutral[50]}
+            align='center'
+          >
+            {suggestion}
+          </Text>
         </Gradient>
       </TouchableOpacity>
     );
@@ -62,7 +60,14 @@ export function SuggestionPill({
       style={[styles.pill, styles.regularPill]}
       onPress={onPress}
     >
-      <Text style={styles.regularText}>{suggestion}</Text>
+      <Text
+        variant='body'
+        weight='medium'
+        color={theme.colors.primary[500]}
+        align='center'
+      >
+        {suggestion}
+      </Text>
     </TouchableOpacity>
   );
 }

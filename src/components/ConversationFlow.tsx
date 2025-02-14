@@ -3,18 +3,18 @@ import {
   StyleSheet,
   View,
   TouchableOpacity,
-  Text,
   ScrollView,
   ActivityIndicator,
 } from 'react-native';
 import { MotiView } from 'moti';
-import { LinearGradient } from 'expo-linear-gradient';
 import { getSmartSuggestions, getFollowUpAnswer } from '../lib/ai';
 import { SuggestionPill } from './SuggestionPill';
 import { LocationCard } from './LocationCard';
 import { PromptLabel } from './PromptLabel';
 import { fadeIn } from '../lib/animations';
 import { SuggestionPillList } from './SuggestionPillList';
+import { useTheme } from '../theme/ThemeProvider';
+import { Text } from '../theme/components/Text';
 
 interface LocationReference {
   name: string;
@@ -46,9 +46,44 @@ export function ConversationFlow({
   initialLocations,
   onSuggestionPress,
 }: ConversationFlowProps) {
+  const theme = useTheme();
   const [answerCards, setAnswerCards] = useState<AnswerCard[]>([]);
   const [isLoadingSmartSuggestions, setIsLoadingSmartSuggestions] =
     useState(false);
+
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      paddingHorizontal: theme.spacing.base,
+    },
+    cardContainer: {
+      marginBottom: theme.spacing.xl,
+    },
+    answerCard: {
+      backgroundColor: 'transparent',
+      borderRadius: theme.borderRadius.xl,
+      paddingVertical: theme.spacing.xl,
+    },
+    locationsContainer: {
+      marginTop: theme.spacing.xl,
+      marginLeft: -theme.spacing.base,
+      marginRight: -theme.spacing.base,
+    },
+    locationsContentContainer: {
+      paddingHorizontal: theme.spacing.base,
+    },
+    suggestionsContainer: {
+      marginTop: theme.spacing.xl,
+    },
+    suggestionsList: {
+      flexDirection: 'column',
+      gap: theme.spacing.md,
+    },
+    loadingContainer: {
+      alignItems: 'center',
+      padding: theme.spacing.xl,
+    },
+  });
 
   // Initialize with the first card when props change
   useEffect(() => {
@@ -138,7 +173,14 @@ export function ConversationFlow({
             <PromptLabel prompt={card.question} />
             {card.answer && (
               <MotiView {...fadeIn}>
-                <Text style={styles.answerText}>{card.answer}</Text>
+                <Text
+                  variant='h4'
+                  weight='semibold'
+                  color={theme.colors.neutral[700]}
+                  style={{ marginTop: theme.spacing.sm }}
+                >
+                  {card.answer}
+                </Text>
                 {card.locations.length > 0 && (
                   <ScrollView
                     horizontal
@@ -173,66 +215,3 @@ export function ConversationFlow({
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingHorizontal: 16,
-  },
-  cardContainer: {
-    marginBottom: 24,
-  },
-  answerCard: {
-    backgroundColor: 'transparent',
-    borderRadius: 16,
-    paddingVertical: 24,
-  },
-  answerText: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#374151',
-    lineHeight: 26,
-    letterSpacing: -0.3,
-    marginTop: 12,
-  },
-  locationsContainer: {
-    marginTop: 24,
-    marginLeft: -16,
-    marginRight: -16,
-  },
-  locationsContentContainer: {
-    paddingHorizontal: 16,
-  },
-  suggestionsContainer: {
-    marginTop: 24,
-  },
-  suggestionsList: {
-    flexDirection: 'column',
-    gap: 12,
-  },
-  suggestionPill: {
-    borderRadius: 100,
-    overflow: 'hidden',
-    alignSelf: 'flex-start',
-  },
-  suggestionPillGradient: {
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 100,
-  },
-  suggestionText: {
-    fontSize: 16,
-    color: '#FFFFFF',
-    fontWeight: '500',
-  },
-  loadingContainer: {
-    alignItems: 'center',
-    padding: 24,
-  },
-  loadingText: {
-    marginTop: 16,
-    fontSize: 15,
-    fontWeight: '500',
-    color: '#6B7280',
-  },
-});

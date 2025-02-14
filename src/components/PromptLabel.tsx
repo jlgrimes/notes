@@ -1,25 +1,26 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import { useTheme } from '../theme/ThemeProvider';
+import { Text } from '../theme/components/Text';
 
 interface PromptLabelProps {
   prompt: string;
 }
 
 export function PromptLabel({ prompt }: PromptLabelProps) {
+  const theme = useTheme();
+
+  const styles = StyleSheet.create({
+    container: {
+      marginBottom: theme.spacing.xs,
+    },
+  });
+
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>{prompt}</Text>
+      <Text variant='body-sm' weight='medium' color={theme.colors.neutral[500]}>
+        {prompt}
+      </Text>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    marginBottom: 4,
-  },
-  text: {
-    fontSize: 15,
-    fontWeight: '500',
-    color: '#6B7280',
-  },
-});

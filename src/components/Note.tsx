@@ -1,14 +1,9 @@
 import React from 'react';
-import {
-  StyleSheet,
-  View,
-  Text,
-  TouchableOpacity,
-  Platform,
-} from 'react-native';
+import { StyleSheet, View, TouchableOpacity, Platform } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../theme/ThemeProvider';
+import { Text } from '../theme/components/Text';
 
 interface NoteProps {
   id: string;
@@ -63,32 +58,6 @@ export function Note({ id, content, onEdit, onDelete }: NoteProps) {
     deleteButton: {
       backgroundColor: theme.colors.error.light + '20', // 20 is for opacity
     },
-    buttonText: {
-      fontSize: theme.typography.sizes.sm,
-      color: theme.colors.neutral[500],
-      marginLeft: theme.spacing.xs,
-    },
-    header: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      gap: theme.spacing.sm,
-    },
-    title: {
-      flex: 1,
-      fontSize: theme.typography.sizes.lg,
-      fontWeight: theme.typography.weights.semibold,
-      color: theme.colors.neutral[900],
-    },
-    date: {
-      fontSize: theme.typography.sizes.sm,
-      color: theme.colors.neutral[500],
-    },
-    content: {
-      fontSize: theme.typography.sizes.base,
-      lineHeight: theme.typography.sizes.base * 1.5,
-      color: theme.colors.neutral[700],
-    },
   });
 
   return (
@@ -99,17 +68,31 @@ export function Note({ id, content, onEdit, onDelete }: NoteProps) {
           style={[styles.button, styles.editButton]}
         >
           <Feather name='edit-2' size={16} color={theme.colors.neutral[500]} />
-          <Text style={styles.buttonText}>{t('common.edit')}</Text>
+          <Text
+            variant='body-sm'
+            weight='medium'
+            color={theme.colors.neutral[500]}
+          >
+            {t('common.edit')}
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => onDelete(id)}
           style={[styles.button, styles.deleteButton]}
         >
           <Feather name='trash-2' size={16} color={theme.colors.neutral[500]} />
-          <Text style={styles.buttonText}>{t('common.delete')}</Text>
+          <Text
+            variant='body-sm'
+            weight='medium'
+            color={theme.colors.neutral[500]}
+          >
+            {t('common.delete')}
+          </Text>
         </TouchableOpacity>
       </View>
-      <Text style={styles.content}>{content}</Text>
+      <Text variant='body' color={theme.colors.neutral[700]}>
+        {content}
+      </Text>
     </View>
   );
 }
