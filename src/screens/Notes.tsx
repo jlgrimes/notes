@@ -18,6 +18,8 @@ import { NoteList } from '../components/NoteList';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
 import { searchNotes, getCommonTopics, getWelcomeMessage } from '../lib/ai';
+import { LinearGradient } from 'expo-linear-gradient';
+import MaskedView from '@react-native-masked-view/masked-view';
 
 export function Notes() {
   const [notes, setNotes] = useState<any[]>([]);
@@ -310,9 +312,21 @@ export function Notes() {
               }}
               style={styles.searchResultContainer}
             >
-              <Text style={[styles.searchResultText, styles.welcomeText]}>
-                {welcomeMessage}
-              </Text>
+              <MaskedView
+                style={styles.maskedView}
+                maskElement={
+                  <Text style={[styles.searchResultText, styles.welcomeText]}>
+                    {welcomeMessage}
+                  </Text>
+                }
+              >
+                <LinearGradient
+                  colors={['#4F46E5', '#7C3AED', '#DB2777']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                  style={styles.gradientContainer}
+                />
+              </MaskedView>
             </MotiView>
           )}
         </View>
@@ -563,10 +577,20 @@ const styles = StyleSheet.create({
     color: '#6B7280',
     fontSize: 14,
   },
+  maskedView: {
+    flex: 1,
+    flexDirection: 'row',
+    height: 'auto',
+  },
+  gradientContainer: {
+    flex: 1,
+    height: '100%',
+    padding: 32,
+  },
   welcomeText: {
-    color: '#4F46E5',
     fontSize: 20,
     fontWeight: '600',
     textAlign: 'center',
+    color: 'black',
   },
 });
