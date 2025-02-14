@@ -9,6 +9,7 @@ import {
   ScrollView,
   Platform,
   Keyboard,
+  SafeAreaView,
 } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
@@ -73,141 +74,147 @@ function NotesScreen(props: NotesScreenProps) {
   } = props;
 
   return (
-    <ScrollView style={styles.container} keyboardShouldPersistTaps='handled'>
-      {isSearching ? (
-        <View style={styles.cardContainer}>
-          <View style={styles.aiLoadingContainer}>
-            <AILoadingIndicator size={40} color='#4F46E5' />
-            <Text style={styles.aiLoadingText}>Analyzing your thoughts...</Text>
-            <Text style={styles.aiLoadingSubtext}>
-              Finding relevant connections...
-            </Text>
+    <SafeAreaView style={styles.safeArea}>
+      <ScrollView style={styles.container} keyboardShouldPersistTaps='handled'>
+        {isSearching ? (
+          <View style={styles.cardContainer}>
+            <View style={styles.aiLoadingContainer}>
+              <AILoadingIndicator size={40} color='#4F46E5' />
+              <Text style={styles.aiLoadingText}>
+                Analyzing your thoughts...
+              </Text>
+              <Text style={styles.aiLoadingSubtext}>
+                Finding relevant connections...
+              </Text>
+            </View>
           </View>
-        </View>
-      ) : searchResult || searchQuery ? (
-        <View style={styles.cardContainer}>
-          <MotiView
-            from={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ type: 'timing', duration: 800, delay: 100 }}
-            style={styles.searchResultContainer}
-          >
-            <MotiView
-              from={{ transform: [{ translateY: 10 }], scale: 0.98 }}
-              animate={{ transform: [{ translateY: 0 }], scale: 1 }}
-              transition={{ type: 'spring', damping: 15, mass: 0.8 }}
-            >
-              <Text style={styles.searchResultText}>{searchResult}</Text>
-            </MotiView>
-          </MotiView>
-        </View>
-      ) : (
-        <View style={styles.cardContainer}>
-          {!isLoadingWelcome && (
+        ) : searchResult || searchQuery ? (
+          <View style={styles.cardContainer}>
             <MotiView
               from={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ type: 'timing', duration: 800 }}
+              exit={{ opacity: 0 }}
+              transition={{ type: 'timing', duration: 800, delay: 100 }}
               style={styles.searchResultContainer}
             >
-              <MaskedView
-                style={styles.maskedView}
-                maskElement={
-                  <Text style={[styles.searchResultText, styles.welcomeText]}>
-                    {welcomeMessage}
-                  </Text>
-                }
+              <MotiView
+                from={{ transform: [{ translateY: 10 }], scale: 0.98 }}
+                animate={{ transform: [{ translateY: 0 }], scale: 1 }}
+                transition={{ type: 'spring', damping: 15, mass: 0.8 }}
               >
-                <LinearGradient
-                  colors={['#4F46E5', '#7C3AED', '#DB2777']}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 0 }}
-                  style={styles.gradientContainer}
-                />
-              </MaskedView>
+                <Text style={styles.searchResultText}>{searchResult}</Text>
+              </MotiView>
             </MotiView>
-          )}
-        </View>
-      )}
+          </View>
+        ) : (
+          <View style={styles.cardContainer}>
+            {!isLoadingWelcome && (
+              <MotiView
+                from={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ type: 'timing', duration: 800 }}
+                style={styles.searchResultContainer}
+              >
+                <MaskedView
+                  style={styles.maskedView}
+                  maskElement={
+                    <Text style={[styles.searchResultText, styles.welcomeText]}>
+                      {welcomeMessage}
+                    </Text>
+                  }
+                >
+                  <LinearGradient
+                    colors={['#4F46E5', '#7C3AED', '#DB2777']}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 0 }}
+                    style={styles.gradientContainer}
+                  />
+                </MaskedView>
+              </MotiView>
+            )}
+          </View>
+        )}
 
-      <View style={styles.searchContainer}>
-        <View style={styles.searchInputContainer}>
-          <TextInput
-            value={searchQuery}
-            onChangeText={text => {
-              setSearchQuery(text);
-              setShowSuggestions(false);
-            }}
-            onFocus={() => setShowSuggestions(true)}
-            onPressIn={handleSearchInputPress}
-            placeholder='Ask anything about your notes...'
-            placeholderTextColor='#9CA3AF'
-            style={styles.searchInput}
-          />
-          {showSuggestions && (
-            <MotiView
-              style={styles.suggestionsDropdown}
-              from={{ opacity: 0, scale: 0.95, translateY: -10 }}
-              animate={{ opacity: 1, scale: 1, translateY: 0 }}
-              transition={{ type: 'spring', damping: 20, mass: 0.8 }}
-            >
-              {isLoadingSuggestions ? (
-                <View style={styles.spinnerContainer}>
-                  <AILoadingIndicator size={30} color='#4F46E5' />
-                  <Text style={styles.aiLoadingSubtext}>
-                    Getting suggestions...
+        <View style={styles.searchContainer}>
+          <View style={styles.searchInputContainer}>
+            <TextInput
+              value={searchQuery}
+              onChangeText={text => {
+                setSearchQuery(text);
+                setShowSuggestions(false);
+              }}
+              onFocus={() => setShowSuggestions(true)}
+              onPressIn={handleSearchInputPress}
+              placeholder='Ask anything about your notes...'
+              placeholderTextColor='#9CA3AF'
+              style={styles.searchInput}
+            />
+            {showSuggestions && (
+              <MotiView
+                style={styles.suggestionsDropdown}
+                from={{ opacity: 0, scale: 0.95, translateY: -10 }}
+                animate={{ opacity: 1, scale: 1, translateY: 0 }}
+                transition={{ type: 'spring', damping: 20, mass: 0.8 }}
+              >
+                {isLoadingSuggestions ? (
+                  <View style={styles.spinnerContainer}>
+                    <AILoadingIndicator size={30} color='#4F46E5' />
+                    <Text style={styles.aiLoadingSubtext}>
+                      Getting suggestions...
+                    </Text>
+                  </View>
+                ) : suggestions.length > 0 ? (
+                  suggestions.map((suggestion, index) => (
+                    <TouchableOpacity
+                      key={index}
+                      style={[
+                        styles.suggestionItem,
+                        index === suggestions.length - 1 &&
+                          styles.suggestionItemLast,
+                      ]}
+                      onPress={() => handleSuggestionPress(suggestion)}
+                    >
+                      <Text style={styles.suggestionText}>{suggestion}</Text>
+                    </TouchableOpacity>
+                  ))
+                ) : (
+                  <Text style={styles.noSuggestionsText}>
+                    No suggestions available
                   </Text>
-                </View>
-              ) : suggestions.length > 0 ? (
-                suggestions.map((suggestion, index) => (
-                  <TouchableOpacity
-                    key={index}
-                    style={[
-                      styles.suggestionItem,
-                      index === suggestions.length - 1 &&
-                        styles.suggestionItemLast,
-                    ]}
-                    onPress={() => handleSuggestionPress(suggestion)}
-                  >
-                    <Text style={styles.suggestionText}>{suggestion}</Text>
-                  </TouchableOpacity>
-                ))
-              ) : (
-                <Text style={styles.noSuggestionsText}>
-                  No suggestions available
-                </Text>
-              )}
-            </MotiView>
-          )}
+                )}
+              </MotiView>
+            )}
+          </View>
+          <TouchableOpacity
+            onPress={handleSearch}
+            style={styles.searchButton}
+            disabled={isSearching}
+          >
+            <Text style={styles.searchButtonText}>Search</Text>
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity
-          onPress={handleSearch}
-          style={styles.searchButton}
-          disabled={isSearching}
-        >
-          <Text style={styles.searchButtonText}>Search</Text>
-        </TouchableOpacity>
-      </View>
 
-      <NoteForm
-        onSubmit={handleSubmit}
-        initialContent={editingNote?.content}
-        isEditing={!!editingNote}
-      />
-      <NoteList notes={notes} onEdit={handleEdit} onDelete={handleDelete} />
-    </ScrollView>
+        <NoteForm
+          onSubmit={handleSubmit}
+          initialContent={editingNote?.content}
+          isEditing={!!editingNote}
+        />
+        <NoteList notes={notes} onEdit={handleEdit} onDelete={handleDelete} />
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 function SettingsScreen({ signOut }: SettingsScreenProps) {
   return (
-    <View style={styles.settingsContainer}>
-      <Text style={styles.settingsTitle}>Settings</Text>
-      <TouchableOpacity onPress={signOut} style={styles.signOutButton}>
-        <Text style={styles.signOutText}>Sign Out</Text>
-      </TouchableOpacity>
-    </View>
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.settingsContainer}>
+        <Text style={styles.settingsTitle}>Settings</Text>
+        <TouchableOpacity onPress={signOut} style={styles.signOutButton}>
+          <Text style={styles.signOutText}>Sign Out</Text>
+        </TouchableOpacity>
+      </View>
+    </SafeAreaView>
   );
 }
 
@@ -424,9 +431,13 @@ export function Notes() {
 
   if (!session?.user) {
     return (
-      <View style={styles.container}>
-        <Text style={styles.errorText}>Please sign in to view your notes.</Text>
-      </View>
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.container}>
+          <Text style={styles.errorText}>
+            Please sign in to view your notes.
+          </Text>
+        </View>
+      </SafeAreaView>
     );
   }
 
@@ -451,8 +462,9 @@ export function Notes() {
             borderTopWidth: 1,
             borderTopColor: '#E5E7EB',
             backgroundColor: '#FFFFFF',
-            paddingBottom: Platform.OS === 'ios' ? 20 : 0,
             height: Platform.OS === 'ios' ? 85 : 60,
+            paddingTop: 8,
+            paddingBottom: Platform.OS === 'ios' ? 30 : 8,
           },
           headerShown: false,
         })}
@@ -490,6 +502,10 @@ export function Notes() {
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#f7f7f7',
+  },
   container: {
     flex: 1,
     padding: 16,
