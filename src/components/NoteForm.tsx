@@ -7,6 +7,7 @@ import {
   Text,
   KeyboardAvoidingView,
   Platform,
+  SafeAreaView,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 
@@ -34,30 +35,37 @@ export function NoteForm({
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={styles.container}
-    >
+    <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity style={styles.cancelButton} onPress={onCancel}>
           <Text style={styles.cancelButtonText}>{translations.cancel}</Text>
         </TouchableOpacity>
       </View>
-      <View style={styles.form}>
-        <TextInput
-          style={styles.contentInput}
-          placeholder={translations.content}
-          value={content}
-          onChangeText={setContent}
-          multiline
-          textAlignVertical='top'
-          autoFocus
-        />
-      </View>
-      <TouchableOpacity style={styles.fab} onPress={handleSubmit}>
-        <Icon name='checkmark' size={32} color='#FFFFFF' />
-      </TouchableOpacity>
-    </KeyboardAvoidingView>
+
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.content}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 88 : 0}
+      >
+        <View style={styles.form}>
+          <TextInput
+            style={styles.contentInput}
+            placeholder={translations.content}
+            value={content}
+            onChangeText={setContent}
+            multiline
+            textAlignVertical='top'
+            autoFocus
+          />
+        </View>
+
+        <View style={styles.fabContainer}>
+          <TouchableOpacity style={styles.fab} onPress={handleSubmit}>
+            <Icon name='checkmark' size={32} color='#FFFFFF' />
+          </TouchableOpacity>
+        </View>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 
@@ -65,6 +73,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#FFFFFF',
+  },
+  content: {
+    flex: 1,
   },
   header: {
     height: 56,
@@ -92,11 +103,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '500',
   },
+  fabContainer: {
+    paddingHorizontal: 16,
+    paddingBottom: 16,
+    paddingTop: 8,
+  },
   fab: {
-    position: 'absolute',
-    right: 16,
-    bottom: Platform.OS === 'ios' ? 32 : 16,
-    width: 56,
+    width: '100%',
     height: 56,
     borderRadius: 28,
     backgroundColor: '#4F46E5',
