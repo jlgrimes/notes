@@ -1,6 +1,7 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { AuthProvider } from './src/context/AuthContext';
+import { ThemeProvider } from './src/theme/ThemeProvider';
 import { AuthenticatedApp } from './src/screens/AuthenticatedApp';
 import { AuthScreen } from './src/screens/AuthScreen';
 import { useAuth } from './src/context/AuthContext';
@@ -10,16 +11,22 @@ function App() {
   const { session } = useAuth();
 
   return (
-    <NavigationContainer>
-      {session ? <AuthenticatedApp /> : <AuthScreen />}
-    </NavigationContainer>
+    <ThemeProvider>
+      <AuthProvider>
+        <NavigationContainer>
+          {session ? <AuthenticatedApp /> : <AuthScreen />}
+        </NavigationContainer>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }
 
 export default function AppWrapper() {
   return (
-    <AuthProvider>
-      <App />
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <App />
+      </AuthProvider>
+    </ThemeProvider>
   );
 }

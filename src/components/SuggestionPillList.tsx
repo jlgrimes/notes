@@ -3,6 +3,7 @@ import { View, StyleSheet } from 'react-native';
 import { SuggestionPill } from './SuggestionPill';
 import { MotiView } from 'moti';
 import { slideUpAndFadeInWithDelay } from '../lib/animations';
+import { useTheme } from '../theme/ThemeProvider';
 
 interface SuggestionPillListProps {
   suggestions?: string[];
@@ -15,6 +16,17 @@ export function SuggestionPillList({
   onSuggestionPress,
   smart = false,
 }: SuggestionPillListProps) {
+  const theme = useTheme();
+
+  const styles = StyleSheet.create({
+    suggestionsList: {
+      flexDirection: 'column',
+      gap: theme.spacing.sm,
+      marginTop: theme.spacing.base,
+      marginBottom: theme.spacing['2xl'],
+    },
+  });
+
   if (!suggestions) {
     return null;
   }
@@ -33,12 +45,3 @@ export function SuggestionPillList({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  suggestionsList: {
-    flexDirection: 'column',
-    gap: 8,
-    marginTop: 16,
-    marginBottom: 32,
-  },
-});

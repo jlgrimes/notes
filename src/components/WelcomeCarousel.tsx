@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { MotiView } from 'moti';
 import { useTranslation } from 'react-i18next';
+import { useTheme } from '../theme/ThemeProvider';
 
 const ANIMATION_DURATION = 5000; // Time each message is shown (5 seconds)
 const TRANSITION_DURATION = 600; // Time for the transition animation
@@ -22,8 +23,35 @@ const welcomeMessages: WelcomeMessage[] = [
 
 export function WelcomeCarousel() {
   const { i18n } = useTranslation();
+  const theme = useTheme();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [messages, setMessages] = useState<WelcomeMessage[]>([]);
+
+  const styles = StyleSheet.create({
+    wrapper: {
+      height: ITEM_HEIGHT * 3,
+      width: '100%',
+    },
+    container: {
+      height: '100%',
+      width: '100%',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    messageContainer: {
+      height: ITEM_HEIGHT,
+      width: '100%',
+      position: 'absolute',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    title: {
+      fontSize: theme.typography.sizes['3xl'],
+      fontWeight: theme.typography.weights.bold,
+      color: theme.colors.neutral[800],
+      textAlign: 'center',
+    },
+  });
 
   useEffect(() => {
     // Reorder messages to start with current language
@@ -94,7 +122,7 @@ export function WelcomeCarousel() {
               style={[
                 styles.messageContainer,
                 {
-                  zIndex: 10 - Math.abs(position),
+                  zIndex: theme.zIndices.base + (10 - Math.abs(position)),
                 },
               ]}
               from={{
@@ -118,29 +146,3 @@ export function WelcomeCarousel() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  wrapper: {
-    height: ITEM_HEIGHT * 3,
-    width: '100%',
-  },
-  container: {
-    height: '100%',
-    width: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  messageContainer: {
-    height: ITEM_HEIGHT,
-    width: '100%',
-    position: 'absolute',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: '#1F2937',
-    textAlign: 'center',
-  },
-});

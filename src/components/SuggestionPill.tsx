@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, TouchableOpacity, Text } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useTheme } from '../theme/ThemeProvider';
 
 interface SuggestionPillProps {
   suggestion: string;
@@ -13,11 +14,44 @@ export function SuggestionPill({
   onPress,
   smart = false,
 }: SuggestionPillProps) {
+  const theme = useTheme();
+
+  const styles = StyleSheet.create({
+    pill: {
+      borderRadius: theme.borderRadius.lg,
+      overflow: 'hidden',
+      width: '100%',
+    },
+    gradientPill: {
+      paddingVertical: theme.spacing.md,
+      paddingHorizontal: theme.spacing.lg,
+      borderRadius: theme.borderRadius.lg,
+      width: '100%',
+    },
+    regularPill: {
+      backgroundColor: theme.colors.neutral[50],
+      borderWidth: 1,
+      borderColor: theme.colors.neutral[200],
+      paddingVertical: theme.spacing.md,
+      paddingHorizontal: theme.spacing.lg,
+    },
+    smartText: {
+      fontSize: theme.typography.sizes.base,
+      color: theme.colors.neutral[50],
+      fontWeight: theme.typography.weights.medium,
+    },
+    regularText: {
+      fontSize: theme.typography.sizes.base,
+      color: theme.colors.primary[500],
+      fontWeight: theme.typography.weights.medium,
+    },
+  });
+
   if (smart) {
     return (
       <TouchableOpacity style={styles.pill} onPress={onPress}>
         <LinearGradient
-          colors={['#4F46E5', '#7C3AED']}
+          colors={[theme.colors.primary[500], '#7C3AED']}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
           style={styles.gradientPill}
@@ -37,34 +71,3 @@ export function SuggestionPill({
     </TouchableOpacity>
   );
 }
-
-const styles = StyleSheet.create({
-  pill: {
-    borderRadius: 12,
-    overflow: 'hidden',
-    width: '100%',
-  },
-  gradientPill: {
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 12,
-    width: '100%',
-  },
-  regularPill: {
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-  },
-  smartText: {
-    fontSize: 16,
-    color: '#FFFFFF',
-    fontWeight: '500',
-  },
-  regularText: {
-    fontSize: 16,
-    color: '#4F46E5',
-    fontWeight: '500',
-  },
-});

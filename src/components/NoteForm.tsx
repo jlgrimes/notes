@@ -10,6 +10,7 @@ import {
   SafeAreaView,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { useTheme } from '../theme/ThemeProvider';
 
 interface NoteFormProps {
   onSubmit: (content: string) => void;
@@ -29,6 +30,55 @@ export function NoteForm({
   translations,
 }: NoteFormProps) {
   const [content, setContent] = useState(initialContent || '');
+  const theme = useTheme();
+
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: theme.colors.neutral[50],
+    },
+    content: {
+      flex: 1,
+    },
+    header: {
+      height: 56,
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingHorizontal: theme.spacing.base,
+    },
+    form: {
+      flex: 1,
+      padding: theme.spacing.base,
+    },
+    contentInput: {
+      flex: 1,
+      fontSize: theme.typography.sizes['2xl'],
+      color: theme.colors.neutral[700],
+      textAlignVertical: 'top',
+    },
+    cancelButton: {
+      padding: theme.spacing.sm,
+    },
+    cancelButtonText: {
+      color: theme.colors.neutral[500],
+      fontSize: theme.typography.sizes.base,
+      fontWeight: theme.typography.weights.medium,
+    },
+    fabContainer: {
+      paddingHorizontal: theme.spacing.base,
+      paddingBottom: theme.spacing.base,
+      paddingTop: theme.spacing.sm,
+    },
+    fab: {
+      width: '100%',
+      height: 56,
+      borderRadius: theme.borderRadius.full,
+      backgroundColor: theme.colors.primary[500],
+      justifyContent: 'center',
+      alignItems: 'center',
+      ...theme.shadows.lg,
+    },
+  });
 
   const handleSubmit = () => {
     onSubmit(content);
@@ -51,6 +101,7 @@ export function NoteForm({
           <TextInput
             style={styles.contentInput}
             placeholder={translations.content}
+            placeholderTextColor={theme.colors.neutral[400]}
             value={content}
             onChangeText={setContent}
             multiline
@@ -61,65 +112,10 @@ export function NoteForm({
 
         <View style={styles.fabContainer}>
           <TouchableOpacity style={styles.fab} onPress={handleSubmit}>
-            <Icon name='checkmark' size={32} color='#FFFFFF' />
+            <Icon name='checkmark' size={32} color={theme.colors.neutral[50]} />
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#FFFFFF',
-  },
-  content: {
-    flex: 1,
-  },
-  header: {
-    height: 56,
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-  },
-  form: {
-    flex: 1,
-    padding: 16,
-  },
-  contentInput: {
-    flex: 1,
-    fontSize: 24,
-    color: '#374151',
-    textAlignVertical: 'top',
-  },
-  cancelButton: {
-    padding: 8,
-  },
-  cancelButtonText: {
-    color: '#6B7280',
-    fontSize: 16,
-    fontWeight: '500',
-  },
-  fabContainer: {
-    paddingHorizontal: 16,
-    paddingBottom: 16,
-    paddingTop: 8,
-  },
-  fab: {
-    width: '100%',
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: '#4F46E5',
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-});

@@ -15,6 +15,7 @@ import { searchNotes, getCommonTopics, getWelcomeMessage } from '../lib/ai';
 import { Keyboard } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useTheme } from '../theme/ThemeProvider';
 
 const Tab = createBottomTabNavigator();
 
@@ -41,6 +42,7 @@ function ChatScreenWrapper(props: any) {
 function TabNavigator({ screenProps }: any) {
   const navigation = useNavigation<NavigationProp>();
   const { t } = useTranslation();
+  const theme = useTheme();
 
   return (
     <Tab.Navigator
@@ -58,12 +60,12 @@ function TabNavigator({ screenProps }: any) {
 
           return <Icon name={iconName} size={size} color={color} />;
         },
-        tabBarActiveTintColor: '#4F46E5',
-        tabBarInactiveTintColor: '#6B7280',
+        tabBarActiveTintColor: theme.colors.primary[500],
+        tabBarInactiveTintColor: theme.colors.neutral[500],
         tabBarStyle: {
           borderTopWidth: 1,
-          borderTopColor: '#E5E7EB',
-          backgroundColor: '#FFFFFF',
+          borderTopColor: theme.colors.neutral[200],
+          backgroundColor: theme.colors.neutral[50],
           height: Platform.OS === 'ios' ? 90 : 60,
           paddingBottom: Platform.OS === 'ios' ? 25 : 8,
           position: 'absolute',
@@ -72,8 +74,8 @@ function TabNavigator({ screenProps }: any) {
           right: 0,
           elevation: 0,
           shadowOpacity: 0,
-          borderTopRightRadius: 15,
-          borderTopLeftRadius: 15,
+          borderTopRightRadius: theme.borderRadius.xl,
+          borderTopLeftRadius: theme.borderRadius.xl,
         },
         headerShown: false,
       })}
@@ -100,21 +102,14 @@ function TabNavigator({ screenProps }: any) {
                 style={{
                   width: 56,
                   height: 56,
-                  borderRadius: 28,
-                  backgroundColor: '#4F46E5',
+                  borderRadius: theme.borderRadius.full,
+                  backgroundColor: theme.colors.primary[500],
                   justifyContent: 'center',
                   alignItems: 'center',
-                  shadowColor: '#000',
-                  shadowOffset: {
-                    width: 0,
-                    height: 2,
-                  },
-                  shadowOpacity: 0.25,
-                  shadowRadius: 3.84,
-                  elevation: 5,
+                  ...theme.shadows.lg,
                 }}
               >
-                <Icon name='add' size={32} color='#FFFFFF' />
+                <Icon name='add' size={32} color={theme.colors.neutral[50]} />
               </View>
             </TouchableOpacity>
           ),
@@ -149,6 +144,7 @@ export function AuthenticatedApp() {
   const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
   const [welcomeMessage, setWelcomeMessage] = useState<string>('');
   const [isLoadingWelcome, setIsLoadingWelcome] = useState(true);
+  const theme = useTheme();
 
   useEffect(() => {
     if (session?.user) {
@@ -363,8 +359,21 @@ export function AuthenticatedApp() {
 
   if (!session?.user) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Text style={{ color: '#EF4444', fontSize: 16 }}>
+      <View
+        style={{
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: theme.colors.neutral[50],
+        }}
+      >
+        <Text
+          style={{
+            color: theme.colors.error.light,
+            fontSize: theme.typography.sizes.base,
+            fontWeight: theme.typography.weights.medium,
+          }}
+        >
           {t('common.pleaseSignIn')}
         </Text>
       </View>
@@ -397,12 +406,12 @@ export function AuthenticatedApp() {
           headerTitle: t('common.conversation'),
           headerShadowVisible: false,
           headerStyle: {
-            backgroundColor: '#f7f7f7',
+            backgroundColor: theme.colors.neutral[50],
           },
           headerTitleStyle: {
-            color: '#1F2937',
-            fontSize: 18,
-            fontWeight: '600',
+            color: theme.colors.neutral[800],
+            fontSize: theme.typography.sizes.lg,
+            fontWeight: theme.typography.weights.semibold,
           },
         }}
       >
@@ -416,12 +425,12 @@ export function AuthenticatedApp() {
           headerTitle: t('common.allMemos'),
           headerShadowVisible: false,
           headerStyle: {
-            backgroundColor: '#f7f7f7',
+            backgroundColor: theme.colors.neutral[50],
           },
           headerTitleStyle: {
-            color: '#1F2937',
-            fontSize: 18,
-            fontWeight: '600',
+            color: theme.colors.neutral[800],
+            fontSize: theme.typography.sizes.lg,
+            fontWeight: theme.typography.weights.semibold,
           },
         }}
       >
