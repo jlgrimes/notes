@@ -197,14 +197,15 @@ export function ConversationFlow({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingHorizontal: 16,
   },
   cardContainer: {
-    marginBottom: 12,
+    marginBottom: 24,
   },
   answerCard: {
     backgroundColor: 'transparent',
     borderRadius: 16,
-    padding: 16,
+    paddingVertical: 24,
   },
   answerText: {
     fontSize: 18,
@@ -212,9 +213,10 @@ const styles = StyleSheet.create({
     color: '#374151',
     lineHeight: 26,
     letterSpacing: -0.3,
+    marginTop: 12,
   },
   locationsContainer: {
-    marginTop: 12,
+    marginTop: 24,
     marginLeft: -16,
     marginRight: -16,
   },
@@ -222,11 +224,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   suggestionsContainer: {
-    marginTop: 12,
+    marginTop: 24,
   },
   suggestionsList: {
     flexDirection: 'column',
-    gap: 6,
+    gap: 12,
   },
   suggestionPill: {
     borderRadius: 100,
@@ -245,10 +247,10 @@ const styles = StyleSheet.create({
   },
   loadingContainer: {
     alignItems: 'center',
-    padding: 20,
+    padding: 24,
   },
   loadingText: {
-    marginTop: 12,
+    marginTop: 16,
     fontSize: 15,
     fontWeight: '500',
     color: '#6B7280',
