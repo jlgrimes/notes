@@ -128,10 +128,9 @@ export function ConversationFlow({
             )}
           </MotiView>
 
-          {card.answer && (
+          {card.answer && cardIndex === answerCards.length - 1 && (
             <View style={styles.suggestionsContainer}>
-              {isLoadingSmartSuggestions &&
-              cardIndex === answerCards.length - 1 ? (
+              {isLoadingSmartSuggestions ? (
                 <View style={styles.loadingContainer}>
                   <AILoadingIndicator size={30} color='#4F46E5' />
                   <Text style={styles.loadingText}>
