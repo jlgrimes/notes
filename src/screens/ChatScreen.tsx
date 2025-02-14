@@ -215,20 +215,13 @@ export function ChatScreen(props: ChatScreenProps) {
                       </MotiView>
                     </MotiView>
                   </View>
-                  {isLoadingSmartSuggestions ? (
-                    <View style={styles.spinnerContainer}>
-                      <AILoadingIndicator size={30} color='#4F46E5' />
-                      <Text style={styles.aiLoadingSubtext}>
-                        Getting smart suggestions...
-                      </Text>
-                    </View>
-                  ) : smartSuggestions.length > 0 ? (
-                    <SuggestionPillList
-                      suggestions={smartSuggestions}
-                      onSuggestionPress={handleSmartSuggestionPress}
-                      smart
-                    />
-                  ) : null}
+                  <SuggestionPillList
+                    suggestions={
+                      isLoadingSmartSuggestions ? undefined : smartSuggestions
+                    }
+                    onSuggestionPress={handleSmartSuggestionPress}
+                    smart
+                  />
                 </>
               )
             )}
@@ -237,30 +230,19 @@ export function ChatScreen(props: ChatScreenProps) {
 
         <View style={styles.bottomContent}>
           {!searchResult && (
-            <>
-              {isLoadingSuggestions ? (
-                <View style={styles.spinnerContainer}>
-                  <AILoadingIndicator size={30} color='#4F46E5' />
-                  <Text style={styles.aiLoadingSubtext}>
-                    Getting suggestions...
-                  </Text>
-                </View>
-              ) : (
-                <View style={styles.suggestionsContainer}>
-                  <SuggestionPillList
-                    suggestions={suggestions}
-                    onSuggestionPress={handleRegularSuggestionPress}
-                  />
-                  <TouchableOpacity
-                    style={styles.browseAllLink}
-                    onPress={() => navigation.navigate('NotesListModal')}
-                  >
-                    <Text style={styles.browseAllText}>Browse all notes</Text>
-                    <Text style={styles.chevron}>›</Text>
-                  </TouchableOpacity>
-                </View>
-              )}
-            </>
+            <View style={styles.suggestionsContainer}>
+              <SuggestionPillList
+                suggestions={isLoadingSuggestions ? undefined : suggestions}
+                onSuggestionPress={handleRegularSuggestionPress}
+              />
+              <TouchableOpacity
+                style={styles.browseAllLink}
+                onPress={() => navigation.navigate('NotesListModal')}
+              >
+                <Text style={styles.browseAllText}>Browse all notes</Text>
+                <Text style={styles.chevron}>›</Text>
+              </TouchableOpacity>
+            </View>
           )}
 
           <View style={styles.searchContainer}>
