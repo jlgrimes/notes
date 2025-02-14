@@ -303,19 +303,56 @@ export function Notes() {
           </Text>
         </View>
       ) : searchResult ? (
-        <View style={styles.searchResultContainer}>
-          <Text style={styles.searchResultTitle}>Search Result:</Text>
-          <Text style={styles.searchResultText}>{searchResult}</Text>
-          <TouchableOpacity
-            style={styles.clearButton}
-            onPress={() => {
-              setSearchResult('');
-              setSearchQuery('');
+        <MotiView
+          from={{
+            opacity: 0,
+          }}
+          animate={{
+            opacity: 1,
+          }}
+          exit={{
+            opacity: 0,
+          }}
+          transition={{
+            type: 'timing',
+            duration: 800,
+            delay: 100,
+          }}
+          style={[
+            styles.searchResultContainer,
+            {
+              transform: [{ translateY: 0 }],
+            },
+          ]}
+        >
+          <MotiView
+            from={{
+              transform: [{ translateY: 10 }],
+              scale: 0.98,
+            }}
+            animate={{
+              transform: [{ translateY: 0 }],
+              scale: 1,
+            }}
+            transition={{
+              type: 'spring',
+              damping: 15,
+              mass: 0.8,
             }}
           >
-            <Text style={styles.clearButtonText}>Clear Search</Text>
-          </TouchableOpacity>
-        </View>
+            <Text style={styles.searchResultTitle}>Search Result:</Text>
+            <Text style={styles.searchResultText}>{searchResult}</Text>
+            <TouchableOpacity
+              style={styles.clearButton}
+              onPress={() => {
+                setSearchResult('');
+                setSearchQuery('');
+              }}
+            >
+              <Text style={styles.clearButtonText}>Clear Search</Text>
+            </TouchableOpacity>
+          </MotiView>
+        </MotiView>
       ) : null}
 
       <NoteForm

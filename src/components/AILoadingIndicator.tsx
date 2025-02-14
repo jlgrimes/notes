@@ -3,62 +3,37 @@ import { View, StyleSheet } from 'react-native';
 import { MotiView } from 'moti';
 
 export const AILoadingIndicator = ({ size = 40, color = '#4F46E5' }) => {
-  // Create 3 dots that will animate in a wave pattern
-  const dots = Array.from({ length: 3 });
+  const bars = Array.from({ length: 3 });
+  const barWidth = size / 4;
 
   return (
-    <View style={[styles.container, { width: size * 3, height: size }]}>
-      {/* Background pulse effect */}
-      <MotiView
-        style={[
-          styles.pulse,
-          {
-            width: size * 2,
-            height: size * 2,
-            backgroundColor: color,
-          },
-        ]}
-        from={{
-          scale: 1,
-          opacity: 0.3,
-        }}
-        animate={{
-          scale: 1.8,
-          opacity: 0,
-        }}
-        transition={{
-          type: 'timing',
-          duration: 2000,
-          loop: true,
-        }}
-      />
-
-      {/* Animated dots */}
-      {dots.map((_, i) => (
+    <View style={[styles.container, { height: size }]}>
+      {bars.map((_, i) => (
         <MotiView
           key={i}
           style={[
-            styles.dot,
+            styles.bar,
             {
-              width: size / 3,
-              height: size / 3,
+              width: barWidth,
+              height: size,
               backgroundColor: color,
+              marginHorizontal: barWidth / 4,
             },
           ]}
           from={{
-            scale: 0.5,
+            height: size * 0.4,
             opacity: 0.3,
           }}
           animate={{
-            scale: 1,
-            opacity: 1,
+            height: [size * 0.4, size * 0.8, size * 0.4],
+            opacity: [0.3, 0.7, 0.3],
           }}
           transition={{
             type: 'timing',
-            duration: 1000,
+            duration: 1600,
             loop: true,
-            delay: i * 200,
-            repeatReverse: true,
+            delay: i * 220,
+            repeatReverse: false,
           }}
         />
       ))}
@@ -69,16 +44,10 @@ export const AILoadingIndicator = ({ size = 40, color = '#4F46E5' }) => {
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    justifyContent: 'center',
     alignItems: 'center',
-    gap: 8,
+    justifyContent: 'center',
   },
-  dot: {
-    borderRadius: 100,
-  },
-  pulse: {
-    position: 'absolute',
-    borderRadius: 100,
-    alignSelf: 'center',
+  bar: {
+    borderRadius: 2,
   },
 });
