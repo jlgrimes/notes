@@ -7,6 +7,8 @@ import {
   SMART_SUGGESTIONS_PROMPT,
   FOLLOW_UP_ANSWER_PROMPT,
 } from './prompts';
+import { LocationReference } from './ai.types';
+import { AnswerWithLocations } from './ai.types';
 
 const MODEL_NAME = 'gemini-2.0-flash-lite-preview-02-05';
 const WELCOME_CACHE_KEY = '@memo_welcome_cache';
@@ -328,21 +330,6 @@ export async function getSmartSuggestions(
     console.error('Error getting smart suggestions:', error);
     return [];
   }
-}
-
-interface LocationReference {
-  name: string;
-  address?: string;
-  placeId?: string; // Google Places ID for accurate location linking
-  coordinates?: {
-    latitude: number;
-    longitude: number;
-  };
-}
-
-export interface AnswerWithLocations {
-  answer: string;
-  locations: LocationReference[];
 }
 
 export async function getFollowUpAnswer(

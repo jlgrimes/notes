@@ -171,9 +171,6 @@ export function ChatScreen(props: ChatScreenProps) {
               : searchResult && (
                   <>
                     <View style={styles.cardContainer}>
-                      <MotiView {...fadeIn}>
-                        {searchQuery && <PromptLabel prompt={searchQuery} />}
-                      </MotiView>
                       <MotiView
                         from={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
@@ -200,19 +197,26 @@ export function ChatScreen(props: ChatScreenProps) {
                             mass: 0.8,
                           }}
                         >
+                          <MotiView {...fadeIn}>
+                            {searchQuery && (
+                              <PromptLabel prompt={searchQuery} />
+                            )}
+                          </MotiView>
                           <Text style={styles.searchResultText}>
                             {searchResult}
                           </Text>
                         </MotiView>
                       </MotiView>
+                      <SuggestionPillList
+                        suggestions={
+                          isLoadingSmartSuggestions
+                            ? undefined
+                            : smartSuggestions
+                        }
+                        onSuggestionPress={handleSmartSuggestionPress}
+                        smart
+                      />
                     </View>
-                    <SuggestionPillList
-                      suggestions={
-                        isLoadingSmartSuggestions ? undefined : smartSuggestions
-                      }
-                      onSuggestionPress={handleSmartSuggestionPress}
-                      smart
-                    />
                   </>
                 )}
           </ModalOverlay>

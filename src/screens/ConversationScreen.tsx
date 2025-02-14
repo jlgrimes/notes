@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, SafeAreaView } from 'react-native';
 import { ConversationFlow } from '../components/ConversationFlow';
 import { getFollowUpAnswer } from '../lib/ai';
+import { LocationReference } from '@/lib/ai.types';
 
 interface ConversationScreenProps {
   route: {
@@ -17,7 +18,7 @@ interface ConversationScreenProps {
 export function ConversationScreen({ route }: ConversationScreenProps) {
   const [query, setQuery] = useState(route.params.initialQuery);
   const [answer, setAnswer] = useState(route.params.initialAnswer);
-  const [locations, setLocations] = useState<string[]>([]);
+  const [locations, setLocations] = useState<LocationReference[]>([]);
   const { onSuggestionPress, previousAnswer } = route.params;
 
   // Fetch answer when component mounts
