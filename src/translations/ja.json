@@ -1,4 +1,5 @@
 {
+  "appName": "メモ",
   "common": {
     "loading": "読み込み中...",
     "error": "エラーが発生しました",
@@ -17,7 +18,7 @@
     "chat": "チャット"
   },
   "welcome": {
-    "title": "Memoへようこそ",
+    "title": "メモへようこそ",
     "subtitle": "あなたの思考とアイデアのための個人スペース",
     "startButton": "Googleで続ける",
     "description": "思考をキャプチャし、アイデアを整理し、大切なことを見失わないようにしましょう。"

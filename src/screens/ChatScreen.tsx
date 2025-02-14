@@ -25,6 +25,7 @@ import { ModalOverlay } from '../components/ModalOverlay';
 import { PromptLabel } from '../components/PromptLabel';
 import { welcomeAnimation, fadeIn, slideUpAndFadeIn } from '../lib/animations';
 import { useTranslation } from 'react-i18next';
+import { Header } from '../components/Header';
 
 type RootStackParamList = {
   MainTabs: undefined;
@@ -137,7 +138,8 @@ export function ChatScreen(props: ChatScreenProps) {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <View style={styles.safeArea}>
+      <Header title={t('appName')} />
       <View style={styles.mainContainer}>
         <View style={styles.topContent}>
           <View style={styles.welcomeContainer}>
@@ -255,7 +257,7 @@ export function ChatScreen(props: ChatScreenProps) {
           </View>
         </View>
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
 

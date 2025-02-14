@@ -1,4 +1,5 @@
 {
+  "appName": "Memo",
   "common": {
     "loading": "Cargando...",
     "error": "Se produjo un error",

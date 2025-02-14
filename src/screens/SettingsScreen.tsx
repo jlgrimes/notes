@@ -11,6 +11,7 @@ import {
 import { useAuth } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import { LanguageSelector } from '../components/LanguageSelector';
+import { Header } from '../components/Header';
 
 interface SettingsScreenProps {
   signOut: () => void;
@@ -24,11 +25,10 @@ export function SettingsScreen({ signOut }: SettingsScreenProps) {
   const userAvatar = session?.user?.user_metadata?.avatar_url;
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
+      <Header title={t('settings.title')} />
       <ScrollView style={styles.scrollView}>
         <View style={styles.settingsContainer}>
-          <Text style={styles.settingsTitle}>{t('settings.title')}</Text>
-
           <View style={styles.profileCard}>
             {userAvatar ? (
               <Image source={{ uri: userAvatar }} style={styles.avatar} />
@@ -52,7 +52,7 @@ export function SettingsScreen({ signOut }: SettingsScreenProps) {
           </TouchableOpacity>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -66,12 +66,6 @@ const styles = StyleSheet.create({
   },
   settingsContainer: {
     padding: 20,
-  },
-  settingsTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#1F2937',
-    marginBottom: 20,
   },
   profileCard: {
     backgroundColor: '#FFFFFF',
