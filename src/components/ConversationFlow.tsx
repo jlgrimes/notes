@@ -10,6 +10,7 @@ import { MotiView } from 'moti';
 import { LinearGradient } from 'expo-linear-gradient';
 import { AILoadingIndicator } from './AILoadingIndicator';
 import { getSmartSuggestions, getFollowUpAnswer } from '../lib/ai';
+import { SmartSuggestionPill } from './SmartSuggestionPill';
 
 interface ConversationFlowProps {
   initialQuery: string;
@@ -142,22 +143,13 @@ export function ConversationFlow({
               ) : card.smartSuggestions?.length > 0 ? (
                 <View style={styles.suggestionsList}>
                   {card.smartSuggestions.map((suggestion, index) => (
-                    <TouchableOpacity
+                    <SmartSuggestionPill
                       key={index}
-                      style={styles.suggestionPill}
+                      suggestion={suggestion}
                       onPress={() =>
                         handleSuggestionPress(suggestion, cardIndex)
                       }
-                    >
-                      <LinearGradient
-                        colors={['#4F46E5', '#7C3AED']}
-                        start={{ x: 0, y: 0 }}
-                        end={{ x: 1, y: 0 }}
-                        style={styles.suggestionPillGradient}
-                      >
-                        <Text style={styles.suggestionText}>{suggestion}</Text>
-                      </LinearGradient>
-                    </TouchableOpacity>
+                    />
                   ))}
                 </View>
               ) : null}
