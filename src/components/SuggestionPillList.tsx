@@ -19,21 +19,26 @@ export function SuggestionPillList({
   }
 
   return (
-    <MotiView
-      from={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ type: 'timing', duration: 300 }}
-      style={styles.suggestionsList}
-    >
+    <View style={styles.suggestionsList}>
       {suggestions.map((suggestion, index) => (
-        <SuggestionPill
+        <MotiView
           key={index}
-          suggestion={suggestion}
-          onPress={() => onSuggestionPress(suggestion)}
-          smart={smart}
-        />
+          from={{ opacity: 0, translateY: 10 }}
+          animate={{ opacity: 1, translateY: 0 }}
+          transition={{
+            type: 'timing',
+            duration: 300,
+            delay: index * 100,
+          }}
+        >
+          <SuggestionPill
+            suggestion={suggestion}
+            onPress={() => onSuggestionPress(suggestion)}
+            smart={smart}
+          />
+        </MotiView>
       ))}
-    </MotiView>
+    </View>
   );
 }
 
