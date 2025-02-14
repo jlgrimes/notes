@@ -40,7 +40,8 @@ export function NoteForm({
     },
     contentInput: {
       flex: 1,
-      fontSize: theme.typography.sizes['2xl'],
+      fontSize: theme.typography.sizes['xl'],
+      lineHeight: theme.typography.sizes['3xl'],
       color: theme.colors.neutral[700],
       textAlignVertical: 'top',
     },
