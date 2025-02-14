@@ -232,7 +232,10 @@ export function Notes() {
         <View style={styles.searchInputContainer}>
           <TextInput
             value={searchQuery}
-            onChangeText={setSearchQuery}
+            onChangeText={text => {
+              setSearchQuery(text);
+              setShowSuggestions(false);
+            }}
             onFocus={() => setShowSuggestions(true)}
             onPressIn={handleSearchInputPress}
             placeholder='Ask anything about your notes...'
