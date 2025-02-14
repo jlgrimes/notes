@@ -421,17 +421,8 @@ export function AuthenticatedApp() {
         name='NotesListModal'
         options={{
           presentation: 'modal',
-          headerShown: true,
-          headerTitle: t('common.allMemos'),
+          headerShown: false,
           headerShadowVisible: false,
-          headerStyle: {
-            backgroundColor: theme.colors.neutral[50],
-          },
-          headerTitleStyle: {
-            color: theme.colors.neutral[800],
-            fontSize: theme.typography.sizes.lg,
-            fontWeight: theme.typography.weights.semibold,
-          },
         }}
       >
         {() => (

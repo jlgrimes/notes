@@ -2,12 +2,11 @@ import React from 'react';
 import {
   View,
   StyleSheet,
-  FlatList,
   TouchableOpacity,
   Text,
   ActivityIndicator,
 } from 'react-native';
-import { Note } from '../components/Note';
+import { MasonryNoteList } from '../components/MasonryNoteList';
 import { useTranslation } from 'react-i18next';
 
 interface NotesListScreenProps {
@@ -52,19 +51,7 @@ export function NotesListScreen({
           )}
         </View>
       ) : (
-        <FlatList
-          data={notes}
-          renderItem={({ item }) => (
-            <Note
-              id={item.id}
-              content={item.content}
-              onEdit={onEdit}
-              onDelete={onDelete}
-            />
-          )}
-          keyExtractor={item => item.id}
-          contentContainerStyle={styles.listContent}
-        />
+        <MasonryNoteList notes={notes} onEdit={onEdit} onDelete={onDelete} />
       )}
     </View>
   );
@@ -79,10 +66,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  listContent: {
-    padding: 16,
-    gap: 12,
   },
   emptyContainer: {
     flex: 1,
@@ -104,27 +87,6 @@ const styles = StyleSheet.create({
   createButtonText: {
     color: '#FFFFFF',
     fontSize: 16,
-    fontWeight: '600',
-  },
-  floatingButton: {
-    position: 'absolute',
-    right: 16,
-    bottom: 16,
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: '#3B82F6',
-    justifyContent: 'center',
-    alignItems: 'center',
-    elevation: 4,
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-  },
-  floatingButtonText: {
-    color: '#FFFFFF',
-    fontSize: 24,
     fontWeight: '600',
   },
 });
