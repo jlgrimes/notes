@@ -195,13 +195,38 @@ export function AuthenticatedApp() {
     }
   };
 
-  const handleSuggestionPress = async (suggestion: string) => {
-    if (notes.length === 0) return;
+  const handleSearch = async (query?: string) => {
+    const searchText = query || searchQuery;
 
+    if (!searchText.trim()) {
+      Alert.alert('Error', 'Please enter a search query.');
+      return;
+    }
+
+    if (notes.length === 0) {
+      setSearchResult("You haven't written any notes yet.");
+      return;
+    }
+
+    try {
+      setIsSearching(true);
+      const result = await searchNotes(searchText, notes);
+      if (query) {
+        setSearchQuery(query);
+      }
+      setSearchResult(result);
+    } catch (error) {
+      console.error('Error searching notes:', error);
+      Alert.alert('Error', 'Failed to search notes. Please try again.');
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  const handleSuggestionPress = (suggestion: string) => {
+    if (notes.length === 0) return;
     Keyboard.dismiss();
-    setSearchQuery(suggestion);
-    setShowSuggestions(false);
-    handleSearch();
+    handleSearch(suggestion);
   };
 
   const fetchNotes = async () => {
@@ -225,29 +250,6 @@ export function AuthenticatedApp() {
         'Error',
         'An unexpected error occurred while fetching notes.'
       );
-    }
-  };
-
-  const handleSearch = async () => {
-    if (!searchQuery.trim()) {
-      Alert.alert('Error', 'Please enter a search query.');
-      return;
-    }
-
-    if (notes.length === 0) {
-      setSearchResult("You haven't written any notes yet.");
-      return;
-    }
-
-    try {
-      setIsSearching(true);
-      const result = await searchNotes(searchQuery, notes);
-      setSearchResult(result);
-    } catch (error) {
-      console.error('Error searching notes:', error);
-      Alert.alert('Error', 'Failed to search notes. Please try again.');
-    } finally {
-      setIsSearching(false);
     }
   };
 

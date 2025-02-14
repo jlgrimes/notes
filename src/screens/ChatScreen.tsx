@@ -99,6 +99,14 @@ export function ChatScreen(props: ChatScreenProps) {
     });
   };
 
+  const handleRegularSuggestionPress = async (suggestion: string) => {
+    await setSearchQuery(suggestion);
+    // Small timeout to ensure state is updated
+    setTimeout(() => {
+      handleSearch();
+    }, 0);
+  };
+
   const handleSearchWithSmartSuggestions = () => {
     handleSearch();
   };
@@ -430,11 +438,11 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   welcomeText: {
-    fontSize: 24,
+    fontSize: 30,
     fontWeight: '600',
     textAlign: 'left',
     color: 'black',
-    lineHeight: 32,
+    lineHeight: 36,
   },
   smartSuggestionPill: {
     borderWidth: 0,
